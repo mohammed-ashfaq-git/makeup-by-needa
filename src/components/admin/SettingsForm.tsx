@@ -265,7 +265,7 @@ export function SettingsForm({ initial }: { initial: SettingsFormValues }) {
       <ImageField
         name="logo"
         label="Logo"
-        hint="Optional — JPG, PNG, WEBP or GIF up to 5 MB. Shown in the header and footer."
+        hint="Optional — JPG, PNG, or WEBP up to 5 MB. Shown in the header and footer."
         state={state}
         currentImageUrl={
           initial.logoUrl && initial.logoUrl !== "/makeup-by-needa-logo.jpg"

@@ -2,11 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Gallery } from "@/components/gallery";
 import { getGalleryItems, getSettings } from "@/lib/cms";
+import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
-  title: "Gallery",
-  description: "A portfolio of makeup, bridal beauty, hair and nail artistry.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  const description = "Browse a portfolio of makeup, bridal beauty, hair styling, and nail artistry.";
+  const canonicalUrl = getAbsoluteSiteUrl("/gallery");
+
+  return {
+    title: "Gallery",
+    description,
+    alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
+    openGraph: {
+      title: `Gallery | ${settings.businessName}`,
+      description,
+      type: "website",
+      locale: "en_CA",
+      siteName: settings.businessName,
+      url: canonicalUrl,
+    },
+  };
+}
 
 export default async function GalleryPage() {
   const [items, settings] = await Promise.all([

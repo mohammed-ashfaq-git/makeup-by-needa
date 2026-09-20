@@ -2,13 +2,26 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getServices, getSettings } from "@/lib/cms";
+import { getAbsoluteSiteUrl } from "@/lib/site-url";
 import styles from "./services.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const description = `Explore makeup, hair styling, and nail artistry services by ${settings.businessName}.`;
+  const canonicalUrl = getAbsoluteSiteUrl("/services");
+
   return {
     title: "Services",
-    description: `Makeup, hair styling and nail artistry services by ${settings.businessName}.`,
+    description,
+    alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
+    openGraph: {
+      title: `Services | ${settings.businessName}`,
+      description,
+      type: "website",
+      locale: "en_CA",
+      siteName: settings.businessName,
+      url: canonicalUrl,
+    },
   };
 }
 

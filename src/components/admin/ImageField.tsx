@@ -56,7 +56,7 @@ export function ImageField({
           id={`${name}-input`}
           name={name}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept="image/jpeg,image/png,image/webp"
           className={fieldClass(name, state, "a-input")}
           onChange={(event) => {
             const file = event.target.files?.[0];

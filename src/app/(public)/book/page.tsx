@@ -1,12 +1,25 @@
 import type { Metadata } from "next";
 import { EnquiryForm } from "@/components/enquiry-form";
 import { getArtist, getFaqs, getServices, getSettings } from "@/lib/cms";
+import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const description = `Start an appointment enquiry with ${settings.businessName} for makeup, hair styling, or nail artistry.`;
+  const canonicalUrl = getAbsoluteSiteUrl("/book");
+
   return {
     title: "Book an Appointment",
-    description: `Start an appointment enquiry with ${settings.businessName}.`,
+    description,
+    alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
+    openGraph: {
+      title: `Book an Appointment | ${settings.businessName}`,
+      description,
+      type: "website",
+      locale: "en_CA",
+      siteName: settings.businessName,
+      url: canonicalUrl,
+    },
   };
 }
 

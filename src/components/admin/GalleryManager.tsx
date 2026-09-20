@@ -185,7 +185,7 @@ function GalleryItemForm({
       <ImageField
         name="image"
         label={initial ? "Replace image" : "Image"}
-        hint="JPG, PNG, WEBP or GIF up to 5 MB."
+        hint="JPG, PNG, or WEBP up to 5 MB."
         state={state}
         currentImageUrl={initial?.imageUrl ?? null}
       />

@@ -3,12 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
 import { getArtist, getSettings } from "@/lib/cms";
+import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const description = `Meet the artist behind ${settings.businessName} and discover a thoughtful approach to makeup, hair styling, and nail artistry.`;
+  const canonicalUrl = getAbsoluteSiteUrl("/about");
+
   return {
     title: "About",
-    description: `Meet the artist behind ${settings.businessName}.`,
+    description,
+    alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
+    openGraph: {
+      title: `About | ${settings.businessName}`,
+      description,
+      type: "website",
+      locale: "en_CA",
+      siteName: settings.businessName,
+      url: canonicalUrl,
+    },
   };
 }
 

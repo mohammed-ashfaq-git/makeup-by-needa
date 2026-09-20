@@ -12,10 +12,91 @@ export const runtime = "nodejs";
 
 const SUBMIT_LIMIT = 6;
 const SUBMIT_WINDOW_MS = 15 * 60 * 1000;
+const MAX_ENQUIRY_REQUEST_BYTES = 32 * 1024;
+
+type LimitedJsonBody =
+  | { kind: "ok"; body: Record<string, unknown> }
+  | { kind: "invalid" }
+  | { kind: "too_large" };
+
+/**
+ * Reads a JSON body incrementally so clients cannot bypass the enquiry size
+ * limit by omitting Content-Length or using a chunked request.
+ */
+async function readLimitedJsonBody(request: Request): Promise<LimitedJsonBody> {
+  const contentLength = request.headers.get("content-length");
+  if (contentLength) {
+    const declaredLength = Number(contentLength);
+    if (Number.isFinite(declaredLength) && declaredLength > MAX_ENQUIRY_REQUEST_BYTES) {
+      return { kind: "too_large" };
+    }
+  }
+
+  if (!request.body) return { kind: "invalid" };
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+
+      totalBytes += value.byteLength;
+      if (totalBytes > MAX_ENQUIRY_REQUEST_BYTES) {
+        try {
+          await reader.cancel();
+        } catch {
+          // The response remains a safe 413 even if the stream cannot cancel.
+        }
+        return { kind: "too_large" };
+      }
+      chunks.push(value);
+    }
+  } catch {
+    return { kind: "invalid" };
+  }
+
+  const bytes = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  try {
+    const value: unknown = JSON.parse(new TextDecoder().decode(bytes));
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return { kind: "invalid" };
+    }
+    return { kind: "ok", body: value as Record<string, unknown> };
+  } catch {
+    return { kind: "invalid" };
+  }
+}
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as Record<string, unknown>;
+    const payload = await readLimitedJsonBody(request);
+    if (payload.kind === "too_large") {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "The enquiry request is too large. Please keep it under 32 KB.",
+        },
+        { status: 413 },
+      );
+    }
+    if (payload.kind === "invalid") {
+      return NextResponse.json(
+        { ok: false, message: "Please submit the enquiry form again." },
+        { status: 400 },
+      );
+    }
+
+    const body = payload.body;
 
     const parsed = enquirySubmissionSchema.safeParse({
       name: body.name,

@@ -15,7 +15,6 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
-  "image/gif",
 ]);
 
 export class ImageValidationError extends Error {}
@@ -47,7 +46,7 @@ function detectImageType(bytes: Uint8Array): string | null {
     return "image/png";
   }
 
-  // GIF: GIF87a / GIF89a
+  // GIF: GIF87a / GIF89a. Detect it so the allow-list explicitly rejects it.
   if (
     bytes[0] === 0x47 &&
     bytes[1] === 0x49 &&
@@ -104,7 +103,7 @@ export async function processImageUpload(
 
   if (!detected || !ALLOWED_MIME_TYPES.has(detected)) {
     throw new ImageValidationError(
-      "That file does not look like a JPG, PNG, WEBP or GIF image.",
+      "That file does not look like a JPG, PNG, or WEBP image.",
     );
   }
 
