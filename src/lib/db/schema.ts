@@ -80,6 +80,8 @@ export const siteSettings = mysqlTable("site_settings", {
   id: int("id").primaryKey(),
   businessName: varchar("business_name", { length: 160 }).notNull(),
   logoUrl: varchar("logo_url", { length: 500 }),
+  /** Homepage hero image. NULL → the first active gallery image is used. */
+  heroImageUrl: varchar("hero_image_url", { length: 500 }),
   phone: varchar("phone", { length: 50 }),
   email: varchar("email", { length: 255 }).notNull(),
   whatsappNumber: varchar("whatsapp_number", { length: 30 }).notNull(),

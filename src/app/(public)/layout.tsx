@@ -19,9 +19,10 @@ export default async function PublicLayout({
     getServices(),
   ]);
 
-  const featuredServices = services
-    .filter((service) => service.featured)
-    .slice(0, 6);
+  const flagged = services.filter((service) => service.featured);
+  const featuredServices = (
+    flagged.length > 0 ? flagged : services
+  ).slice(0, 6);
 
   return (
     <>

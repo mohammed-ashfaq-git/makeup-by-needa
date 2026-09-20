@@ -4,10 +4,13 @@ import Link from "next/link";
 import { getServices, getSettings } from "@/lib/cms";
 import styles from "./services.module.css";
 
-export const metadata: Metadata = {
-  title: "Services",
-  description: "Makeup, hair styling and nail artistry services.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  return {
+    title: "Services",
+    description: `Makeup, hair styling and nail artistry services by ${settings.businessName}.`,
+  };
+}
 
 const categories = ["Makeup", "Hair", "Nails"] as const;
 
@@ -120,6 +123,21 @@ export default async function Services() {
           </div>
         </section>
 
+        {services.length === 0 && (
+          <section className="section">
+            <div className="shell">
+              <div className="empty-state">
+                <p className="eyebrow">Services</p>
+                <p>
+                  The service menu is being updated. Please enquire about
+                  makeup, hair styling or nail artistry and {settings.businessName}{" "}
+                  will be happy to help.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         {categories.map((category, categoryIndex) => {
           const content = categoryContent[category];
           const categoryServices = services.filter(
@@ -128,6 +146,8 @@ export default async function Services() {
           const categoryImage = categoryServices.find(
             (service) => service.imageUrl,
           )?.imageUrl;
+
+          if (categoryServices.length === 0) return null;
 
           return (
             <section

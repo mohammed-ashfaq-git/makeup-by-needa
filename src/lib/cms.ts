@@ -5,7 +5,11 @@
  * configuration in `lib/site-data.ts` when the database is unavailable
  * or a table has not been seeded yet. Public pages therefore never
  * render blank.
+ *
+ * Getters are wrapped in React `cache()` so a single request that renders
+ * the layout plus several components never queries the same data twice.
  */
+import { cache } from "react";
 import { asc, eq } from "drizzle-orm";
 import {
   artistProfile,
@@ -30,6 +34,8 @@ import {
 export type PublicSettings = {
   businessName: string;
   logoUrl: string;
+  /** Homepage hero image; NULL → use the first active gallery image. */
+  heroImageUrl: string | null;
   phone: string | null;
   email: string;
   whatsappNumber: string;
@@ -130,7 +136,7 @@ function splitParagraphs(value: string): string[] {
 /* Settings                                                            */
 /* ------------------------------------------------------------------ */
 
-export async function getSettings(): Promise<PublicSettings> {
+export const getSettings = cache(async (): Promise<PublicSettings> => {
   const rows = await queryWithFallback((db) =>
     db.select().from(siteSettings).where(eq(siteSettings.id, 1)).limit(1),
   );
@@ -140,6 +146,7 @@ export async function getSettings(): Promise<PublicSettings> {
     return {
       businessName: business.name,
       logoUrl: "/makeup-by-needa-logo.jpg",
+      heroImageUrl: null,
       phone: null,
       email: business.email,
       whatsappNumber: business.whatsapp,
@@ -162,6 +169,7 @@ export async function getSettings(): Promise<PublicSettings> {
   return {
     businessName: row.businessName || business.name,
     logoUrl: row.logoUrl || "/makeup-by-needa-logo.jpg",
+    heroImageUrl: row.heroImageUrl || null,
     phone: row.phone || null,
     email: row.email || business.email,
     whatsappNumber: row.whatsappNumber || business.whatsapp,
@@ -180,15 +188,14 @@ export async function getSettings(): Promise<PublicSettings> {
     homeDescription: row.homeDescription || business.homeDescription,
     footerText: row.footerText || business.footerText,
   };
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* Services                                                            */
 /* ------------------------------------------------------------------ */
 
-export async function getServices(
-  options?: { activeOnly?: boolean },
-): Promise<PublicService[]> {
+export const getServices = cache(
+  async (options?: { activeOnly?: boolean }): Promise<PublicService[]> => {
     const activeOnly = options?.activeOnly ?? true;
 
     const rows = await queryWithFallback((db) =>
@@ -222,22 +229,20 @@ export async function getServices(
         shortDescription: row.shortDescription,
         description: row.description,
         priceDisplay:
-          row.priceDisplay ||
-          formatPrice(row.price) ||
-          "Enquire for pricing",
+          row.priceDisplay || formatPrice(row.price) || "Enquire for pricing",
         hasNumericPrice: row.price != null,
         duration: row.duration,
         imageUrl: row.imageUrl,
         featured: row.featured,
       }));
-
-}
+  },
+);
 
 /* ------------------------------------------------------------------ */
 /* Gallery                                                             */
 /* ------------------------------------------------------------------ */
 
-export async function getGalleryItems(): Promise<PublicGalleryItem[]> {
+export const getGalleryItems = cache(async (): Promise<PublicGalleryItem[]> => {
   const rows = await queryWithFallback((db) =>
     db
       .select()
@@ -266,13 +271,13 @@ export async function getGalleryItems(): Promise<PublicGalleryItem[]> {
       altText: row.altText || row.title,
       caption: row.caption,
     }));
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* Testimonials                                                        */
 /* ------------------------------------------------------------------ */
 
-export async function getTestimonials(): Promise<PublicTestimonial[]> {
+export const getTestimonials = cache(async (): Promise<PublicTestimonial[]> => {
   const rows = await queryWithFallback((db) =>
     db
       .select()
@@ -292,13 +297,13 @@ export async function getTestimonials(): Promise<PublicTestimonial[]> {
       photoUrl: row.photoUrl,
       service: row.service,
     }));
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* FAQs                                                                */
 /* ------------------------------------------------------------------ */
 
-export async function getFaqs(): Promise<PublicFaq[]> {
+export const getFaqs = cache(async (): Promise<PublicFaq[]> => {
   const rows = await queryWithFallback((db) =>
     db.select().from(faqs).orderBy(asc(faqs.displayOrder), asc(faqs.id)),
   );
@@ -312,13 +317,13 @@ export async function getFaqs(): Promise<PublicFaq[]> {
       question: row.question,
       answer: row.answer,
     }));
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* Artist                                                              */
 /* ------------------------------------------------------------------ */
 
-export async function getArtist(): Promise<PublicArtist> {
+export const getArtist = cache(async (): Promise<PublicArtist> => {
   const rows = await queryWithFallback((db) =>
     db.select().from(artistProfile).where(eq(artistProfile.id, 1)).limit(1),
   );
@@ -349,4 +354,4 @@ export async function getArtist(): Promise<PublicArtist> {
     location: row.location || null,
     instagram: row.instagram || null,
   };
-}
+});

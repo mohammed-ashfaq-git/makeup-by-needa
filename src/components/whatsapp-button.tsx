@@ -1,3 +1,5 @@
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
+
 export function WhatsAppButton({
   whatsappNumber,
   whatsappMessage,
@@ -8,7 +10,7 @@ export function WhatsAppButton({
   return (
     <a
       className="whatsapp"
-      href={`https://wa.me/${whatsappNumber.replace("+", "")}?text=${encodeURIComponent(whatsappMessage)}`}
+      href={buildWhatsAppUrl(whatsappNumber, whatsappMessage)}
       target="_blank"
       rel="noreferrer"
       aria-label="Chat on WhatsApp"

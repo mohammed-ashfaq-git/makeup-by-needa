@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, type ChangeEvent } from "react";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export type EnquiryFormService = {
   name: string;
@@ -44,10 +45,12 @@ export function EnquiryForm({
   serviceOptions,
   whatsappNumber,
   whatsappMessage,
+  artistName,
 }: {
   serviceOptions: EnquiryFormService[];
   whatsappNumber: string;
   whatsappMessage: string;
+  artistName: string;
 }) {
   const [fields, setFields] = useState<FormFields>(initialFields);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -151,7 +154,7 @@ export function EnquiryForm({
       .filter(Boolean)
       .join("\n");
 
-    return `https://wa.me/${whatsappNumber.replace("+", "")}?text=${encodeURIComponent(lines)}`;
+    return buildWhatsAppUrl(whatsappNumber, lines);
   };
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -232,9 +235,10 @@ export function EnquiryForm({
 
         <div className="enquiry-info-box">
           <p>
-            <strong>Important note:</strong> This is an enquiry, not an automatic
-            booking confirmation. Needa will review your event details and get
-            back to you directly to confirm availability and timing.
+            <strong>Important note:</strong> This is an enquiry, not an
+            automatic booking confirmation. {artistName} will review your
+            event details and get back to you directly to confirm availability
+            and timing.
           </p>
 
           <p>
@@ -513,7 +517,7 @@ export function EnquiryForm({
         </button>
 
         <span className="form-privacy-note">
-          Your enquiry is directly reviewed by Needa. No spam, ever.
+          Your enquiry is directly reviewed by {artistName}. No spam, ever.
         </span>
       </div>
 

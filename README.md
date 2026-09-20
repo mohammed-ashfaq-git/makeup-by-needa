@@ -15,8 +15,9 @@ and generates an ENQ-#### reference.
 
 - **Dashboard** — enquiry, service, gallery and testimonial counters with
   quick links to the latest enquiries.
-- **Website Settings** — business name & contact details, WhatsApp number and
-  prefilled message, Instagram/Facebook links, homepage copy and footer text.
+- **Website Settings** — business name, logo, homepage hero image, phone,
+  email, address, hours, WhatsApp number and prefilled message,
+  Instagram/Facebook links, homepage copy and footer text.
 - **Artist / Bio** — bio shown on the About page (name, short bio, full bio,
   experience, specialties, qualifications, location, Instagram).
 - **Services** — full CRUD with categories (Makeup / Hair / Nails), pricing
@@ -85,17 +86,45 @@ src/
     auth/            # session management, password hashing, guards, rate limit
     db/              # Drizzle schema, migrations live in /drizzle
     schemas.ts       # Zod validation schemas for all forms
-    cms.ts           # read helpers with static fallbacks if the DB is down
+    cms.ts           # cached read helpers with static fallbacks if the DB is down
+    whatsapp.ts      # single WhatsApp deep-link builder used everywhere
 scripts/
   dev-db.sh          # private MySQL 5.7 dev instance (user-space)
   seed.mjs           # idempotent content seed
   reset-admin-password.mjs
+  e2e-cms.mjs        # admin CMS end-to-end suite (54 tests)
+  e2e-public.mjs     # public website integration suite (42 tests)
 ```
+
+## Testing
+
+Two Puppeteer end-to-end suites run against a started server
+(`npm run build && npm start`):
+
+```bash
+npm run test:e2e          # 54 admin CMS tests (setup, auth, every manager,
+                          # enquiry workflow, logout protection)
+npm run test:e2e:public   # 42 public-integration tests (logo/hero/artist
+                          # photo uploads, settings propagating to every
+                          # public page, visibility toggles, content audit)
+```
+
+The CMS suite expects a **fresh database** (no admin yet): it creates
+`admin@e2e.test` / `e2e-password-123` through the first-run setup page. On
+machines without a bundled Chrome, point the suite at one with
+`CHROME_PATH=… ` (and `CHROME_LD_LIBRARY_PATH=…` if needed).
 
 ## Notes
 
+- The public website is fully database-driven: settings, artist profile,
+  services, gallery, testimonials and FAQs all come from the CMS, rendered
+  server-side. Admin edits appear immediately — no redeployment needed.
 - All public pages fall back to the built-in static content if the database
-  is unavailable, so the site never goes down with the DB.
+  is unavailable, so the site never goes down with the DB. The enquiry API
+  degrades to a WhatsApp hand-off in that case, so no enquiry is lost.
+- Empty CMS collections are handled gracefully: sections with no content
+  (testimonials, FAQs, services, gallery) are hidden or replaced by a short
+  note instead of rendering empty grids or placeholder text.
 - Uploaded images are stored as BLOBs in `site_images` and streamed through a
   route handler, so no writable disk is required in production.
 - Admin forms keep their field values after a failed submit (no accidental

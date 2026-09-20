@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "dev-db": "bash scripts/dev-db.sh",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "node scripts/seed.mjs",
     "db:setup": "drizzle-kit migrate && node scripts/seed.mjs",
-    "dev-db": "bash scripts/dev-db.sh",
-    "admin:reset-password": "node scripts/reset-admin-password.mjs"
+    "admin:reset-password": "node scripts/reset-admin-password.mjs",
+    "test:e2e": "node scripts/e2e-cms.mjs",
+    "test:e2e:public": "node scripts/e2e-public.mjs"
   },
   "dependencies": {
     "@netlify/plugin-nextjs": "^5.15.13",

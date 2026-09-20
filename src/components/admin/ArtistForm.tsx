@@ -147,7 +147,7 @@ export function ArtistForm({ initial }: { initial: ArtistFormValues }) {
       <ImageField
         name="photo"
         label="Profile photo"
-        hint="Optional — replaces the portrait placeholder on the About page."
+        hint="Optional — shown as the portrait on the About page."
         state={state}
         currentImageUrl={initial.photoUrl}
         removeName="removePhoto"

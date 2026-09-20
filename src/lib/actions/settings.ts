@@ -62,17 +62,27 @@ export async function saveSettingsAction(
     };
   }
 
-  // Logo upload (optional).
+  // Logo + hero image uploads (optional).
   let logoUrl: string | null | undefined = undefined;
+  let heroImageUrl: string | null | undefined = undefined;
   const removeLogo = readBoolean(formData, "removeLogo");
+  const removeHero = readBoolean(formData, "removeHero");
 
   try {
-    const file = readOptionalFile(formData, "logo");
-    if (file) {
-      const processed = await processImageUpload(file, "logo");
+    const logoFile = readOptionalFile(formData, "logo");
+    if (logoFile) {
+      const processed = await processImageUpload(logoFile, "logo");
       if (processed) logoUrl = await storeImage(processed);
     } else if (removeLogo) {
       logoUrl = null;
+    }
+
+    const heroFile = readOptionalFile(formData, "hero");
+    if (heroFile) {
+      const processed = await processImageUpload(heroFile, "hero");
+      if (processed) heroImageUrl = await storeImage(processed);
+    } else if (removeHero) {
+      heroImageUrl = null;
     }
   } catch (error) {
     if (error instanceof ImageValidationError) {
@@ -87,7 +97,10 @@ export async function saveSettingsAction(
 
   const existing = await queryWithFallback((db) =>
     db
-      .select({ logoUrl: siteSettings.logoUrl })
+      .select({
+        logoUrl: siteSettings.logoUrl,
+        heroImageUrl: siteSettings.heroImageUrl,
+      })
       .from(siteSettings)
       .where(eq(siteSettings.id, 1))
       .limit(1),
@@ -96,16 +109,25 @@ export async function saveSettingsAction(
   try {
     await getDb()
       .insert(siteSettings)
-      .values({ id: 1, ...parsed.data, logoUrl: logoUrl ?? null })
+      .values({
+        id: 1,
+        ...parsed.data,
+        logoUrl: logoUrl ?? null,
+        heroImageUrl: heroImageUrl ?? null,
+      })
       .onDuplicateKeyUpdate({
-        set: { ...parsed.data, ...(logoUrl !== undefined ? { logoUrl } : {}) },
+        set: {
+          ...parsed.data,
+          ...(logoUrl !== undefined ? { logoUrl } : {}),
+          ...(heroImageUrl !== undefined ? { heroImageUrl } : {}),
+        },
       });
   } catch (error) {
     console.error("[settings] save failed:", error);
     return { ok: false, message: "Could not save settings. Please try again." };
   }
 
-  // Clean up the replaced logo file (only after a successful save).
+  // Clean up the replaced image files (only after a successful save).
   const previousLogo = existing?.[0]?.logoUrl;
   if (
     previousLogo &&
@@ -113,6 +135,15 @@ export async function saveSettingsAction(
     previousLogo !== logoUrl
   ) {
     await deleteManagedImage(previousLogo);
+  }
+
+  const previousHero = existing?.[0]?.heroImageUrl;
+  if (
+    previousHero &&
+    isManagedImageUrl(previousHero) &&
+    previousHero !== heroImageUrl
+  ) {
+    await deleteManagedImage(previousHero);
   }
 
   revalidatePath("/", "layout");

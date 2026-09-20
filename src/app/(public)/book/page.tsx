@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 import { EnquiryForm } from "@/components/enquiry-form";
-import { getFaqs, getServices, getSettings } from "@/lib/cms";
+import { getArtist, getFaqs, getServices, getSettings } from "@/lib/cms";
 
-export const metadata: Metadata = {
-  title: "Book an Appointment",
-  description: "Start an appointment enquiry with Makeup by Needa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  return {
+    title: "Book an Appointment",
+    description: `Start an appointment enquiry with ${settings.businessName}.`,
+  };
+}
 
 export default async function Book() {
-  const [services, settings, faqs] = await Promise.all([
+  const [services, settings, faqs, artist] = await Promise.all([
     getServices(),
     getSettings(),
     getFaqs(),
+    getArtist(),
   ]);
 
   return (
@@ -59,6 +63,7 @@ export default async function Book() {
             }))}
             whatsappNumber={settings.whatsappNumber}
             whatsappMessage={settings.whatsappMessage}
+            artistName={artist.name}
           />
         </div>
       </section>

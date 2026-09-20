@@ -1197,6 +1197,46 @@ i {
   text-transform: uppercase;
 }
 
+.portrait-placeholder-inner {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding: 0 36px;
+  text-align: center;
+}
+
+.portrait-monogram {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(72px, 9vw, 118px);
+  font-weight: 400;
+  line-height: 1;
+  color: rgba(255, 248, 241, 0.94);
+}
+
+.portrait-placeholder-inner small {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 248, 241, 0.72);
+}
+
+/* Graceful empty states (no services / gallery images / testimonials…) */
+.empty-state {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 46px 26px;
+  text-align: center;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.empty-state p {
+  margin: 8px 0 0;
+  color: var(--muted, #71645c);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
 /* Artist portrait (uploaded via the CMS) */
 .portrait-photo {
   position: relative;

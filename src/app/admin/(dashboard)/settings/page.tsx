@@ -30,6 +30,7 @@ export default async function AdminSettingsPage() {
     ? {
         businessName: saved.businessName,
         logoUrl: saved.logoUrl,
+        heroImageUrl: saved.heroImageUrl,
         phone: saved.phone,
         email: saved.email,
         whatsappNumber: saved.whatsappNumber,
@@ -50,6 +51,7 @@ export default async function AdminSettingsPage() {
     : {
         businessName: fallback.businessName,
         logoUrl: null,
+        heroImageUrl: null,
         phone: fallback.phone,
         email: fallback.email,
         whatsappNumber: fallback.whatsappNumber,

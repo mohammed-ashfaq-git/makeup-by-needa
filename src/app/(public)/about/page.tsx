@@ -4,10 +4,13 @@ import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
 import { getArtist, getSettings } from "@/lib/cms";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "Meet the artist behind Makeup by Needa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  return {
+    title: "About",
+    description: `Meet the artist behind ${settings.businessName}.`,
+  };
+}
 
 export default async function About() {
   const [artist, settings] = await Promise.all([getArtist(), getSettings()]);
@@ -65,13 +68,14 @@ export default async function About() {
               />
             </div>
           ) : (
-            <div className="portrait-placeholder">
+            <div className="portrait-placeholder" aria-hidden="true">
               <div className="portrait-placeholder-inner">
-                <span>Professional artist portrait</span>
-                <small>Image will be added</small>
-              </div>
+                <strong className="portrait-monogram">
+                  {artist.name.charAt(0).toUpperCase()}
+                </strong>
 
-              <strong>01</strong>
+                <small>{artist.name} · Makeup · Hair · Nail Art</small>
+              </div>
             </div>
           )}
 

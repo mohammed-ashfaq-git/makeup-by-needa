@@ -71,7 +71,20 @@ export default async function Home() {
       getArtist(),
     ]);
 
-  const featured = services.filter((service) => service.featured).slice(0, 4);
+  // Featured services for the homepage grid; when none are flagged as
+  // featured, the first active services (in display order) are shown so the
+  // section never renders empty while services exist.
+  const featuredServices = services.filter((service) => service.featured);
+  const featured = (
+    featuredServices.length > 0 ? featuredServices : services
+  ).slice(0, 4);
+
+  // Hero image: dedicated CMS hero, else the first active gallery image,
+  // else the static file that ships with the site.
+  const heroImage =
+    settings.heroImageUrl ||
+    galleryItems[0]?.imageUrl ||
+    "/images/makeup-by-needa-hero.jpg";
 
   const getCategoryLabel = (category: string) =>
     category === "Nails" ? "Nail Art" : category;
@@ -124,7 +137,7 @@ export default async function Home() {
 
               <Image
                 className="hero-photo"
-                src="/images/makeup-by-needa-hero.jpg"
+                src={heroImage}
                 alt={`${settings.businessName} beauty artistry`}
                 fill
                 priority
@@ -183,8 +196,9 @@ export default async function Home() {
       </section>
 
       {/* =========================================================
-          SERVICES
+          SERVICES (rendered only while the CMS has services)
       ========================================================= */}
+      {services.length > 0 && (
       <section className="section cream services-home">
         <div className="service-halo" aria-hidden="true" />
 
@@ -253,10 +267,12 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* =========================================================
-          PORTFOLIO
+          PORTFOLIO (rendered only while the CMS has gallery images)
       ========================================================= */}
+      {galleryItems.length > 0 && (
       <section className="section portfolio-home">
         <div className="shell">
           <div className="row-heading">
@@ -279,6 +295,7 @@ export default async function Home() {
           />
         </div>
       </section>
+      )}
 
       {/* =========================================================
           TESTIMONIALS (rendered only when the CMS has some)

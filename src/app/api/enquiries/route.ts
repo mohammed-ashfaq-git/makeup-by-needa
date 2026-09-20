@@ -5,6 +5,7 @@ import { getDb, queryWithFallback } from "@/lib/db";
 import { enquiries } from "@/lib/db/schema";
 import { enquirySubmissionSchema } from "@/lib/schemas";
 import { getSettings } from "@/lib/cms";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { checkRateLimit, pruneRateLimits } from "@/lib/auth/rate-limit";
 
 export const runtime = "nodejs";
@@ -84,10 +85,10 @@ export async function POST(request: Request) {
       .filter(Boolean)
       .join("\n");
 
-    const whatsappUrl = `https://wa.me/${settings.whatsappNumber.replace(
-      "+",
-      "",
-    )}?text=${encodeURIComponent(whatsappLines)}`;
+    const whatsappUrl = buildWhatsAppUrl(
+      settings.whatsappNumber,
+      whatsappLines,
+    );
 
     // Persist the enquiry. The placeholder is replaced with ENQ-#### based on
     // the inserted row's auto-increment id.
@@ -124,8 +125,7 @@ export async function POST(request: Request) {
         ok: true,
         delivery: "saved",
         enquiryNumber: saved.enquiryNumber,
-        message:
-          "Your enquiry has been received. Makeup by Needa will get back to you to confirm availability.",
+        message: `Your enquiry has been received. ${settings.businessName} will get back to you to confirm availability.`,
         whatsappUrl,
       });
     }
@@ -135,8 +135,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       delivery: "whatsapp_fallback",
-      message:
-        "Your enquiry has been received. Makeup by Needa will get back to you to confirm availability.",
+      message: `Your enquiry has been received. ${settings.businessName} will get back to you to confirm availability.`,
       whatsappUrl,
     });
   } catch (error) {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/cms";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 function InstagramSvg() {
   return (
@@ -99,9 +100,10 @@ function SparkleSvg() {
 export default async function Contact() {
   const business = await getSettings();
 
-  const whatsappUrl = `https://wa.me/${business.whatsappNumber.replace("+", "")}?text=${encodeURIComponent(
+  const whatsappUrl = buildWhatsAppUrl(
+    business.whatsappNumber,
     business.whatsappMessage,
-  )}`;
+  );
 
   return (
     <>

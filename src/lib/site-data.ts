@@ -157,7 +157,7 @@ export const artist = {
   name: "Needa",
   shortBio:
     "A personal approach to makeup, hair styling, and nail art, thoughtfully designed around your features, your occasion, and the way you want to feel.",
-  bio: "Artist introduction and professional story will be added here once the final details are provided. This space is designed for a genuine introduction rather than generic marketing copy.\n\nExperience, qualifications, creative influences, and the details that make the Makeup by Needa experience distinctive can be added here.",
+  bio: "Hi, I'm Needa — a makeup, hair and nail artist based in Toronto. My work is built around a simple belief: beauty should feel personal, never templated.\n\n\n\nEvery appointment begins with a conversation — your occasion, your features, your outfit, and above all, the way you want to feel when you walk out the door. From there, the look is designed around you: softly luminous bridal makeup, defined evening glamour, romantic waves, sleek finished hair, or nail art detailed to complete the story.\n\n\n\nWhether it is your wedding morning, an engagement celebration, a reception, or a portrait session, the intention stays the same — a polished, enduring finish that still feels entirely like you.",
   experience: "",
   specialties: "",
   qualifications: "",

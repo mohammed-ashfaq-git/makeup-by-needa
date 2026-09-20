@@ -10,6 +10,7 @@ import { ACTION_IDLE } from "@/lib/form";
 export type SettingsFormValues = {
   businessName: string;
   logoUrl: string | null;
+  heroImageUrl: string | null;
   phone: string | null;
   email: string;
   whatsappNumber: string;
@@ -264,7 +265,7 @@ export function SettingsForm({ initial }: { initial: SettingsFormValues }) {
       <ImageField
         name="logo"
         label="Logo"
-        hint="Optional — JPG, PNG, WEBP or GIF up to 5 MB."
+        hint="Optional — JPG, PNG, WEBP or GIF up to 5 MB. Shown in the header and footer."
         state={state}
         currentImageUrl={
           initial.logoUrl && initial.logoUrl !== "/makeup-by-needa-logo.jpg"
@@ -273,6 +274,17 @@ export function SettingsForm({ initial }: { initial: SettingsFormValues }) {
         }
         removeName="removeLogo"
         removeLabel="Use the default logo instead"
+      />
+
+      <ImageField
+        name="hero"
+        label="Homepage hero image"
+        hint="Optional — when empty, the first active gallery image is used as the hero."
+        state={state}
+        currentImageUrl={initial.heroImageUrl ?? null}
+        removeName="removeHero"
+        removeLabel="Use the first gallery image instead"
+        previewWidth={160}
       />
 
       <div className="a-btn-row">

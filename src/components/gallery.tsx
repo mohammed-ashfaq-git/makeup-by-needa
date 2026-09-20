@@ -37,6 +37,20 @@ export function Gallery({
     (item) => filter === "All" || item.category === filter,
   );
 
+  // No portfolio images yet — show a quiet note instead of an empty grid.
+  if (items.length === 0) {
+    return (
+      <div className="empty-state">
+        <p className="eyebrow">Portfolio</p>
+        <p>
+          The portfolio is being refreshed — new work will be shared here
+          soon. Please enquire for recent examples of {businessName}&apos;s
+          makeup, hair and nail artistry.
+        </p>
+      </div>
+    );
+  }
+
   const itemsShown = filteredItems.slice(0, limit);
 
   const selectedItem =

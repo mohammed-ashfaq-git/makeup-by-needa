@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { navigation } from "@/lib/site-data";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import type { PublicSettings } from "@/lib/cms";
 
 export function SiteFooter({
@@ -93,7 +94,10 @@ export function SiteFooter({
             </a>
           )}
           <a
-            href={`https://wa.me/${settings.whatsappNumber.replace("+", "")}?text=${encodeURIComponent(settings.whatsappMessage)}`}
+            href={buildWhatsAppUrl(
+              settings.whatsappNumber,
+              settings.whatsappMessage,
+            )}
             target="_blank"
             rel="noreferrer"
             className="footer-social-link"
