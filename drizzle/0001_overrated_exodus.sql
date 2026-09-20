@@ -1,0 +1,1 @@
+ALTER TABLE `site_settings` ADD `hero_image_url` varchar(500);

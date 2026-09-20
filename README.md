@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Makeup by Needa
 
-## Getting Started
+Client website + custom content management system (CMS) for a Toronto-based
+makeup, hair and nail art artist, built with Next.js 16 (App Router, React 19,
+Server Actions) and MySQL via Drizzle ORM.
 
-First, run the development server:
+## Features
+
+**Public website** — home, about, services, gallery, contact and booking
+pages, all driven by the database. Includes a WhatsApp deep-link button and a
+self-service appointment enquiry form that stores enquiries in the database
+and generates an ENQ-#### reference.
+
+**Admin CMS** (`/admin`) — password-protected dashboard for the site owner:
+
+- **Dashboard** — enquiry, service, gallery and testimonial counters with
+  quick links to the latest enquiries.
+- **Website Settings** — business name, logo, homepage hero image, phone,
+  email, address, hours, WhatsApp number and prefilled message,
+  Instagram/Facebook links, homepage copy and footer text.
+- **Artist / Bio** — bio shown on the About page (name, short bio, full bio,
+  experience, specialties, qualifications, location, Instagram).
+- **Services** — full CRUD with categories (Makeup / Hair / Nails), pricing
+  (numeric price, custom price text, or *Enquire for pricing*), duration,
+  featured & active flags, and reordering.
+- **Gallery** — image upload (stored in the database, served through
+  `/api/images/:id`) with categories, captions, alt text and active flag.
+- **Testimonials** — client quotes with a 1–5 star rating, shown on the home
+  page.
+- **FAQs** — questions & answers shown on the booking page.
+- **Enquiries** — list, filter by status, view details and update status
+  (NEW / CONTACTED / CONFIRMED / COMPLETED / CANCELLED).
+
+## Tech stack
+
+- [Next.js](https://nextjs.org) 16 (App Router) + React 19 + TypeScript
+- [Drizzle ORM](https://orm.drizzle.team) + MySQL
+- [bcryptjs](https://github.com/dcodeIO/bcrypt.js) password hashing
+- Session-cookie auth (7-day sliding expiry, stored server-side)
+- [Zod](https://zod.dev) validation on every server action
+- In-memory rate limiting on the public enquiry API
+- Zero UI framework — the existing handcrafted CSS was kept
+
+## Getting started
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start a private MySQL dev instance (no root/apt needed)
+npm run dev-db
+
+# 3. Create the schema and seed the content
+npm run db:setup        # = db:migrate + db:seed
+
+# 4. Run the app
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000, then visit `/admin` and complete the first-run
+setup form to create your administrator account.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Resetting the admin password
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If the admin password is lost, run (server-side):
 
-## Learn More
+```bash
+npm run admin:reset-password -- --email admin@example.com --password 'new-password'
+```
 
-To learn more about Next.js, take a look at the following resources:
+It also works without arguments and prompts interactively. Resetting a
+password signs out all existing admin sessions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+  app/
+    (public)/        # public pages (home, about, services, gallery, contact, book)
+    admin/           # login, first-run setup and the CMS dashboard
+    api/enquiries/   # public enquiry submission endpoint (rate limited)
+    api/images/:id/  # serves gallery images from the database
+  components/        # public site components + admin form components
+  lib/
+    actions/         # server actions (auth, settings, services, gallery, …)
+    auth/            # session management, password hashing, guards, rate limit
+    db/              # Drizzle schema, migrations live in /drizzle
+    schemas.ts       # Zod validation schemas for all forms
+    cms.ts           # cached read helpers with static fallbacks if the DB is down
+    whatsapp.ts      # single WhatsApp deep-link builder used everywhere
+scripts/
+  dev-db.sh          # private MySQL 5.7 dev instance (user-space)
+  seed.mjs           # idempotent content seed
+  reset-admin-password.mjs
+  e2e-cms.mjs        # admin CMS end-to-end suite (54 tests)
+  e2e-public.mjs     # public website integration suite (42 tests)
+```
 
-## Deploy on Vercel
+## Testing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Two Puppeteer end-to-end suites run against a started server
+(`npm run build && npm start`):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run test:e2e          # 54 admin CMS tests (setup, auth, every manager,
+                          # enquiry workflow, logout protection)
+npm run test:e2e:public   # 42 public-integration tests (logo/hero/artist
+                          # photo uploads, settings propagating to every
+                          # public page, visibility toggles, content audit)
+```
+
+The CMS suite expects a **fresh database** (no admin yet): it creates
+`admin@e2e.test` / `e2e-password-123` through the first-run setup page. On
+machines without a bundled Chrome, point the suite at one with
+`CHROME_PATH=… ` (and `CHROME_LD_LIBRARY_PATH=…` if needed).
+
+## Notes
+
+- The public website is fully database-driven: settings, artist profile,
+  services, gallery, testimonials and FAQs all come from the CMS, rendered
+  server-side. Admin edits appear immediately — no redeployment needed.
+- All public pages fall back to the built-in static content if the database
+  is unavailable, so the site never goes down with the DB. The enquiry API
+  degrades to a WhatsApp hand-off in that case, so no enquiry is lost.
+- Empty CMS collections are handled gracefully: sections with no content
+  (testimonials, FAQs, services, gallery) are hidden or replaced by a short
+  note instead of rendering empty grids or placeholder text.
+- Uploaded images are stored as BLOBs in `site_images` and streamed through a
+  route handler, so no writable disk is required in production.
+- Admin forms keep their field values after a failed submit (no accidental
+  data loss) and show inline, per-field validation messages.
