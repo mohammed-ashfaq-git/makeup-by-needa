@@ -1393,12 +1393,26 @@ i {
 
 .lightbox-content button {
   position: absolute;
+  z-index: 2;
   top: 12px;
   right: 15px;
   border: 0;
   background: none;
   color: var(--white);
   font-size: 32px;
+}
+
+.lightbox-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.lightbox-content > span,
+.lightbox-content > h2,
+.lightbox-content > p {
+  position: relative;
+  z-index: 1;
 }
 
 .lightbox-content h2 {
@@ -2070,12 +2084,10 @@ i {
 @keyframes page-arrive {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0);
   }
 
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
