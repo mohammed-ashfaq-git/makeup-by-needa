@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Makeup by Needa - Toronto Makeup Artist
+
+A clean, production-ready full-stack Next.js website for Makeup by Needa, a Toronto-based beauty artistry studio specializing in bridal, event, and editorial looks across makeup, hair styling, and nail art.
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router) + React 19 + TypeScript
+- **Styling:** Tailwind CSS v4 + Custom CSS design system
+- **Deployment:** Node.js application (Hostinger compatible)
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router pages & API
+│   ├── about/              # About page
+│   ├── book/               # Booking/enquiry page
+│   ├── contact/            # Contact page
+│   ├── gallery/            # Portfolio gallery
+│   ├── services/           # Services listing
+│   ├── api/
+│   │   └── enquiries/      # Enquiry form API endpoint
+│   ├── globals.css         # Global design system
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Homepage
+├── components/
+│   ├── layout/             # Header, Footer
+│   ├── ui/                 # Reusable UI components
+│   ├── features/           # Feature components (gallery, forms)
+│   └── motion/             # Animation components
+├── config/
+│   └── site.ts             # Business data, services, gallery (CMS-ready)
+├── lib/
+│   ├── validations/        # Form validation logic
+│   ├── utils/              # Utility functions (WhatsApp, formatters)
+│   ├── email/              # Email delivery placeholder
+│   ├── db/                 # Database placeholder
+│   ├── auth/               # Auth placeholder
+│   └── cms/                # CMS logic placeholder
+└── types/                  # Shared TypeScript types
+public/
+├── images/                 # Portfolio images
+└── makeup-by-needa-logo.jpg
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js >= 18.17.0
+- npm
+
+### Installation
+
+```bash
+npm install
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.example` to `.env.local` and configure:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cp .env.example .env.local
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Available variables:
 
-## Deploy on Vercel
+- `BUSINESS_INQUIRY_EMAIL` - Email for receiving enquiries
+- `RESEND_API_KEY` - Optional, for email delivery via Resend
+- `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` - Optional, for SMTP email delivery
+- `NEXT_PUBLIC_SITE_URL` - Public site URL
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If no email provider is configured, the API gracefully falls back to WhatsApp.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Hostinger Deployment
+
+This app is designed to run as a Node.js application on Hostinger:
+
+1. **Build the application:**
+   ```bash
+   npm run build
+   ```
+
+2. **Hostinger Node.js Setup:**
+   - Set Node.js version to 18 or higher
+   - Set entry point to `node_modules/next/dist/bin/next` or use `npm start`
+   - Set environment variables in Hostinger panel
+   - The app automatically respects `PORT` env variable
+
+3. **Start command:**
+   ```bash
+   npm start
+   ```
+
+4. **Environment Variables on Hostinger:**
+   - Add variables from `.env.example` in Hostinger's Node.js management panel
+   - Never hardcode secrets
+
+## Features
+
+- **Responsive Design:** Mobile-first, editorial beauty studio aesthetic
+- **Enquiry System:** Validated form with WhatsApp fallback
+- **Portfolio Gallery:** Filterable gallery with lightbox
+- **SEO Ready:** Proper metadata, semantic HTML
+- **Lightweight:** No heavy dependencies, fast loading
+- **Production Ready:** Clean architecture, separation of concerns
+
+## Business Information (CMS-Ready)
+
+Currently hardcoded in `src/config/site.ts`, designed for future CMS migration:
+
+- Business contact details
+- Services (Makeup, Hair, Nails)
+- Gallery items
+- Navigation
+
+## Future Implementation
+
+- **CMS:** Lightweight file-based or SQLite for Hostinger compatibility
+- **Database:** Enquiry persistence
+- **Authentication:** Simple admin auth for CMS
+- **Email:** Resend or SMTP integration
+
+## Design
+
+Preserves the existing premium editorial beauty studio design with:
+- Custom color palette (browns, roses, creams)
+- Serif typography for headings
+- Smooth animations and transitions
+- No generic templates
+
+## License
+
+Private - Makeup by Needa
