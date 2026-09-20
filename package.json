@@ -10,21 +10,42 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx src/lib/db/seed.ts",
+    "db:studio": "drizzle-kit studio",
+    "db:check": "drizzle-kit check",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "postinstall": "echo 'Skipping prisma generate (offline build) - run npm run prisma:generate when online'"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.2",
+    "mysql2": "^3.24.4",
     "next": "^16.3.5",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "^16.3.5",
+    "prisma": "^6.19.3",
     "tailwindcss": "^4",
+    "tsx": "^4.23.14",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx src/lib/db/seed.ts"
   }
 }

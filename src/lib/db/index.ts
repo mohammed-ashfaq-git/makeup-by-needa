@@ -1,18 +1,41 @@
 /**
- * Database placeholder
- * Future implementation will handle enquiry persistence
- * For Hostinger deployment, consider SQLite or lightweight file-based storage
- * to keep the application lightweight
+ * Database Module - MySQL with Drizzle ORM (Primary)
+ * Production-ready for Hostinger Node.js
  */
 
-// Placeholder - no database required for current lightweight implementation
-// When CMS is implemented, this will handle:
-// - Enquiries storage
-// - Gallery images metadata
-// - Services management
-// - Site content
+// Drizzle (Primary)
+export { getDb, checkDatabaseConnection, disconnectDatabase } from "./client";
+export { db } from "./client";
+export * as schema from "./schema";
+export { generateEnquiryNumber, generateSlug, generateUniqueSlug, safeDbOperation, generateId } from "./utils";
 
-export const dbPlaceholder = {
-  // Future: add database connection logic here
-  isConfigured: false,
-};
+// Repositories
+export * as siteSettingsRepo from "./repositories/site-settings";
+export * as servicesRepo from "./repositories/services";
+export * as galleryRepo from "./repositories/gallery";
+export * as enquiriesRepo from "./repositories/enquiries";
+
+// Types from Drizzle schema
+export type {
+  AdminUser,
+  SiteSettings,
+  ArtistProfile,
+  Service,
+  GalleryImage,
+  Testimonial,
+  FAQ,
+  Enquiry,
+  EnquiryStatus,
+  ServiceCategory,
+  GalleryCategory,
+} from "./schema";
+
+// Optional Prisma export for backward compatibility (may be null in offline build)
+export let prisma: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const clientModule = require("./client");
+  prisma = clientModule.prisma || null;
+} catch {
+  prisma = null;
+}

@@ -1,20 +1,14 @@
 /**
- * CMS logic placeholder
- * Future implementation will handle content management for:
- * - Business info (name, location, contact)
- * - Services (makeup, hair, nails)
- * - Gallery images
- * - About page content
- * - Testimonials (future)
- *
- * Design goals:
- * - Lightweight, no heavy dependencies
- * - File-based or SQLite for Hostinger compatibility
- * - Simple admin UI
+ * CMS Module
+ * Content management for Makeup by Needa
+ * MySQL-backed with fallback to hardcoded config
  */
 
-export const cmsPlaceholder = {
-  // Future: CMS implementation
-  isConfigured: false,
-  contentTypes: ["business", "services", "gallery", "about"],
+export * from "./content";
+
+export const cmsInfo = {
+  isConfigured: true,
+  database: "MySQL with Prisma",
+  contentTypes: ["business", "services", "gallery", "artist", "testimonials", "faqs", "enquiries"],
+  features: ["MySQL persistence", "Admin auth", "Image management", "Enquiry tracking"],
 };

@@ -1,0 +1,199 @@
+// Prisma Schema for Makeup by Needa - MySQL Production
+// Designed for Hostinger Node.js deployment with persistent MySQL
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enquiry Status Enum
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+// Service Category Enum
+enum ServiceCategory {
+  Makeup
+  Hair
+  Nails
+}
+
+// Gallery Category Enum
+enum GalleryCategory {
+  Makeup
+  Bridal
+  Hair
+  Nails
+}
+
+// Admin User - Secure authentication for CMS
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String   @db.VarChar(100)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @db.VarChar(255)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
+// Site Settings - Single editable record, extensible
+model SiteSettings {
+  id                  String   @id @default(cuid())
+  businessName        String   @db.VarChar(255) @default("Makeup by Needa")
+  logo                String?  @db.VarChar(500)
+  phone               String?  @db.VarChar(50)
+  email               String?  @db.VarChar(255)
+  whatsapp            String?  @db.VarChar(50)
+  whatsappDisplay     String?  @db.VarChar(50)
+  whatsappMessage     String?  @db.Text
+  location            String?  @db.VarChar(255)
+  address             String?  @db.VarChar(500)
+  hours               String?  @db.VarChar(255)
+  instagram           String?  @db.VarChar(255)
+  instagramUrl        String?  @db.VarChar(500)
+  instagramMakeup     String?  @db.VarChar(255)
+  instagramMakeupUrl  String?  @db.VarChar(500)
+  instagramNails      String?  @db.VarChar(255)
+  instagramNailsUrl   String?  @db.VarChar(500)
+  facebook            String?  @db.VarChar(500)
+  homepageTitle       String?  @db.Text
+  homepageDescription String?  @db.Text
+  footerText          String?  @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// Artist Profile - Editable from CMS
+model ArtistProfile {
+  id             String   @id @default(cuid())
+  name           String   @db.VarChar(255) @default("Needa")
+  profileImage   String?  @db.VarChar(500)
+  shortBio       String?  @db.Text
+  fullBio        String?  @db.Text
+  experience     String?  @db.Text
+  specialties    String?  @db.Text
+  qualifications String?  @db.Text
+  location       String?  @db.VarChar(255)
+  instagram      String?  @db.VarChar(255)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("artist_profiles")
+}
+
+// Service - Price stored in DB, not hardcoded
+model Service {
+  id               String          @id @default(cuid())
+  name             String          @db.VarChar(255)
+  slug             String          @unique @db.VarChar(255)
+  shortDescription String?         @db.Text
+  description      String          @db.Text
+  price            Decimal?        @db.Decimal(10, 2)
+  priceText        String?         @db.VarChar(255) @default("Enquire for pricing")
+  duration         String?         @db.VarChar(255)
+  image            String?         @db.VarChar(500)
+  category         ServiceCategory
+  featured         Boolean         @default(false)
+  active           Boolean         @default(true)
+  displayOrder     Int             @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([category])
+  @@index([featured])
+  @@index([active])
+  @@index([displayOrder])
+  @@map("services")
+}
+
+// Gallery Image - Real portfolio images
+model GalleryImage {
+  id           String          @id @default(cuid())
+  image        String          @db.VarChar(500)
+  title        String?         @db.VarChar(255)
+  caption      String?         @db.Text
+  altText      String?         @db.VarChar(500)
+  category     GalleryCategory?
+  active       Boolean         @default(true)
+  displayOrder Int             @default(0)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([category])
+  @@index([active])
+  @@index([displayOrder])
+  @@map("gallery_images")
+}
+
+// Testimonial
+model Testimonial {
+  id           String   @id @default(cuid())
+  clientName   String   @db.VarChar(255)
+  testimonial  String   @db.Text
+  rating       Int      @default(5) @db.TinyInt
+  clientPhoto  String?  @db.VarChar(500)
+  service      String?  @db.VarChar(255)
+  active       Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active])
+  @@index([rating])
+  @@index([displayOrder])
+  @@map("testimonials")
+}
+
+// FAQ
+model FAQ {
+  id           String   @id @default(cuid())
+  question     String   @db.Text
+  answer       String   @db.Text
+  active       Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active])
+  @@index([displayOrder])
+  @@map("faqs")
+}
+
+// Enquiry - Customer-facing enquiryNumber like MBN-2026-0001
+model Enquiry {
+  id            String        @id @default(cuid())
+  enquiryNumber String        @unique @db.VarChar(50)
+  name          String        @db.VarChar(255)
+  phone         String        @db.VarChar(50)
+  email         String        @db.VarChar(255)
+  service       String?       @db.VarChar(255)
+  eventDate     DateTime?     @db.DateTime
+  eventDateRaw  String?       @db.VarChar(100) // Keep raw string for flexibility
+  preferredTime String?       @db.VarChar(100)
+  location      String?       @db.VarChar(255)
+  people        Int?          @db.Int
+  peopleRaw     String?       @db.VarChar(50) // Keep raw for "1" string
+  message       String        @db.Text
+  status        EnquiryStatus @default(NEW)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([enquiryNumber])
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+  @@map("enquiries")
+}
