@@ -10,6 +10,7 @@ import {
   getSettings,
   getTestimonials,
 } from "@/lib/cms";
+import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 function InstagramIcon() {
   return (
@@ -51,12 +52,19 @@ function StarIcon({ filled }: { filled: boolean }) {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const canonicalUrl = getAbsoluteSiteUrl("/");
+
   return {
     title: { absolute: settings.homeTitle },
     description: settings.homeDescription,
+    alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
     openGraph: {
-      title: settings.businessName,
+      title: settings.homeTitle,
       description: settings.homeDescription,
+      type: "website",
+      locale: "en_CA",
+      siteName: settings.businessName,
+      url: canonicalUrl,
     },
   };
 }

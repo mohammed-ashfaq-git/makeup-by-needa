@@ -26,6 +26,8 @@ import type { ActionState } from "@/lib/form";
 
 const LOGIN_LIMIT = 8;
 const LOGIN_WINDOW_MS = 10 * 60 * 1000;
+const SETUP_LIMIT = 5;
+const SETUP_WINDOW_MS = 15 * 60 * 1000;
 
 const credentialsSchema = z.object({
   email: z.email("Please enter a valid email address.").max(255),
@@ -150,6 +152,20 @@ export async function createFirstAdminAction(
     };
   }
 
+  // First-run setup has no known email account yet, so limit attempts by the
+  // caller's IP before checking the optional setup secret or password fields.
+  pruneRateLimits();
+  const headerList = await headers();
+  const ip = clientIpFromHeaders(headerList);
+  const rateKey = `setup:${ip}`;
+  const limit = checkRateLimit(rateKey, SETUP_LIMIT, SETUP_WINDOW_MS);
+  if (!limit.allowed) {
+    return {
+      ok: false,
+      message: `Too many setup attempts. Please try again in ${Math.ceil(limit.retryInSeconds / 60)} minute(s).`,
+    };
+  }
+
   // When ADMIN_SETUP_SECRET is configured, it must match — but it is only
   // ever compared here, on the server. It is never sent to the browser.
   const requiredSecret = process.env.ADMIN_SETUP_SECRET;
@@ -220,6 +236,7 @@ export async function createFirstAdminAction(
     };
   }
 
+  resetRateLimit(rateKey);
   await createSession(adminId);
   redirect("/admin");
 }

@@ -1,6 +1,28 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getSettings } from "@/lib/cms";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { getAbsoluteSiteUrl } from "@/lib/site-url";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  const description = `Contact ${settings.businessName} for appointment enquiries, availability, and beauty service details.`;
+  const canonicalUrl = getAbsoluteSiteUrl("/contact");
+
+  return {
+    title: "Contact",
+    description,
+    alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
+    openGraph: {
+      title: `Contact | ${settings.businessName}`,
+      description,
+      type: "website",
+      locale: "en_CA",
+      siteName: settings.businessName,
+      url: canonicalUrl,
+    },
+  };
+}
 
 function InstagramSvg() {
   return (
