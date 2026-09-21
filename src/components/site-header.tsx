@@ -2,8 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { navigation } from "@/lib/site-data";
+
+function isActivePath(pathname: string, href: string) {
+  if (href === "/") {
+    return pathname === "/";
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function SiteHeader({
   businessName,
@@ -13,6 +21,8 @@ export function SiteHeader({
   logoUrl: string;
 }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const bookActive = isActivePath(pathname, "/book");
 
   return (
     <header className="site-header">
@@ -42,12 +52,30 @@ export function SiteHeader({
           <i />
         </button>
         <nav className={open ? "nav nav-open" : "nav"} aria-label="Main navigation">
-          {navigation.map((item) => (
-            <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
-              {item.label}
-            </Link>
-          ))}
-          <Link className="button button-small" href="/book" onClick={() => setOpen(false)}>
+          {navigation.map((item) => {
+            const active = isActivePath(pathname, item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                aria-current={active ? "page" : undefined}
+                className={active ? "nav-link-active" : undefined}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+          <Link
+            className={
+              bookActive
+                ? "button button-small nav-cta-active"
+                : "button button-small"
+            }
+            href="/book"
+            onClick={() => setOpen(false)}
+            aria-current={bookActive ? "page" : undefined}
+          >
             Book appointment
           </Link>
         </nav>

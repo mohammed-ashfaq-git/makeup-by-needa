@@ -415,6 +415,27 @@ i {
   transform-origin: left;
 }
 
+/* Active page indicator (current route, applied via usePathname). */
+.nav > a:not(.button).nav-link-active {
+  color: var(--brown);
+  font-weight: 600;
+}
+
+.nav > a:not(.button).nav-link-active::after {
+  height: 2px;
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Active state for the "Book appointment" CTA while on /book. */
+.nav .button.nav-cta-active {
+  background: var(--brown-deep);
+  border-color: var(--brown-deep);
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 4px var(--brown);
+}
+
 .menu-button {
   display: none;
   width: 42px;
@@ -1291,6 +1312,167 @@ i {
   .about-facts p {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+}
+
+/* About page — Aura Beauty artist profile blocks. */
+.about-copy p {
+  color: var(--ink-soft);
+  font-size: 15.5px;
+  line-height: 1.85;
+}
+
+.about-copy p + p {
+  margin-top: 16px;
+}
+
+.about-story-content > .eyebrow {
+  margin-top: 34px;
+}
+
+.about-story-content .text-link {
+  margin-top: 26px;
+}
+
+.about-qual-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 20px;
+}
+
+.about-qual-groups h3 {
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+}
+
+.about-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.about-bullets li {
+  position: relative;
+  padding-left: 24px;
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.about-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 13px;
+  height: 1px;
+  background: var(--rose);
+}
+
+.about-bullets-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 36px;
+  margin-top: 26px;
+}
+
+.about-bullets-grid + .copy {
+  margin-top: 26px;
+}
+
+.about-values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 40px;
+  margin-top: 44px;
+  border-top: 1px solid var(--line);
+}
+
+.about-value {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.about-value > span {
+  color: var(--rose);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+}
+
+.about-value h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.about-experience-copy p {
+  color: var(--ink-soft);
+  font-size: 15.5px;
+  line-height: 1.85;
+}
+
+.about-experience-copy p + p {
+  margin-top: 16px;
+}
+
+.about-experience-copy .button {
+  margin-top: 24px;
+}
+
+.about-closing .lede,
+.about-closing .copy {
+  margin-top: 16px;
+}
+
+.about-promise {
+  margin-top: 18px;
+  color: var(--brown);
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  line-height: 1.35;
+}
+
+.about-signoff {
+  display: grid;
+  gap: 6px;
+  margin-top: 26px;
+}
+
+.about-signoff strong {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.about-signoff span {
+  color: var(--rose);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.about-signoff em {
+  color: var(--ink-soft);
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+.about-closing .text-link {
+  margin-top: 26px;
+}
+
+@media (max-width: 760px) {
+  .about-qual-groups,
+  .about-bullets-grid,
+  .about-values {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2357,6 +2539,16 @@ i {
 
   .nav > a:not(.button)::after {
     display: none;
+  }
+
+  /* Mobile menu: the underline is hidden, so mark the active page with
+     an accent bar, tinted background, and stronger type instead. */
+  .nav > a:not(.button).nav-link-active {
+    padding-left: 12px;
+    border-left: 2px solid var(--brown);
+    background: rgba(92, 65, 52, 0.07);
+    color: var(--brown);
+    font-weight: 700;
   }
 
   .nav .button {
