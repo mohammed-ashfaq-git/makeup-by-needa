@@ -3,3 +3,433 @@
 @media(prefers-reduced-motion:no-preference){.scope :global(.service-feature-visual){clip-path:polygon(8% 0,100% 0,100% 89%,89% 100%,0 100%,0 10%);animation:service-visual-reveal 1s cubic-bezier(.77,0,.18,1) both}.scope :global(.visual-right .service-feature-visual){animation-name:service-visual-reveal-reverse}.scope :global(.motion-section.in-view .service-block){animation:service-block-arrive .6s cubic-bezier(.22,1,.36,1) both}.scope :global(.motion-section.in-view .service-block:nth-child(2)){animation-delay:.08s}.scope :global(.motion-section.in-view .service-block:nth-child(3)){animation-delay:.16s}.scope :global(.motion-section.in-view .service-block:nth-child(4)){animation-delay:.24s}.scope :global(.motion-section.in-view .service-block:nth-child(5)){animation-delay:.32s}.scope :global(.motion-section.in-view .service-block:nth-child(6)){animation-delay:.4s}}@keyframes service-visual-reveal{from{clip-path:inset(0 100% 0 0);transform:scale(1.05)}to{clip-path:polygon(8% 0,100% 0,100% 89%,89% 100%,0 100%,0 10%);transform:scale(1)}}@keyframes service-visual-reveal-reverse{from{clip-path:inset(0 0 0 100%);transform:scale(1.05)}to{clip-path:polygon(0 0,91% 0,100% 9%,100% 100%,11% 100%,0 89%);transform:scale(1)}}@keyframes service-block-arrive{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 
 .scope :global(.service-feature-image){position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+
+/* =========================================================
+   AURA BEAUTY — HAIRSTYLING PRICE LIST
+   ========================================================= */
+
+.scope :global(.hair-menu) {
+  position: relative;
+  padding: 100px 0 110px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(231, 207, 189, 0.45), transparent 28%),
+    radial-gradient(circle at 90% 70%, rgba(201, 159, 144, 0.18), transparent 30%),
+    linear-gradient(160deg, #fbf8f3 0%, #f3ebe2 48%, #ebe0d4 100%);
+}
+
+.scope :global(.hair-menu-header) {
+  max-width: 720px;
+  margin: 0 auto 52px;
+  text-align: center;
+}
+
+.scope :global(.hair-menu-brand) {
+  margin: 0 0 10px;
+  color: var(--brown);
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.scope :global(.hair-menu-header h2) {
+  margin: 8px 0 14px;
+  font-size: clamp(2.1rem, 4vw, 3.2rem);
+}
+
+.scope :global(.hair-menu-tagline) {
+  margin: 0;
+  color: var(--rose);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+}
+
+.scope :global(.hair-menu-divider) {
+  width: 64px;
+  height: 1px;
+  margin: 28px auto 0;
+  background: linear-gradient(90deg, transparent, var(--rose), transparent);
+}
+
+.scope :global(.hair-menu-toc) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto 48px;
+  max-width: 920px;
+}
+
+.scope :global(.hair-menu-toc a) {
+  padding: 8px 14px;
+  border: 1px solid rgba(130, 93, 72, 0.18);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--brown);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.scope :global(.hair-menu-toc a:hover) {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--brown);
+  transform: translateY(-1px);
+}
+
+.scope :global(.hair-section) {
+  margin: 0 auto 34px;
+  max-width: 920px;
+  padding: 28px 30px 24px;
+  border: 1px solid rgba(130, 93, 72, 0.14);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 14px 36px rgba(66, 45, 35, 0.05);
+}
+
+.scope :global(.hair-section-heading) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.scope :global(.hair-section-heading span) {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.scope :global(.hair-section-heading h3) {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  letter-spacing: -0.02em;
+}
+
+.scope :global(.hair-item) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(216, 200, 187, 0.7);
+}
+
+.scope :global(.hair-item:last-child) {
+  border-bottom: 0;
+}
+
+.scope :global(.hair-item-name) {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.scope :global(.hair-item-price) {
+  color: var(--brown);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.scope :global(.hair-item-desc) {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  color: #71645c;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.scope :global(.hair-item-details) {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 6px 18px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scope :global(.hair-item-details li) {
+  position: relative;
+  padding-left: 14px;
+  color: #675c55;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.scope :global(.hair-item-details li::before) {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 1px;
+  background: var(--rose);
+}
+
+.scope :global(.hair-section-note) {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  color: #7b675d;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.scope :global(.hair-info-grid) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  max-width: 920px;
+  margin: 42px auto 0;
+}
+
+.scope :global(.hair-info-card) {
+  padding: 24px 22px;
+  border: 1px solid rgba(130, 93, 72, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.scope :global(.hair-info-card h3) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+.scope :global(.hair-info-card .intro) {
+  margin: 0 0 10px;
+  color: #675c55;
+  font-size: 13.5px;
+}
+
+.scope :global(.hair-info-card ul) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.scope :global(.hair-info-card li) {
+  position: relative;
+  padding-left: 14px;
+  color: #675c55;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.scope :global(.hair-info-card li::before) {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 6px;
+  height: 1px;
+  background: var(--rose);
+}
+
+.scope :global(.hair-info-card .footer-note) {
+  margin: 14px 0 0;
+  color: var(--brown);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.scope :global(.hair-menu-signoff) {
+  max-width: 520px;
+  margin: 56px auto 0;
+  padding-top: 36px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+.scope :global(.hair-menu-signoff strong) {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+
+.scope :global(.hair-menu-signoff .disciplines) {
+  display: block;
+  margin-top: 8px;
+  color: var(--rose);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.scope :global(.hair-menu-signoff em) {
+  display: block;
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.scope :global(.hair-menu-signoff .location) {
+  display: block;
+  margin-top: 8px;
+  color: #8b7a70;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.scope :global(.hair-menu-cta) {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.scope :global(.services-hero-copy .lede) {
+  max-width: 560px;
+}
+
+.scope :global(.services-hero-actions) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-top: 28px;
+}
+
+.scope :global(.services-hero-meta) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 28px;
+  color: #7b675d;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.scope :global(.services-page-hero .shell) {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) auto;
+  align-items: end;
+  gap: 40px;
+}
+
+.scope :global(.services-hero-number) {
+  width: 140px;
+  aspect-ratio: 1;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(92, 65, 52, 0.2);
+  background: linear-gradient(145deg, #3a2a23, #6b4a3c);
+  color: #fff;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.scope :global(.services-hero-number span) {
+  font-family: var(--font-serif);
+  font-size: 2.6rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.scope :global(.services-hero-number small) {
+  color: rgba(255, 248, 241, 0.75);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.scope :global(.services-introduction) {
+  padding: 72px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.scope :global(.services-introduction-grid) {
+  display: grid;
+  grid-template-columns: 0.35fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.scope :global(.services-introduction h2) {
+  margin: 0 0 16px;
+}
+
+.scope :global(.services-introduction p:not(.eyebrow)) {
+  max-width: 560px;
+  margin: 0;
+  color: #675c55;
+  font-size: 15.5px;
+  line-height: 1.8;
+}
+
+.scope :global(.services-closing-inner) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  text-align: left;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.scope :global(.services-closing-copy p) {
+  margin: 0 0 18px;
+}
+
+@media (max-width: 900px) {
+  .scope :global(.hair-info-grid) {
+    grid-template-columns: 1fr;
+  }
+
+  .scope :global(.services-introduction-grid),
+  .scope :global(.services-closing-inner),
+  .scope :global(.services-page-hero .shell) {
+    grid-template-columns: 1fr;
+  }
+
+  .scope :global(.services-hero-number) {
+    width: 110px;
+  }
+}
+
+@media (max-width: 760px) {
+  .scope :global(.hair-menu) {
+    padding: 72px 0 80px;
+  }
+
+  .scope :global(.hair-section) {
+    padding: 22px 18px 18px;
+  }
+
+  .scope :global(.hair-item) {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .scope :global(.hair-item-price) {
+    text-align: left;
+  }
+
+  .scope :global(.hair-item-details) {
+    grid-template-columns: 1fr;
+  }
+
+  .scope :global(.hair-menu-toc) {
+    justify-content: flex-start;
+  }
+}

@@ -7,7 +7,7 @@ import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `Meet the artist behind ${settings.businessName} and discover a thoughtful approach to makeup, hair styling, and nail artistry.`;
+  const description = `Meet Needa, founder & beauty artist at Aura Beauty — Confident You. 5+ years of professional makeup, hair, nail art and bridal beauty.`;
   const canonicalUrl = getAbsoluteSiteUrl("/about");
 
   return {
@@ -25,6 +25,29 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const experienceItems = [
+  "Makeup",
+  "South Asian & Bridal Makeup",
+  "Soft Glam & Full Glam",
+  "Event & Photoshoot Makeup",
+  "Hairstyling",
+  "Bridal Hairstyling",
+  "Nail Services",
+  "Nail Art",
+  "Creative Beauty Looks",
+] as const;
+
+const auraExperienceItems = [
+  "Personalized consultation",
+  "Customized beauty services",
+  "Professional techniques",
+  "Attention to detail",
+  "Hygiene-focused service",
+  "Quality professional products",
+  "A comfortable and welcoming environment",
+  "Beauty looks designed around your individual style",
+] as const;
+
 export default async function About() {
   const artist = await getArtist();
 
@@ -39,7 +62,7 @@ export default async function About() {
               <h1>
                 Needa —
                 <br />
-                <i>Founder & Beauty Artist at AURA BEAUTY</i>
+                <i>Founder &amp; Beauty Artist at AURA BEAUTY</i>
               </h1>
 
               <p className="lede">Welcome to Aura Beauty — Confident You.</p>
@@ -56,8 +79,8 @@ export default async function About() {
             </div>
 
             <div className="about-hero-mark" aria-hidden="true">
-              <span>MN</span>
-              <small>Makeup · Hair · Nail Art</small>
+              <span>AB</span>
+              <small>Makeup · Hair · Nails</small>
             </div>
           </div>
         </div>
@@ -69,7 +92,7 @@ export default async function About() {
             <div className="portrait-photo">
               <Image
                 src={artist.photoUrl}
-                alt={`${artist.name}, makeup artist`}
+                alt={`${artist.name}, beauty artist at Aura Beauty`}
                 fill
                 sizes="(max-width: 760px) 92vw, 40vw"
                 priority
@@ -78,11 +101,8 @@ export default async function About() {
           ) : (
             <div className="portrait-placeholder" aria-hidden="true">
               <div className="portrait-placeholder-inner">
-                <strong className="portrait-monogram">
-                  {artist.name.charAt(0).toUpperCase()}
-                </strong>
-
-                <small>{artist.name} · Makeup · Hair · Nail Art</small>
+                <strong className="portrait-monogram">N</strong>
+                <small>Aura Beauty · Makeup · Hair · Nails</small>
               </div>
             </div>
           )}
@@ -115,8 +135,13 @@ export default async function About() {
             <p className="eyebrow">My Qualifications</p>
 
             <div className="about-qual-groups">
-              <div>
-                <h3>India</h3>
+              <div className="about-qual-card">
+                <h3>
+                  <span className="about-flag" aria-hidden="true">
+                    🇮🇳
+                  </span>{" "}
+                  India
+                </h3>
 
                 <ul className="about-bullets">
                   <li>Professional Cosmetology Training</li>
@@ -127,8 +152,13 @@ export default async function About() {
                 </ul>
               </div>
 
-              <div>
-                <h3>Canada</h3>
+              <div className="about-qual-card">
+                <h3>
+                  <span className="about-flag" aria-hidden="true">
+                    🇨🇦
+                  </span>{" "}
+                  Canada
+                </h3>
 
                 <ul className="about-bullets">
                   <li>Ontario-Certified Makeup Artist</li>
@@ -155,50 +185,12 @@ export default async function About() {
           </div>
 
           <div className="about-values">
-            <article className="about-value">
-              <span>01</span>
-              <h3>Makeup</h3>
-            </article>
-
-            <article className="about-value">
-              <span>02</span>
-              <h3>South Asian & Bridal Makeup</h3>
-            </article>
-
-            <article className="about-value">
-              <span>03</span>
-              <h3>Soft Glam & Full Glam</h3>
-            </article>
-
-            <article className="about-value">
-              <span>04</span>
-              <h3>Event & Photoshoot Makeup</h3>
-            </article>
-
-            <article className="about-value">
-              <span>05</span>
-              <h3>Hairstyling</h3>
-            </article>
-
-            <article className="about-value">
-              <span>06</span>
-              <h3>Bridal Hairstyling</h3>
-            </article>
-
-            <article className="about-value">
-              <span>07</span>
-              <h3>Nail Services</h3>
-            </article>
-
-            <article className="about-value">
-              <span>08</span>
-              <h3>Nail Art</h3>
-            </article>
-
-            <article className="about-value">
-              <span>09</span>
-              <h3>Creative Beauty Looks</h3>
-            </article>
+            {experienceItems.map((item, index) => (
+              <article className="about-value" key={item}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{item}</h3>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -220,9 +212,9 @@ export default async function About() {
               <p>
                 Every client has their own features, style, personality and
                 vision. I take the time to understand what you are looking for
-                and customize each service accordingly — whether you want a
-                soft natural look, elegant glam, a South Asian bridal
-                transformation, a statement hairstyle or detailed nail art.
+                and customize each service accordingly — whether you want a soft
+                natural look, elegant glam, a South Asian bridal transformation,
+                a statement hairstyle or detailed nail art.
               </p>
 
               <p>
@@ -242,25 +234,25 @@ export default async function About() {
         <div className="shell">
           <p className="eyebrow">The Aura Beauty Experience</p>
 
-          <p className="lede">
-            When you book with Aura Beauty, you can expect:
-          </p>
+          <h2 className="about-aura-title">When you book with Aura Beauty</h2>
 
-          <ul className="about-bullets about-bullets-grid">
-            <li>Personalized consultation</li>
-            <li>Customized beauty services</li>
-            <li>Professional techniques</li>
-            <li>Attention to detail</li>
-            <li>Hygiene-focused service</li>
-            <li>Quality professional products</li>
-            <li>A comfortable and welcoming environment</li>
-            <li>Beauty looks designed around your individual style</li>
+          <p className="lede">When you book with Aura Beauty, you can expect:</p>
+
+          <ul className="about-bullets about-bullets-grid about-bullets-sparkle">
+            {auraExperienceItems.map((item) => (
+              <li key={item}>
+                <span className="about-sparkle" aria-hidden="true">
+                  ✨
+                </span>
+                {item}
+              </li>
+            ))}
           </ul>
 
           <p className="copy">
-            Whether you’re getting ready for your wedding, engagement,
-            birthday, special event, photoshoot or simply treating yourself,
-            I’m here to help bring your vision to life.
+            Whether you’re getting ready for your wedding, engagement, birthday,
+            special event, photoshoot or simply treating yourself, I’m here to
+            help bring your vision to life.
           </p>
         </div>
       </section>
