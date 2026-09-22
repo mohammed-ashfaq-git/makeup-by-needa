@@ -68,51 +68,118 @@ export type Service = {
   featured?: boolean;
 };
 
-const serviceNames = {
-  Makeup: [
-    "Bridal Makeup",
-    "Engagement Makeup",
-    "Reception Makeup",
-    "Party / Event Makeup",
-    "Photoshoot Makeup",
-    "Custom Makeup",
-  ],
-
-  Hair: [
-    "Bridal Hair Styling",
-    "Engagement Hair",
-    "Reception Hair",
-    "Party / Event Hair",
-    "Soft Curls & Waves",
-    "Elegant Updo",
-    "Sleek Hair Styling",
-    "Custom Hair Styling",
-  ],
-
-  Nails: [
-    "Classic Nail Art",
-    "Bridal Nail Art",
-    "French Tips",
-    "Gel Nails",
-    "Nail Extensions",
-    "Custom Nail Art",
-    "Minimal Nail Art",
-    "Luxury Nail Art",
-  ],
-};
-
-export const services: Service[] = Object.entries(serviceNames).flatMap(
-  ([category, names]) =>
-    names.map((name, index) => ({
-      name,
-      category: category as Service["category"],
-      description:
-        "A tailored service designed around your occasion, preferred finish, and personal style.",
-      price: "Enquire for pricing",
-      duration: "Duration available on enquiry",
-      featured: index < 2,
-    })),
-);
+/** Featured / fallback services for homepage & CMS-offline mode.
+ *  Full hairstyling menu with prices lives in `lib/hair-services.ts`. */
+export const services: Service[] = [
+  {
+    name: "Bridal Makeup",
+    category: "Makeup",
+    description:
+      "A tailored bridal beauty look designed around your features, outfit, and wedding-day vision.",
+    price: "Enquire for pricing",
+    duration: "Duration available on enquiry",
+    featured: true,
+  },
+  {
+    name: "Bridal Hairstyle",
+    category: "Hair",
+    description:
+      "Customized bridal hairstyle designed around your face shape, outfit, jewellery, and personal preference.",
+    price: "From $150",
+    duration: "Duration available on enquiry",
+    featured: true,
+  },
+  {
+    name: "Bridal Nail Art",
+    category: "Nails",
+    description:
+      "Detailed bridal nail finishes shaped around your celebration and personal style.",
+    price: "Enquire for pricing",
+    duration: "Duration available on enquiry",
+    featured: true,
+  },
+  {
+    name: "Glam Updo",
+    category: "Hair",
+    description:
+      "Detailed updo with volume, curls, texture and polished finishing for events and celebrations.",
+    price: "$100+",
+    duration: "Duration available on enquiry",
+    featured: true,
+  },
+  {
+    name: "Soft Glam Makeup",
+    category: "Makeup",
+    description:
+      "A softly luminous makeup finish for engagements, events, and portrait sessions.",
+    price: "Enquire for pricing",
+    duration: "Duration available on enquiry",
+    featured: true,
+  },
+  {
+    name: "Hollywood Waves",
+    category: "Hair",
+    description:
+      "Classic polished waves suitable for formal events, photoshoots and parties.",
+    price: "$100+",
+    duration: "Duration available on enquiry",
+    featured: true,
+  },
+  {
+    name: "Party / Event Makeup",
+    category: "Makeup",
+    description:
+      "A polished event makeup look designed around your outfit and occasion.",
+    price: "Enquire for pricing",
+    duration: "Duration available on enquiry",
+    featured: false,
+  },
+  {
+    name: "Curls / Waves",
+    category: "Hair",
+    description:
+      "Soft curls, Hollywood waves, beach waves or customized curls.",
+    price: "$55+",
+    duration: "Duration available on enquiry",
+    featured: false,
+  },
+  {
+    name: "South Asian Bridal Hairstyle",
+    category: "Hair",
+    description:
+      "Traditional or contemporary bridal styling with customized buns, braids, curls and bridal finishing.",
+    price: "From $175",
+    duration: "Duration available on enquiry",
+    featured: false,
+  },
+  {
+    name: "Photoshoot Makeup",
+    category: "Makeup",
+    description:
+      "Camera-ready makeup for portfolios, fashion shoots, and content creation.",
+    price: "Enquire for pricing",
+    duration: "Duration available on enquiry",
+    featured: false,
+  },
+  {
+    name: "Classic Nail Art",
+    category: "Nails",
+    description:
+      "Clean, polished nail finishes with optional subtle design detail.",
+    price: "Enquire for pricing",
+    duration: "Duration available on enquiry",
+    featured: false,
+  },
+  {
+    name: "Custom Nail Art",
+    category: "Nails",
+    description:
+      "Expressive nail design tailored to your outfit, celebration, or personal style.",
+    price: "Enquire for pricing",
+    duration: "Duration available on enquiry",
+    featured: false,
+  },
+];
 
 export type GalleryItem = {
   title: string;
