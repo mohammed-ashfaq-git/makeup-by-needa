@@ -43,6 +43,30 @@ and generates an ENQ-#### reference.
 
 ## Getting started
 
+**One-command local bootstrap** — creates `.env`, starts the bundled
+MySQL 5.7 dev instance (no root/apt needed), applies migrations and seeds
+the content:
+
+```bash
+npm install
+npm run setup:dev       # keep this terminal open — the dev DB stays up
+```
+
+Then start the app in a second terminal:
+
+```bash
+npm run dev
+```
+
+**Already have a database?** Point `DATABASE_URL` in `.env` at it
+(created from `.env.example` if missing) and run:
+
+```bash
+npm run setup           # = .env check + db:migrate + db:seed
+```
+
+Step by step (manual control):
+
 ```bash
 # 1. Install dependencies
 npm install
@@ -89,6 +113,8 @@ src/
     cms.ts           # cached read helpers with static fallbacks if the DB is down
     whatsapp.ts      # single WhatsApp deep-link builder used everywhere
 scripts/
+  setup.sh           # one-command setup against an existing database
+  setup-dev.sh       # one-command local bootstrap (.env + dev DB + setup)
   dev-db.sh          # private MySQL 5.7 dev instance (user-space)
   seed.mjs           # idempotent content seed
   reset-admin-password.mjs

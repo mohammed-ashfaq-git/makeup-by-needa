@@ -10,6 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "setup": "bash scripts/setup.sh",
+    "setup:dev": "bash scripts/setup-dev.sh",
     "dev-db": "bash scripts/dev-db.sh",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
