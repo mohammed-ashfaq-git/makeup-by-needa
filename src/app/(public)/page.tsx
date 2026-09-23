@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Gallery } from "@/components/gallery";
 import { SectionHeading } from "@/components/section-heading";
+import { AddToEnquiryButton } from "@/components/service-cart";
 import {
   getArtist,
   getGalleryItems,
@@ -259,16 +260,27 @@ export default async function Home() {
                       <h3>{service.name}</h3>
 
                       <p>{service.shortDescription || service.description}</p>
-
-                      <div className="service-meta">
-                        <strong>{service.priceDisplay}</strong>
-
-                        <span>
-                          Details <b>→</b>
-                        </span>
-                      </div>
                     </div>
                   </Link>
+
+                  <div className="service-card-actions-row">
+                    <strong>{service.priceDisplay}</strong>
+
+                    <div className="service-card-btns">
+                      <AddToEnquiryButton
+                        service={{
+                          id: service.id,
+                          name: service.name,
+                          category: service.category,
+                          subcategory: service.subcategory,
+                          price: service.priceDisplay,
+                        }}
+                      />
+                      <Link href="/services" className="service-details-link">
+                        Details <b>→</b>
+                      </Link>
+                    </div>
+                  </div>
                 </article>
               );
             })}

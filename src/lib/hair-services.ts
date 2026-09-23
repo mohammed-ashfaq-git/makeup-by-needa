@@ -398,3 +398,97 @@ export const hairInfoBlocks: HairInfoBlock[] = [
     ],
   },
 ];
+
+/**
+ * Groups CMS services by subcategory to construct the hairstyling menu.
+ * Falls back to the curated price list if no hair services with subcategories
+ * are present in the database.
+ */
+export function groupHairServicesBySubcategory(
+  services: Array<{
+    id: number;
+    name: string;
+    category: string;
+    subcategory?: string | null;
+    description?: string;
+    shortDescription?: string | null;
+    details?: string[];
+    priceDisplay?: string;
+  }>,
+): HairServiceSection[] {
+  const hairServices = services.filter((s) => s.category === "Hair");
+  const hasCmsHairWithSubcat = hairServices.some(
+    (s) => s.subcategory && s.subcategory.trim() !== "",
+  );
+
+  if (!hasCmsHairWithSubcat) {
+    return hairServiceSections;
+  }
+
+  const assignedServiceIds = new Set<number>();
+
+  const sections: HairServiceSection[] = hairServiceSections.map((section) => {
+    const matching = hairServices.filter((s) => {
+      if (!s.subcategory) return false;
+      const subNorm = s.subcategory.toLowerCase().trim();
+      const secNorm = section.title.toLowerCase().trim();
+      const idNorm = section.id.toLowerCase().trim();
+      return (
+        subNorm === secNorm ||
+        subNorm === idNorm ||
+        secNorm.includes(subNorm) ||
+        subNorm.includes(secNorm)
+      );
+    });
+
+    if (matching.length === 0) {
+      return section;
+    }
+
+    matching.forEach((s) => assignedServiceIds.add(s.id));
+
+    return {
+      ...section,
+      items: matching.map((s) => ({
+        name: s.name,
+        price: s.priceDisplay || "Enquire for pricing",
+        description: s.shortDescription || s.description || undefined,
+        details: s.details && s.details.length > 0 ? s.details : undefined,
+      })),
+    };
+  });
+
+  // Handle any additional custom subcategories not in the static list
+  const remaining = hairServices.filter(
+    (s) => !assignedServiceIds.has(s.id) && s.subcategory?.trim(),
+  );
+  if (remaining.length > 0) {
+    const bySub = new Map<string, typeof remaining>();
+    for (const item of remaining) {
+      const sub = item.subcategory!.trim();
+      const list = bySub.get(sub) ?? [];
+      list.push(item);
+      bySub.set(sub, list);
+    }
+
+    for (const [subTitle, items] of bySub.entries()) {
+      const id = subTitle
+        .toLowerCase()
+        .replace(/[^\w]+/g, "-")
+        .replace(/^-|-$/g, "");
+      sections.push({
+        id,
+        emoji: "✨",
+        title: subTitle,
+        items: items.map((s) => ({
+          name: s.name,
+          price: s.priceDisplay || "Enquire for pricing",
+          description: s.shortDescription || s.description || undefined,
+          details: s.details && s.details.length > 0 ? s.details : undefined,
+        })),
+      });
+    }
+  }
+
+  return sections;
+}

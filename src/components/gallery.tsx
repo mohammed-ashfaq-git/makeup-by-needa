@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Reveal } from "@/components/motion";
+import { toVideoEmbedUrl } from "@/lib/video-url";
 
 const filters = ["All", "Makeup", "Bridal", "Hair", "Nails"] as const;
 
@@ -13,11 +14,13 @@ export type GalleryViewItem = {
   imageUrl: string;
   altText: string;
   caption: string | null;
+  mediaType?: "image" | "video";
+  videoUrl?: string | null;
 };
 
 /**
  * Gallery grid. Items come from the CMS (with a static fallback), so every
- * card is a real portfolio image.
+ * card is a real portfolio image or video.
  */
 export function Gallery({
   items,
@@ -37,7 +40,7 @@ export function Gallery({
     (item) => filter === "All" || item.category === filter,
   );
 
-  // No portfolio images yet — show a quiet note instead of an empty grid.
+  // No portfolio items yet — show a quiet note instead of an empty grid.
   if (items.length === 0) {
     return (
       <div className="empty-state">
@@ -57,6 +60,10 @@ export function Gallery({
     selectedId !== null
       ? itemsShown.find((item) => item.id === selectedId) ?? null
       : null;
+
+  const embedUrl = selectedItem?.videoUrl
+    ? toVideoEmbedUrl(selectedItem.videoUrl)
+    : null;
 
   return (
     <>
@@ -81,39 +88,59 @@ export function Gallery({
           limit ? "gallery-featured" : "gallery-editorial"
         }`}
       >
-        {itemsShown.map((item, index) => (
-          <Reveal
-            key={item.id}
-            delay={index * 90}
-            direction={index % 2 ? "right" : "left"}
-            media
-          >
-            <button
-              type="button"
-              className="gallery-card"
-              onClick={() => setSelectedId(item.id)}
-              aria-label={`View ${item.title}`}
+        {itemsShown.map((item, index) => {
+          const isVideo = item.mediaType === "video";
+
+          return (
+            <Reveal
+              key={item.id}
+              delay={index * 90}
+              direction={index % 2 ? "right" : "left"}
+              media
             >
-              <Image
-                src={item.imageUrl}
-                alt={item.altText || item.title}
-                fill
-                sizes={
-                  limit
-                    ? "(max-width: 760px) 100vw, 33vw"
-                    : "(max-width: 760px) 100vw, 50vw"
-                }
-              />
+              <button
+                type="button"
+                className={`gallery-card ${isVideo ? "is-video" : ""}`}
+                onClick={() => setSelectedId(item.id)}
+                aria-label={`View ${item.title}${isVideo ? " (Video)" : ""}`}
+              >
+                <Image
+                  src={item.imageUrl}
+                  alt={item.altText || item.title}
+                  fill
+                  sizes={
+                    limit
+                      ? "(max-width: 760px) 100vw, 33vw"
+                      : "(max-width: 760px) 100vw, 50vw"
+                  }
+                />
 
-              <span className="gallery-card-overlay" />
+                {isVideo && (
+                  <span className="gallery-play-badge" aria-hidden="true">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <polygon points="6 3 20 12 6 21 6 3" />
+                    </svg>
+                  </span>
+                )}
 
-              <span className="gallery-card-info">
-                <span>{item.category}</span>
-                <strong>{item.title}</strong>
-              </span>
-            </button>
-          </Reveal>
-        ))}
+                <span className="gallery-card-overlay" />
+
+                <span className="gallery-card-info">
+                  <span>
+                    {item.category}
+                    {isVideo ? " · Video" : ""}
+                  </span>
+                  <strong>{item.title}</strong>
+                </span>
+              </button>
+            </Reveal>
+          );
+        })}
       </div>
 
       {selectedItem && (
@@ -136,16 +163,42 @@ export function Gallery({
               ×
             </button>
 
-            <div className="lightbox-image">
-              <Image
-                src={selectedItem.imageUrl}
-                alt={selectedItem.altText || selectedItem.title}
-                fill
-                sizes="90vw"
-              />
-            </div>
+            {selectedItem.mediaType === "video" && selectedItem.videoUrl ? (
+              <div className="lightbox-video-container">
+                {embedUrl ? (
+                  <iframe
+                    src={embedUrl}
+                    title={selectedItem.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="lightbox-video-frame"
+                  />
+                ) : (
+                  <video
+                    src={selectedItem.videoUrl}
+                    poster={selectedItem.imageUrl}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="lightbox-video-player"
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="lightbox-image">
+                <Image
+                  src={selectedItem.imageUrl}
+                  alt={selectedItem.altText || selectedItem.title}
+                  fill
+                  sizes="90vw"
+                />
+              </div>
+            )}
 
-            <span>{selectedItem.category}</span>
+            <span>
+              {selectedItem.category}
+              {selectedItem.mediaType === "video" ? " · Video" : ""}
+            </span>
 
             <h2>{selectedItem.title}</h2>
 

@@ -181,8 +181,10 @@ export const serviceSchema = z.object({
   category: z.enum(SERVICE_CATEGORIES, {
     message: "Please choose a category.",
   }),
+  subcategory: optionalText(160),
   shortDescription: optionalText(300),
   description: requiredText(4000, "A description is required."),
+  details: optionalText(4000),
   price: priceValue,
   priceDisplay: optionalText(100),
   duration: optionalText(100),
@@ -203,6 +205,8 @@ export const galleryItemSchema = z.object({
   }),
   caption: optionalText(300),
   altText: optionalText(200),
+  mediaType: z.enum(["image", "video"]).default("image"),
+  videoUrl: optionalUrl,
   active: z.boolean(),
 });
 

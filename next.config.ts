@@ -8,9 +8,11 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://img.youtube.com https://i.vimeocdn.com",
   "font-src 'self' data:",
   "connect-src 'self'",
+  "media-src 'self' data: blob: https:",
+  "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
 ].join("; ");
 
 const securityHeaders = [
@@ -36,9 +38,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     cpus: 1,
-    // Image uploads through server actions (logo, artist photo, gallery…).
+    // Media uploads through server actions (images up to 5MB, videos up to 40MB).
     serverActions: {
-      bodySizeLimit: "6mb",
+      bodySizeLimit: "45mb",
     },
   },
   // Native/dynamic server packages that should not be bundled.

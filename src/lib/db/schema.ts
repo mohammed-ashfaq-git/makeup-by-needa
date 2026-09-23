@@ -145,8 +145,10 @@ export const services = mysqlTable(
     id: int("id").autoincrement().primaryKey(),
     name: varchar("name", { length: 160 }).notNull(),
     category: mysqlEnum("category", ["Makeup", "Hair", "Nails"]).notNull(),
+    subcategory: varchar("subcategory", { length: 160 }),
     shortDescription: varchar("short_description", { length: 300 }),
     description: text("description").notNull(),
+    details: text("details"),
     /** Numeric price in CAD. NULL means "Enquire for pricing". */
     price: decimal("price"),
     /** Optional custom price text, e.g. "From $120" or "Enquire for pricing". */
@@ -179,6 +181,8 @@ export const galleryItems = mysqlTable(
     caption: varchar("caption", { length: 300 }),
     altText: varchar("alt_text", { length: 200 }),
     category: mysqlEnum("category", ["Makeup", "Bridal", "Hair", "Nails"]).notNull(),
+    mediaType: mysqlEnum("media_type", ["image", "video"]).notNull().default("image"),
+    videoUrl: varchar("video_url", { length: 700 }),
     active: boolean("active").notNull().default(true),
     displayOrder: int("display_order").notNull().default(0),
     createdAt: datetime("created_at", { mode: "string" })

@@ -2,6 +2,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { PageTransition } from "@/components/motion";
+import { ServiceCartProvider } from "@/components/service-cart";
 import { getServices, getSettings } from "@/lib/cms";
 
 /**
@@ -25,7 +26,10 @@ export default async function PublicLayout({
   ).slice(0, 6);
 
   return (
-    <>
+    <ServiceCartProvider
+      businessName={settings.businessName}
+      whatsappNumber={settings.whatsappNumber}
+    >
       <SiteHeader
         businessName={settings.businessName}
         logoUrl={settings.logoUrl}
@@ -44,6 +48,6 @@ export default async function PublicLayout({
         whatsappNumber={settings.whatsappNumber}
         whatsappMessage={settings.whatsappMessage}
       />
-    </>
+    </ServiceCartProvider>
   );
 }

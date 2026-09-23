@@ -110,14 +110,33 @@
 
 .scope :global(.hair-item) {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 24px;
+  grid-template-columns: 1fr;
+  gap: 8px;
   padding: 14px 0;
   border-bottom: 1px solid rgba(216, 200, 187, 0.7);
 }
 
 .scope :global(.hair-item:last-child) {
   border-bottom: 0;
+}
+
+.scope :global(.hair-item-row-main) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.scope :global(.hair-item-info) {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex: 1 1 auto;
+}
+
+.scope :global(.hair-item-btn-wrapper) {
+  flex-shrink: 0;
 }
 
 .scope :global(.hair-item-name) {
@@ -135,7 +154,6 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
-  text-align: right;
 }
 
 .scope :global(.hair-item-desc) {

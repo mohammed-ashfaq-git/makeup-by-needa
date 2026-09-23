@@ -12,9 +12,11 @@ import {
   deleteManagedImage,
   isManagedImageUrl,
   processImageUpload,
+  processMediaUpload,
   storeImage,
   ImageValidationError,
 } from "@/lib/images";
+import { getYouTubeThumbnailUrl } from "@/lib/video-url";
 import {
   readBoolean,
   readId,
@@ -36,11 +38,17 @@ export async function saveGalleryItemAction(
   await requireAdmin();
 
   const id = readId(formData);
+  const mediaType =
+    readString(formData, "mediaType") === "video" ? "video" : "image";
+  const videoUrlInput = readString(formData, "videoUrl");
+
   const parsed = galleryItemSchema.safeParse({
     title: readString(formData, "title"),
     category: readString(formData, "category"),
     caption: readString(formData, "caption"),
     altText: readString(formData, "altText"),
+    mediaType,
+    videoUrl: videoUrlInput,
     active: readBoolean(formData, "active"),
   });
 
@@ -57,17 +65,23 @@ export async function saveGalleryItemAction(
     };
   }
 
-  const file = readOptionalFile(formData, "image");
+  const imageFile = readOptionalFile(formData, "image");
+  const videoFile = readOptionalFile(formData, "videoFile");
 
   const db = getDb();
 
   try {
     let previousImage: string | null = null;
+    let previousVideo: string | null = null;
     let currentImage: string | null | undefined = undefined;
+    let currentVideo: string | null | undefined = undefined;
 
     if (id) {
       const existing = await db
-        .select({ imageUrl: galleryItems.imageUrl })
+        .select({
+          imageUrl: galleryItems.imageUrl,
+          videoUrl: galleryItems.videoUrl,
+        })
         .from(galleryItems)
         .where(eq(galleryItems.id, id))
         .limit(1);
@@ -76,39 +90,98 @@ export async function saveGalleryItemAction(
         return { ok: false, message: "That gallery item no longer exists." };
       }
       previousImage = existing[0].imageUrl;
+      previousVideo = existing[0].videoUrl ?? null;
 
-      if (file) {
-        const processed = await processImageUpload(file, "image");
-        if (processed) currentImage = await storeImage(processed);
+      if (mediaType === "video") {
+        if (videoFile) {
+          const processedVid = await processMediaUpload(videoFile, "videoFile");
+          if (processedVid) {
+            currentVideo = await storeImage(processedVid);
+          }
+        } else if (parsed.data.videoUrl !== undefined) {
+          currentVideo = parsed.data.videoUrl;
+        }
+
+        if (imageFile) {
+          const processedImg = await processImageUpload(imageFile, "image");
+          if (processedImg) currentImage = await storeImage(processedImg);
+        } else if (!previousImage && currentVideo) {
+          const ytThumb = getYouTubeThumbnailUrl(currentVideo);
+          if (ytThumb) currentImage = ytThumb;
+        }
+      } else {
+        // Image item
+        currentVideo = null;
+        if (imageFile) {
+          const processedImg = await processImageUpload(imageFile, "image");
+          if (processedImg) currentImage = await storeImage(processedImg);
+        }
       }
 
       await db
         .update(galleryItems)
         .set({
-          ...parsed.data,
-          ...(currentImage !== undefined
-            ? { imageUrl: currentImage }
-            : {}),
+          title: parsed.data.title,
+          category: parsed.data.category,
+          caption: parsed.data.caption,
+          altText: parsed.data.altText,
+          mediaType,
+          active: parsed.data.active,
+          ...(currentImage !== undefined ? { imageUrl: currentImage } : {}),
+          ...(currentVideo !== undefined ? { videoUrl: currentVideo } : {}),
         })
         .where(eq(galleryItems.id, id));
     } else {
-      if (!file) {
-        return {
-          ok: false,
-          message: "Please choose an image to upload.",
-          fieldErrors: { image: "An image file is required." },
-        };
-      }
+      // New item
+      if (mediaType === "video") {
+        if (videoFile) {
+          const processedVid = await processMediaUpload(videoFile, "videoFile");
+          if (processedVid) {
+            currentVideo = await storeImage(processedVid);
+          }
+        } else if (parsed.data.videoUrl) {
+          currentVideo = parsed.data.videoUrl;
+        }
 
-      const processed = await processImageUpload(file, "image");
-      if (!processed) {
-        return {
-          ok: false,
-          message: "Please choose an image to upload.",
-          fieldErrors: { image: "An image file is required." },
-        };
+        if (!currentVideo) {
+          return {
+            ok: false,
+            message:
+              "Please provide a video link (YouTube, Vimeo, MP4) or upload a video file.",
+            fieldErrors: {
+              videoUrl: "A video link or uploaded video file is required.",
+            },
+          };
+        }
+
+        if (imageFile) {
+          const processedImg = await processImageUpload(imageFile, "image");
+          if (processedImg) currentImage = await storeImage(processedImg);
+        } else {
+          const ytThumb = getYouTubeThumbnailUrl(currentVideo);
+          currentImage = ytThumb || "/images/makeup-by-needa-hero.jpg";
+        }
+      } else {
+        // New Image item
+        if (!imageFile) {
+          return {
+            ok: false,
+            message: "Please choose an image to upload.",
+            fieldErrors: { image: "An image file is required." },
+          };
+        }
+
+        const processedImg = await processImageUpload(imageFile, "image");
+        if (!processedImg) {
+          return {
+            ok: false,
+            message: "Please choose an image to upload.",
+            fieldErrors: { image: "An image file is required." },
+          };
+        }
+        currentImage = await storeImage(processedImg);
+        currentVideo = null;
       }
-      currentImage = await storeImage(processed);
 
       const maxOrder = await db
         .select({
@@ -118,8 +191,14 @@ export async function saveGalleryItemAction(
       const nextOrder = Number(maxOrder[0]?.max ?? 0) + 10;
 
       await db.insert(galleryItems).values({
-        ...parsed.data,
-        imageUrl: currentImage,
+        title: parsed.data.title,
+        category: parsed.data.category,
+        caption: parsed.data.caption,
+        altText: parsed.data.altText,
+        mediaType,
+        imageUrl: currentImage || "/images/makeup-by-needa-hero.jpg",
+        videoUrl: currentVideo,
+        active: parsed.data.active,
         displayOrder: nextOrder,
       });
     }
@@ -131,12 +210,27 @@ export async function saveGalleryItemAction(
     ) {
       await deleteManagedImage(previousImage);
     }
+
+    if (
+      previousVideo &&
+      isManagedImageUrl(previousVideo) &&
+      previousVideo !== currentVideo
+    ) {
+      await deleteManagedImage(previousVideo);
+    }
   } catch (error) {
     if (error instanceof ImageValidationError) {
-      return { ok: false, message: error.message, fieldErrors: { image: error.message } };
+      return {
+        ok: false,
+        message: error.message,
+        fieldErrors: { image: error.message, videoFile: error.message },
+      };
     }
     console.error("[gallery] save failed:", error);
-    return { ok: false, message: "Could not save the gallery item. Please try again." };
+    return {
+      ok: false,
+      message: "Could not save the gallery item. Please try again.",
+    };
   }
 
   revalidateGalleryPages();
@@ -145,6 +239,8 @@ export async function saveGalleryItemAction(
     ok: true,
     message: id
       ? "Gallery item updated."
+      : mediaType === "video"
+      ? "Video added to the gallery."
       : "Image uploaded and added to the gallery.",
   };
 }
@@ -156,7 +252,10 @@ export async function deleteGalleryItemAction(formData: FormData): Promise<void>
 
   const db = getDb();
   const existing = await db
-    .select({ imageUrl: galleryItems.imageUrl })
+    .select({
+      imageUrl: galleryItems.imageUrl,
+      videoUrl: galleryItems.videoUrl,
+    })
     .from(galleryItems)
     .where(eq(galleryItems.id, id))
     .limit(1);
@@ -166,6 +265,10 @@ export async function deleteGalleryItemAction(formData: FormData): Promise<void>
   const image = existing[0]?.imageUrl;
   if (image && isManagedImageUrl(image)) {
     await deleteManagedImage(image);
+  }
+  const video = existing[0]?.videoUrl;
+  if (video && isManagedImageUrl(video)) {
+    await deleteManagedImage(video);
   }
 
   revalidateGalleryPages();
