@@ -29,6 +29,13 @@
       "when": 1790144536092,
       "tag": "0003_gallery_video",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1790233486870,
+      "tag": "0004_mobile_images",
+      "breakpoints": true
     }
   ]
 }

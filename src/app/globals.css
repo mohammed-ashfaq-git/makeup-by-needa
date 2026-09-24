@@ -827,12 +827,23 @@ i {
   font-size: 13px;
 }
 
-.service-card a {
+/* Legacy rule: absolute positioning for the plain "view all" style link that
+   is a direct child of a service card. Scoped so it can never pull the
+   service-card-link wrapper or the "Details" link out of normal flow. */
+.service-card > a:not(.service-card-link):not(.service-details-link) {
   position: absolute;
   bottom: 24px;
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+/* The whole copy block is one link, so it must stay in flow and fill the
+   card so the actions row below it sits at the bottom edge. */
+.services-home .service-card-link {
+  display: block;
+  flex: 1 1 auto;
+  color: inherit;
 }
 
 .service-number {
@@ -845,7 +856,10 @@ i {
 }
 
 .services-home .service-card {
-  min-height: 435px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 480px;
   overflow: hidden;
   padding: 0;
   border: 1px solid rgba(119, 86, 68, 0.18);
@@ -858,6 +872,8 @@ i {
 }
 
 .service-visual {
+  position: relative;
+  overflow: hidden;
   height: 176px;
   display: flex;
   align-items: flex-start;
@@ -868,6 +884,12 @@ i {
   letter-spacing: 0.17em;
   text-transform: uppercase;
   transition: transform 0.7s var(--ease);
+}
+
+/* Uploaded service photos fill their frame — never stretched or squished. */
+.service-visual img {
+  object-fit: cover !important;
+  object-position: center !important;
 }
 
 .service-visual-1 {
@@ -1013,6 +1035,81 @@ i {
   transform: translateY(-2px);
 }
 
+/* ---------------------------------------------------------
+   Gallery card legibility
+   A rich gradient backdrop (0.04 → 0.94) keeps the category
+   badge and the title 100% readable over pale dresses,
+   jewellery and bright skin tones.
+   --------------------------------------------------------- */
+
+.gallery-card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 20, 16, 0.04) 0%,
+    rgba(30, 20, 16, 0.18) 32%,
+    rgba(30, 20, 16, 0.55) 62%,
+    rgba(30, 20, 16, 0.82) 82%,
+    rgba(30, 20, 16, 0.94) 100%
+  );
+}
+
+.gallery-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+}
+
+/* Neutralise the inherited uppercase micro-type of `.gallery-card span`
+   for the info wrapper itself — the badge and title set their own type. */
+.gallery-card .gallery-card-info {
+  font-size: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.gallery-card .gallery-card-category {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  padding: 5px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 99px;
+  background: rgba(28, 20, 16, 0.42);
+  color: #fdfaf6;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.gallery-card .gallery-card-title {
+  display: block;
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: clamp(20px, 2.3vw, 30px);
+  font-weight: 500;
+  line-height: 1.22;
+  text-shadow: 0 1px 14px rgba(24, 16, 12, 0.6);
+}
+
+/* Portfolio photos always fill their frame — never stretched or squished. */
+.gallery-card-img,
+.gallery-card img {
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
 .bg-rose {
   background: linear-gradient(140deg, #89635c, #dcb8aa);
 }
@@ -1035,6 +1132,37 @@ i {
 
 .bg-mauve {
   background: linear-gradient(145deg, #755d61, #c7a1a0);
+}
+
+/* Gallery page — closing CTA.
+   Framed on its own warm surface with generous breathing room so the
+   button never collides with the dark footer below it. */
+.gallery-closing-section {
+  position: relative;
+  padding: 110px 0 120px;
+  border-top: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--paper) 0%, #f4eee7 100%);
+}
+
+.gallery-closing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.gallery-closing h2 {
+  margin: 12px 0 18px;
+}
+
+.gallery-closing .eyebrow {
+  margin-bottom: 0;
+}
+
+.gallery-closing .button {
+  min-height: 48px;
+  padding: 14px 38px;
+  margin-top: 8px;
 }
 
 /* =========================================================
@@ -3687,6 +3815,16 @@ i {
   font-size: 13.5px;
 }
 
+/* Homepage featured cards: the price + actions bar is pinned to the bottom
+   of the card, on its own surface, so it never floats mid-card or collides
+   with the description above. */
+.services-home .service-card-actions-row {
+  margin-top: auto;
+  padding: 14px 20px 18px;
+  border-top: 1px solid rgba(119, 86, 68, 0.14);
+  background: rgba(250, 247, 242, 0.95);
+}
+
 .service-card-btns {
   display: flex;
   align-items: center;
@@ -3922,7 +4060,16 @@ iframe {
   .portfolio-home .gallery-grid {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-    gap: 16px;
+    gap: 22px;
+  }
+
+  /* Portrait cards keep their full editorial proportions on phones instead
+     of collapsing into thin horizontal bars. */
+  .portfolio-home .gallery-card,
+  .gallery-card {
+    min-height: 420px !important;
+    height: auto !important;
+    aspect-ratio: 4 / 5 !important;
   }
 
   .portfolio-home .reveal:first-child {
@@ -3931,6 +4078,10 @@ iframe {
 
   .portfolio-home .reveal:nth-child(3) {
     grid-column: auto;
+  }
+
+  .gallery-closing-section {
+    padding: 70px 0 85px;
   }
 
   .footer-grid {

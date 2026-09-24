@@ -36,6 +36,8 @@ export type PublicSettings = {
   logoUrl: string;
   /** Homepage hero image; NULL → use the first active gallery image. */
   heroImageUrl: string | null;
+  /** Mobile portrait crop of the hero; NULL → use the desktop hero image. */
+  heroImageMobileUrl: string | null;
   phone: string | null;
   email: string;
   whatsappNumber: string;
@@ -77,6 +79,8 @@ export type PublicGalleryItem = {
   mediaType: "image" | "video";
   videoUrl: string | null;
   imageUrl: string;
+  /** Optional portrait crop served on phones; NULL → use imageUrl. */
+  mobileImageUrl: string | null;
   altText: string;
   caption: string | null;
 };
@@ -151,6 +155,7 @@ export const getSettings = cache(async (): Promise<PublicSettings> => {
       businessName: business.name,
       logoUrl: "/makeup-by-needa-logo.jpg",
       heroImageUrl: null,
+      heroImageMobileUrl: null,
       phone: null,
       email: business.email,
       whatsappNumber: business.whatsapp,
@@ -174,6 +179,7 @@ export const getSettings = cache(async (): Promise<PublicSettings> => {
     businessName: row.businessName || business.name,
     logoUrl: row.logoUrl || "/makeup-by-needa-logo.jpg",
     heroImageUrl: row.heroImageUrl || null,
+    heroImageMobileUrl: row.heroImageMobileUrl || null,
     phone: row.phone || null,
     email: row.email || business.email,
     whatsappNumber: row.whatsappNumber || business.whatsapp,
@@ -266,6 +272,7 @@ export const getGalleryItems = cache(async (): Promise<PublicGalleryItem[]> => {
       mediaType: "image" as const,
       videoUrl: null,
       imageUrl: item.imageUrl,
+      mobileImageUrl: null,
       altText: item.altText,
       caption: null,
     }));
@@ -280,6 +287,7 @@ export const getGalleryItems = cache(async (): Promise<PublicGalleryItem[]> => {
       mediaType: (row.mediaType ?? "image") as "image" | "video",
       videoUrl: row.videoUrl ?? null,
       imageUrl: row.imageUrl || "/images/makeup-by-needa-hero.jpg",
+      mobileImageUrl: row.mobileImageUrl || null,
       altText: row.altText || row.title,
       caption: row.caption,
     }));

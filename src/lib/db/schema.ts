@@ -82,6 +82,11 @@ export const siteSettings = mysqlTable("site_settings", {
   logoUrl: varchar("logo_url", { length: 500 }),
   /** Homepage hero image. NULL → the first active gallery image is used. */
   heroImageUrl: varchar("hero_image_url", { length: 500 }),
+  /**
+   * Optional portrait crop of the hero shown on phones (< 768px).
+   * NULL → the desktop hero image is used, cropped with object-fit: cover.
+   */
+  heroImageMobileUrl: varchar("hero_image_mobile_url", { length: 500 }),
   phone: varchar("phone", { length: 50 }),
   email: varchar("email", { length: 255 }).notNull(),
   whatsappNumber: varchar("whatsapp_number", { length: 30 }).notNull(),
@@ -177,6 +182,11 @@ export const galleryItems = mysqlTable(
   {
     id: int("id").autoincrement().primaryKey(),
     imageUrl: varchar("image_url", { length: 500 }).notNull(),
+    /**
+     * Optional portrait crop for the mobile gallery (< 640px). NULL → the
+     * desktop image is used, cropped with object-fit: cover.
+     */
+    mobileImageUrl: varchar("mobile_image_url", { length: 500 }),
     title: varchar("title", { length: 160 }).notNull(),
     caption: varchar("caption", { length: 300 }),
     altText: varchar("alt_text", { length: 200 }),

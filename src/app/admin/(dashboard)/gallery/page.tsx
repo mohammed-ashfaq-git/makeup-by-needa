@@ -37,6 +37,7 @@ export default async function AdminGalleryPage() {
           items={rows.map((row) => ({
             id: row.id,
             imageUrl: row.imageUrl,
+            mobileImageUrl: row.mobileImageUrl ?? null,
             title: row.title,
             caption: row.caption,
             altText: row.altText,

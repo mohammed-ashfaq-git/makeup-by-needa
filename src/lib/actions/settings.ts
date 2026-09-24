@@ -62,11 +62,14 @@ export async function saveSettingsAction(
     };
   }
 
-  // Logo + hero image uploads (optional).
+  // Logo + hero image uploads (optional). The hero has two files: the
+  // desktop image and an optional mobile portrait crop.
   let logoUrl: string | null | undefined = undefined;
   let heroImageUrl: string | null | undefined = undefined;
+  let heroImageMobileUrl: string | null | undefined = undefined;
   const removeLogo = readBoolean(formData, "removeLogo");
   const removeHero = readBoolean(formData, "removeHero");
+  const removeHeroMobile = readBoolean(formData, "removeHeroMobile");
 
   try {
     const logoFile = readOptionalFile(formData, "logo");
@@ -84,12 +87,20 @@ export async function saveSettingsAction(
     } else if (removeHero) {
       heroImageUrl = null;
     }
+
+    const heroMobileFile = readOptionalFile(formData, "heroMobile");
+    if (heroMobileFile) {
+      const processed = await processImageUpload(heroMobileFile, "heroMobile");
+      if (processed) heroImageMobileUrl = await storeImage(processed);
+    } else if (removeHeroMobile) {
+      heroImageMobileUrl = null;
+    }
   } catch (error) {
     if (error instanceof ImageValidationError) {
       return {
         ok: false,
         message: error.message,
-        fieldErrors: { logo: error.message },
+        fieldErrors: { logo: error.message, heroMobile: error.message },
       };
     }
     throw error;
@@ -100,6 +111,7 @@ export async function saveSettingsAction(
       .select({
         logoUrl: siteSettings.logoUrl,
         heroImageUrl: siteSettings.heroImageUrl,
+        heroImageMobileUrl: siteSettings.heroImageMobileUrl,
       })
       .from(siteSettings)
       .where(eq(siteSettings.id, 1))
@@ -114,12 +126,14 @@ export async function saveSettingsAction(
         ...parsed.data,
         logoUrl: logoUrl ?? null,
         heroImageUrl: heroImageUrl ?? null,
+        heroImageMobileUrl: heroImageMobileUrl ?? null,
       })
       .onDuplicateKeyUpdate({
         set: {
           ...parsed.data,
           ...(logoUrl !== undefined ? { logoUrl } : {}),
           ...(heroImageUrl !== undefined ? { heroImageUrl } : {}),
+          ...(heroImageMobileUrl !== undefined ? { heroImageMobileUrl } : {}),
         },
       });
   } catch (error) {
@@ -144,6 +158,15 @@ export async function saveSettingsAction(
     previousHero !== heroImageUrl
   ) {
     await deleteManagedImage(previousHero);
+  }
+
+  const previousHeroMobile = existing?.[0]?.heroImageMobileUrl;
+  if (
+    previousHeroMobile &&
+    isManagedImageUrl(previousHeroMobile) &&
+    previousHeroMobile !== heroImageMobileUrl
+  ) {
+    await deleteManagedImage(previousHeroMobile);
   }
 
   revalidatePath("/", "layout");
