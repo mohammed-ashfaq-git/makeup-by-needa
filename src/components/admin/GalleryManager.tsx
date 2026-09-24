@@ -21,6 +21,8 @@ import {
 export type AdminGalleryItem = {
   id: number;
   imageUrl: string;
+  /** Optional portrait crop served on phones (< 640px). */
+  mobileImageUrl: string | null;
   title: string;
   caption: string | null;
   altText: string | null;
@@ -183,6 +185,7 @@ export function GalleryManager({
                   </strong>
                   <div className="meta">
                     {item.category}
+                    {item.mobileImageUrl ? " · Mobile crop" : ""}
                     {item.caption ? ` · ${item.caption}` : ""}
                     {isVideo && item.videoUrl ? (
                       <span className="a-muted">
@@ -279,13 +282,26 @@ function GalleryItemForm({
       </div>
 
       {mediaType === "image" ? (
-        <ImageField
-          name="image"
-          label={initial ? "Replace image" : "Image file"}
-          hint="JPG, PNG, or WEBP up to 5 MB."
-          state={state}
-          currentImageUrl={initial?.imageUrl ?? null}
-        />
+        <>
+          <ImageField
+            name="image"
+            label={initial ? "Desktop image — replace file" : "Desktop image file"}
+            hint="JPG, PNG, or WEBP up to 5 MB. Shown on desktop and tablet."
+            state={state}
+            currentImageUrl={initial?.imageUrl ?? null}
+          />
+
+          <ImageField
+            name="mobileImage"
+            label="Mobile portrait crop (optional)"
+            hint="Recommended 4:5 portrait, JPG/PNG/WEBP up to 5 MB. Shown on phones; when empty, the desktop image is used on mobile instead."
+            state={state}
+            currentImageUrl={initial?.mobileImageUrl ?? null}
+            removeName="removeMobileImage"
+            removeLabel="Use the desktop image on mobile instead"
+            previewWidth={110}
+          />
+        </>
       ) : (
         <div
           style={{
@@ -331,10 +347,21 @@ function GalleryItemForm({
           <div style={{ marginTop: "1rem" }}>
             <ImageField
               name="image"
-              label="Video thumbnail / poster image (optional)"
+              label="Video thumbnail / poster image — desktop (optional)"
               hint="JPG, PNG, or WEBP up to 5 MB. YouTube thumbnails are detected automatically if left blank."
               state={state}
               currentImageUrl={initial?.imageUrl ?? null}
+            />
+
+            <ImageField
+              name="mobileImage"
+              label="Video thumbnail / poster image — mobile portrait crop (optional)"
+              hint="Recommended 4:5 portrait. Shown on phones; when empty, the desktop thumbnail is used on mobile instead."
+              state={state}
+              currentImageUrl={initial?.mobileImageUrl ?? null}
+              removeName="removeMobileImage"
+              removeLabel="Use the desktop thumbnail on mobile instead"
+              previewWidth={110}
             />
           </div>
         </div>

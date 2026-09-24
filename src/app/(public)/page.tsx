@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Gallery } from "@/components/gallery";
+import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionHeading } from "@/components/section-heading";
 import { AddToEnquiryButton } from "@/components/service-cart";
 import {
@@ -95,6 +96,14 @@ export default async function Home() {
     galleryItems[0]?.imageUrl ||
     "/images/makeup-by-needa-hero.jpg";
 
+  // Mobile hero (< 768px): the dedicated mobile crop when the CMS has one,
+  // otherwise the mobile crop of the gallery image used as the hero. When
+  // neither exists, ResponsiveImage falls back to the desktop hero.
+  const heroImageMobile =
+    settings.heroImageMobileUrl ||
+    (settings.heroImageUrl ? null : galleryItems[0]?.mobileImageUrl) ||
+    null;
+
   const getCategoryLabel = (category: string) =>
     category === "Nails" ? "Nail Art" : category;
 
@@ -144,11 +153,12 @@ export default async function Home() {
               <div className="hero-photo-glow" aria-hidden="true" />
               <div className="arch-shape" aria-hidden="true" />
 
-              <Image
+              <ResponsiveImage
                 className="hero-photo"
-                src={heroImage}
+                desktopSrc={heroImage}
+                mobileSrc={heroImageMobile}
+                mobileBreakpoint={768}
                 alt={`${settings.businessName} beauty artistry`}
-                fill
                 priority
                 sizes="(max-width: 760px) 88vw, 48vw"
               />

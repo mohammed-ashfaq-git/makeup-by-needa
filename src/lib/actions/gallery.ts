@@ -65,21 +65,41 @@ export async function saveGalleryItemAction(
     };
   }
 
+  // Two image uploads: the desktop file and an optional mobile portrait
+  // crop. When the mobile file is empty, the public site keeps using the
+  // desktop file on phones as well.
   const imageFile = readOptionalFile(formData, "image");
+  const mobileImageFile = readOptionalFile(formData, "mobileImage");
   const videoFile = readOptionalFile(formData, "videoFile");
+  const removeMobileImage = readBoolean(formData, "removeMobileImage");
 
   const db = getDb();
 
   try {
     let previousImage: string | null = null;
+    let previousMobileImage: string | null = null;
     let previousVideo: string | null = null;
     let currentImage: string | null | undefined = undefined;
+    let currentMobileImage: string | null | undefined = undefined;
     let currentVideo: string | null | undefined = undefined;
+
+    if (mobileImageFile) {
+      const processedMobileImg = await processImageUpload(
+        mobileImageFile,
+        "mobileImage",
+      );
+      if (processedMobileImg) {
+        currentMobileImage = await storeImage(processedMobileImg);
+      }
+    } else if (removeMobileImage) {
+      currentMobileImage = null;
+    }
 
     if (id) {
       const existing = await db
         .select({
           imageUrl: galleryItems.imageUrl,
+          mobileImageUrl: galleryItems.mobileImageUrl,
           videoUrl: galleryItems.videoUrl,
         })
         .from(galleryItems)
@@ -90,6 +110,7 @@ export async function saveGalleryItemAction(
         return { ok: false, message: "That gallery item no longer exists." };
       }
       previousImage = existing[0].imageUrl;
+      previousMobileImage = existing[0].mobileImageUrl ?? null;
       previousVideo = existing[0].videoUrl ?? null;
 
       if (mediaType === "video") {
@@ -128,6 +149,9 @@ export async function saveGalleryItemAction(
           mediaType,
           active: parsed.data.active,
           ...(currentImage !== undefined ? { imageUrl: currentImage } : {}),
+          ...(currentMobileImage !== undefined
+            ? { mobileImageUrl: currentMobileImage }
+            : {}),
           ...(currentVideo !== undefined ? { videoUrl: currentVideo } : {}),
         })
         .where(eq(galleryItems.id, id));
@@ -197,6 +221,7 @@ export async function saveGalleryItemAction(
         altText: parsed.data.altText,
         mediaType,
         imageUrl: currentImage || "/images/makeup-by-needa-hero.jpg",
+        mobileImageUrl: currentMobileImage ?? null,
         videoUrl: currentVideo,
         active: parsed.data.active,
         displayOrder: nextOrder,
@@ -212,6 +237,14 @@ export async function saveGalleryItemAction(
     }
 
     if (
+      previousMobileImage &&
+      isManagedImageUrl(previousMobileImage) &&
+      previousMobileImage !== currentMobileImage
+    ) {
+      await deleteManagedImage(previousMobileImage);
+    }
+
+    if (
       previousVideo &&
       isManagedImageUrl(previousVideo) &&
       previousVideo !== currentVideo
@@ -223,7 +256,11 @@ export async function saveGalleryItemAction(
       return {
         ok: false,
         message: error.message,
-        fieldErrors: { image: error.message, videoFile: error.message },
+        fieldErrors: {
+          image: error.message,
+          mobileImage: error.message,
+          videoFile: error.message,
+        },
       };
     }
     console.error("[gallery] save failed:", error);
@@ -254,6 +291,7 @@ export async function deleteGalleryItemAction(formData: FormData): Promise<void>
   const existing = await db
     .select({
       imageUrl: galleryItems.imageUrl,
+      mobileImageUrl: galleryItems.mobileImageUrl,
       videoUrl: galleryItems.videoUrl,
     })
     .from(galleryItems)
@@ -265,6 +303,10 @@ export async function deleteGalleryItemAction(formData: FormData): Promise<void>
   const image = existing[0]?.imageUrl;
   if (image && isManagedImageUrl(image)) {
     await deleteManagedImage(image);
+  }
+  const mobileImage = existing[0]?.mobileImageUrl;
+  if (mobileImage && isManagedImageUrl(mobileImage)) {
+    await deleteManagedImage(mobileImage);
   }
   const video = existing[0]?.videoUrl;
   if (video && isManagedImageUrl(video)) {

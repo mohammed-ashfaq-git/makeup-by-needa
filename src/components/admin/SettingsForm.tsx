@@ -11,6 +11,8 @@ export type SettingsFormValues = {
   businessName: string;
   logoUrl: string | null;
   heroImageUrl: string | null;
+  /** Optional portrait crop of the hero, served on phones (< 768px). */
+  heroImageMobileUrl: string | null;
   phone: string | null;
   email: string;
   whatsappNumber: string;
@@ -278,13 +280,24 @@ export function SettingsForm({ initial }: { initial: SettingsFormValues }) {
 
       <ImageField
         name="hero"
-        label="Homepage hero image"
+        label="Homepage hero image — desktop"
         hint="Optional — when empty, the first active gallery image is used as the hero."
         state={state}
         currentImageUrl={initial.heroImageUrl ?? null}
         removeName="removeHero"
         removeLabel="Use the first gallery image instead"
         previewWidth={160}
+      />
+
+      <ImageField
+        name="heroMobile"
+        label="Homepage hero image — mobile portrait crop"
+        hint="Optional — a portrait version of the hero shown on phones (under 768px). When empty, the desktop hero is shown instead, cropped to fill the frame."
+        state={state}
+        currentImageUrl={initial.heroImageMobileUrl ?? null}
+        removeName="removeHeroMobile"
+        removeLabel="Use the desktop hero image on mobile instead"
+        previewWidth={110}
       />
 
       <div className="a-btn-row">

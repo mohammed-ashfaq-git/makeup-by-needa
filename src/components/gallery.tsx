@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Reveal } from "@/components/motion";
+import { ResponsiveImage } from "@/components/responsive-image";
 import { toVideoEmbedUrl } from "@/lib/video-url";
 
 const filters = ["All", "Makeup", "Bridal", "Hair", "Nails"] as const;
@@ -12,6 +13,8 @@ export type GalleryViewItem = {
   title: string;
   category: (typeof filters)[number];
   imageUrl: string;
+  /** Optional CMS portrait crop served on phones (< 640px). */
+  mobileImageUrl?: string | null;
   altText: string;
   caption: string | null;
   mediaType?: "image" | "video";
@@ -104,10 +107,12 @@ export function Gallery({
                 onClick={() => setSelectedId(item.id)}
                 aria-label={`View ${item.title}${isVideo ? " (Video)" : ""}`}
               >
-                <Image
-                  src={item.imageUrl}
+                <ResponsiveImage
+                  desktopSrc={item.imageUrl}
+                  mobileSrc={item.mobileImageUrl}
                   alt={item.altText || item.title}
-                  fill
+                  className="gallery-card-img"
+                  mobileBreakpoint={640}
                   sizes={
                     limit
                       ? "(max-width: 760px) 100vw, 33vw"
@@ -131,11 +136,11 @@ export function Gallery({
                 <span className="gallery-card-overlay" />
 
                 <span className="gallery-card-info">
-                  <span>
+                  <span className="gallery-card-category">
                     {item.category}
                     {isVideo ? " · Video" : ""}
                   </span>
-                  <strong>{item.title}</strong>
+                  <strong className="gallery-card-title">{item.title}</strong>
                 </span>
               </button>
             </Reveal>
