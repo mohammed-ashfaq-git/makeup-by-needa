@@ -152,7 +152,9 @@ export function Gallery({
           onClick={() => setSelectedId(null)}
         >
           <div
-            className="lightbox-content"
+            className={`lightbox-content ${
+              selectedItem.mediaType === "video" ? "has-video" : ""
+            }`}
             onClick={(event) => event.stopPropagation()}
           >
             <button

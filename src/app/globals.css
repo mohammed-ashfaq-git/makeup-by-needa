@@ -2668,6 +2668,25 @@ i {
     gap: 25px;
   }
 
+  .services-home .service-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .services-home .service-card:nth-child(2),
+  .services-home .service-card:nth-child(3) {
+    margin-top: 0;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 24px;
+  }
+
+  .footer-grid > div:first-child {
+    grid-column: span 2;
+  }
+
   .social-home-grid {
     grid-template-columns: 1fr;
     gap: 36px;
@@ -2698,6 +2717,7 @@ i {
 
   .menu-button {
     display: block;
+    cursor: pointer;
   }
 
   .nav {
@@ -2705,13 +2725,17 @@ i {
     top: 70px;
     right: 0;
     left: 0;
+    z-index: 29;
     display: none;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding: 22px 24px 26px;
+    padding: 16px 20px 24px;
     border-bottom: 1px solid var(--line);
     background: var(--paper);
+    max-height: calc(100dvh - 70px);
+    overflow-y: auto;
+    box-shadow: 0 14px 28px rgba(35, 25, 20, 0.12);
   }
 
   .nav-open {
@@ -2719,7 +2743,10 @@ i {
   }
 
   .nav > a {
-    padding: 12px 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
   }
 
   .nav > a:not(.button)::after {
@@ -3703,6 +3730,16 @@ i {
   color: #fff;
 }
 
+.lightbox-content.has-video {
+  height: auto;
+  max-height: min(90vh, 850px);
+  justify-content: flex-start;
+  padding: 30px;
+  background: #1e1713;
+  border-radius: 12px;
+  overflow-y: auto;
+}
+
 .lightbox-video-container {
   position: relative;
   width: 100%;
@@ -3728,11 +3765,207 @@ i {
   background: #000;
 }
 
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  top: 70px;
+  z-index: 28;
+  background: rgba(32, 24, 20, 0.45);
+  backdrop-filter: blur(3px);
+  animation: lightbox-fade 0.2s ease both;
+}
+
+/* =========================================================
+   COMPREHENSIVE RESPONSIVENESS (MOBILE, TABLET, DESKTOP)
+   ========================================================= */
+
+/* Root & layout guardrails */
+html {
+  overflow-x: hidden;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  min-width: 320px;
+}
+
+/* Fluid media */
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+/* Floating Action Buttons: Safe Areas & Touch Targets */
+.service-cart-fab {
+  bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  left: max(16px, env(safe-area-inset-left, 16px));
+}
+
+.whatsapp {
+  bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  right: max(16px, env(safe-area-inset-right, 16px));
+}
+
+/* Prevent iOS Safari auto-zoom on form inputs */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea,
+  .enquiry-form input,
+  .enquiry-form textarea,
+  .enquiry-form select,
+  .cart-field input,
+  .cart-field textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Drawer mobile responsiveness */
+@media (max-width: 640px) {
+  .service-cart-drawer {
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  .cart-drawer-header {
+    padding: max(16px, env(safe-area-inset-top, 16px)) 18px 14px;
+  }
+
+  .cart-drawer-body {
+    padding: 16px 18px;
+  }
+
+  .cart-drawer-footer {
+    padding: 14px 18px max(18px, env(safe-area-inset-bottom, 18px));
+  }
+
+  .cart-item-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .cart-item-actions {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px dashed #ebdcd0;
+  }
+}
+
+/* Tablet portrait & Mobile (< 760px) */
 @media (max-width: 760px) {
   .service-cart-fab {
-    left: 16px;
-    bottom: 15px;
     padding: 10px 14px;
     font-size: 10px;
+  }
+
+  .lightbox {
+    padding: 12px;
+  }
+
+  .lightbox-content {
+    width: 100%;
+    height: min(540px, 80vh);
+    padding: 24px 18px;
+  }
+
+  .lightbox-content.has-video {
+    height: auto;
+    max-height: 88vh;
+    padding: 18px 14px;
+  }
+
+  .lightbox-content button {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .service-card-actions-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .service-card-btns {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Mobile Narrow (< 600px) */
+@media (max-width: 600px) {
+  .services-home .service-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .services-home .service-card {
+    min-height: auto;
+  }
+
+  .services-home .service-card:nth-child(2),
+  .services-home .service-card:nth-child(3) {
+    margin-top: 0;
+  }
+
+  .portfolio-home .gallery-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 16px;
+  }
+
+  .portfolio-home .reveal:first-child {
+    grid-row: auto;
+  }
+
+  .portfolio-home .reveal:nth-child(3) {
+    grid-column: auto;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .footer-grid > div:first-child {
+    grid-column: auto;
+  }
+}
+
+/* Very Narrow Devices (< 420px) */
+@media (max-width: 420px) {
+  .service-cart-fab {
+    padding: 9px 12px;
+    font-size: 10px;
+    gap: 5px;
+    letter-spacing: 0.04em;
+  }
+
+  .whatsapp {
+    padding: 9px 13px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (max-width: 350px) {
+  .service-cart-fab .cart-fab-label {
+    display: none;
+  }
+
+  .service-cart-fab {
+    padding: 10px;
+    border-radius: 50%;
   }
 }

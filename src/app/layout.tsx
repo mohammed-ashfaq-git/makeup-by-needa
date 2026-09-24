@@ -1,9 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./refinement.css";
 import "./admin.css";
 import { getSettings } from "@/lib/cms";
 import { getAbsoluteSiteUrl, getSiteUrl } from "@/lib/site-url";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#2b201a",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   // Business name and homepage copy come from the CMS; the static config

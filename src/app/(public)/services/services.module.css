@@ -451,3 +451,52 @@
     justify-content: flex-start;
   }
 }
+
+@media (max-width: 500px) {
+  .scope :global(.hair-item-row-main) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .scope :global(.hair-item-info) {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .scope :global(.hair-item-btn-wrapper) {
+    width: 100%;
+  }
+
+  .scope :global(.hair-item-btn-wrapper .add-to-enquiry-pill) {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .scope :global(.hair-menu-cta) {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .scope :global(.hair-menu-cta .button) {
+    width: 100%;
+    text-align: center;
+  }
+
+  .scope :global(.service-block) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .scope :global(.block-number) {
+    display: none;
+  }
+
+  .scope :global(.block-detail) {
+    grid-column: 1;
+    align-items: flex-start;
+    text-align: left;
+  }
+}

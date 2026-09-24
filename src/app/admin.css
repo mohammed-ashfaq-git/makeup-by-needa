@@ -852,3 +852,45 @@
   letter-spacing: 0.08em;
   color: var(--a-ink-soft);
 }
+
+@media (max-width: 640px) {
+  .manager-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .manager-row-main {
+    flex: 1 1 auto;
+  }
+
+  .manager-row-actions {
+    justify-content: flex-start;
+    width: 100%;
+    border-top: 1px dashed var(--a-border);
+    padding-top: 8px;
+  }
+
+  .admin-page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .admin-page-head h1 {
+    font-size: 20px;
+  }
+
+  .a-card {
+    padding: 16px 14px;
+  }
+
+  .a-card-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .a-btn {
+    min-height: 38px;
+  }
+}
