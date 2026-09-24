@@ -7,9 +7,16 @@ Server Actions) and MySQL via Drizzle ORM.
 ## Features
 
 **Public website** — home, about, services, gallery, contact and booking
-pages, all driven by the database. Includes a WhatsApp deep-link button and a
-self-service appointment enquiry form that stores enquiries in the database
-and generates an ENQ-#### reference.
+pages, all driven by the database:
+- **Service enquiry cart with WhatsApp** — visitors can add services to an
+  in-browser cart, pick an event date, add notes, and generate a pre-formatted
+  WhatsApp message with categorized line items.
+- **Full hairstyling price list** — categorized Aura Beauty menu with
+  everyday, event, bridal, South Asian, extension, braid and party styling.
+- **Media gallery** — photo portfolio and video playback (YouTube, Vimeo,
+  and uploaded MP4/WebM/MOV) with responsive video lightbox.
+- **Enquiry form & WhatsApp button** — self-service enquiry form with
+  ENQ-#### reference numbers and floating WhatsApp messaging button.
 
 **Admin CMS** (`/admin`) — password-protected dashboard for the site owner:
 
@@ -20,11 +27,13 @@ and generates an ENQ-#### reference.
   Instagram/Facebook links, homepage copy and footer text.
 - **Artist / Bio** — bio shown on the About page (name, short bio, full bio,
   experience, specialties, qualifications, location, Instagram).
-- **Services** — full CRUD with categories (Makeup / Hair / Nails), pricing
-  (numeric price, custom price text, or *Enquire for pricing*), duration,
-  featured & active flags, and reordering.
-- **Gallery** — image upload (stored in the database, served through
-  `/api/images/:id`) with categories, captions, alt text and active flag.
+- **Services** — full CRUD with categories (Makeup / Hair / Nails),
+  subcategories, detail bullet points, pricing (numeric price, custom price
+  text, or *Enquire for pricing*), duration, featured & active flags, search
+  and reordering.
+- **Gallery** — image and video management (supports photo uploads, YouTube/Vimeo
+  links, and video uploads up to 40 MB) with captions, alt text, poster images
+  and category filters.
 - **Testimonials** — client quotes with a 1–5 star rating, shown on the home
   page.
 - **FAQs** — questions & answers shown on the booking page.

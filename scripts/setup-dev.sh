@@ -72,6 +72,10 @@ echo "✓ MySQL is ready on 127.0.0.1:$PORT"
 
 npm run db:setup
 
+if [ -f scripts/setup.mjs ]; then
+  node scripts/setup.mjs
+fi
+
 echo "✓ Setup complete. The dev database keeps running in this terminal —"
 echo "  start the app in a second terminal with: npm run dev"
 wait "$DB_PID"

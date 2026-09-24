@@ -39,8 +39,10 @@ export async function saveServiceAction(
   const parsed = serviceSchema.safeParse({
     name: readString(formData, "name"),
     category: readString(formData, "category"),
+    subcategory: readString(formData, "subcategory"),
     shortDescription: readString(formData, "shortDescription"),
     description: readString(formData, "description"),
+    details: readString(formData, "details"),
     price: readString(formData, "price"),
     priceDisplay: readString(formData, "priceDisplay"),
     duration: readString(formData, "duration"),

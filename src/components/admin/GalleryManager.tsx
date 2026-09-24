@@ -7,6 +7,7 @@ import {
   saveGalleryItemAction,
   toggleGalleryItemAction,
 } from "@/lib/actions/gallery";
+import { isExternalVideoUrl } from "@/lib/video-url";
 import { SubmitButton } from "./SubmitButton";
 import { FieldError, FormBanner, fieldClass } from "./FormFeedback";
 import { ImageField } from "./ImageField";
@@ -24,6 +25,8 @@ export type AdminGalleryItem = {
   caption: string | null;
   altText: string | null;
   category: "Makeup" | "Bridal" | "Hair" | "Nails";
+  mediaType?: "image" | "video";
+  videoUrl?: string | null;
   active: boolean;
 };
 
@@ -37,13 +40,16 @@ export function GalleryManager({
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
+  const imageCount = items.filter((i) => i.mediaType !== "video").length;
+  const videoCount = items.filter((i) => i.mediaType === "video").length;
+
   return (
     <div className="a-card">
       <div className="a-card-head">
         <div>
-          <h2>Gallery images</h2>
+          <h2>Gallery items</h2>
           <p className="a-muted">
-            {items.length} image{items.length === 1 ? "" : "s"} · hidden images
+            {items.length} item{items.length === 1 ? "" : "s"} ({imageCount} image{imageCount === 1 ? "" : "s"}, {videoCount} video{videoCount === 1 ? "" : "s"}) · hidden items
             are not shown on the website
           </p>
         </div>
@@ -56,7 +62,7 @@ export function GalleryManager({
               setEditingId(null);
             }}
           >
-            + Upload image
+            + Add to gallery
           </button>
         )}
       </div>
@@ -69,93 +75,139 @@ export function GalleryManager({
 
       <div className="manager-list">
         {items.length === 0 && !adding && (
-          <p className="a-empty">No gallery images yet.</p>
+          <p className="a-empty">No gallery items yet.</p>
         )}
 
-        {items.map((item) => (
-          <div key={item.id}>
-            <ManagerRow
-              actions={
-                <>
-                  <form action={moveGalleryItemAction}>
-                    <input type="hidden" name="id" value={item.id} />
-                    <input type="hidden" name="direction" value="up" />
+        {items.map((item) => {
+          const isVideo = item.mediaType === "video";
+          return (
+            <div key={item.id}>
+              <ManagerRow
+                actions={
+                  <>
+                    <form action={moveGalleryItemAction}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <button
+                        type="submit"
+                        className="a-btn ghost small"
+                        aria-label={`Move ${item.title} up`}
+                        title="Move up"
+                      >
+                        ↑
+                      </button>
+                    </form>
+                    <form action={moveGalleryItemAction}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <button
+                        type="submit"
+                        className="a-btn ghost small"
+                        aria-label={`Move ${item.title} down`}
+                        title="Move down"
+                      >
+                        ↓
+                      </button>
+                    </form>
                     <button
-                      type="submit"
-                      className="a-btn ghost small"
-                      aria-label={`Move ${item.title} up`}
-                      title="Move up"
+                      type="button"
+                      className="a-btn small"
+                      onClick={() => {
+                        setEditingId(editingId === item.id ? null : item.id);
+                        setAdding(false);
+                      }}
                     >
-                      ↑
+                      {editingId === item.id ? "Close" : "Edit"}
                     </button>
-                  </form>
-                  <form action={moveGalleryItemAction}>
-                    <input type="hidden" name="id" value={item.id} />
-                    <input type="hidden" name="direction" value="down" />
-                    <button
-                      type="submit"
-                      className="a-btn ghost small"
-                      aria-label={`Move ${item.title} down`}
-                      title="Move down"
+                    <form action={toggleGalleryItemAction}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <button type="submit" className="a-btn ghost small">
+                        {item.active ? "Hide" : "Show"}
+                      </button>
+                    </form>
+                    <form action={deleteGalleryItemAction}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <SubmitButton
+                        className="a-btn danger small"
+                        pendingText="…"
+                        confirm={`Delete “${item.title}”? This cannot be undone.`}
+                      >
+                        Delete
+                      </SubmitButton>
+                    </form>
+                  </>
+                }
+              >
+                <span className="a-thumb" style={{ position: "relative" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={item.imageUrl} alt={item.altText || item.title} />
+                  {isVideo && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        bottom: 4,
+                        right: 4,
+                        background: "rgba(0,0,0,0.75)",
+                        color: "#fff",
+                        borderRadius: "50%",
+                        width: 18,
+                        height: 18,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 10,
+                      }}
+                      title="Video"
                     >
-                      ↓
-                    </button>
-                  </form>
-                  <button
-                    type="button"
-                    className="a-btn small"
-                    onClick={() => {
-                      setEditingId(editingId === item.id ? null : item.id);
-                      setAdding(false);
-                    }}
-                  >
-                    {editingId === item.id ? "Close" : "Edit"}
-                  </button>
-                  <form action={toggleGalleryItemAction}>
-                    <input type="hidden" name="id" value={item.id} />
-                    <button type="submit" className="a-btn ghost small">
-                      {item.active ? "Hide" : "Show"}
-                    </button>
-                  </form>
-                  <form action={deleteGalleryItemAction}>
-                    <input type="hidden" name="id" value={item.id} />
-                    <SubmitButton
-                      className="a-btn danger small"
-                      pendingText="…"
-                      confirm={`Delete “${item.title}”? This cannot be undone.`}
-                    >
-                      Delete
-                    </SubmitButton>
-                  </form>
-                </>
-              }
-            >
-              <span className="a-thumb">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.imageUrl} alt={item.altText || item.title} />
-              </span>
+                      ▶
+                    </span>
+                  )}
+                </span>
 
-              <div>
-                <strong>
-                  {item.title} <ActiveBadge active={item.active} />
-                </strong>
-                <div className="meta">
-                  {item.category}
-                  {item.caption ? ` · ${item.caption}` : ""}
+                <div>
+                  <strong>
+                    {item.title}{" "}
+                    {isVideo && (
+                      <span
+                        className="a-badge"
+                        style={{
+                          background: "#e8f0fe",
+                          color: "#1a73e8",
+                          marginRight: 6,
+                        }}
+                      >
+                        ▶ Video
+                      </span>
+                    )}
+                    <ActiveBadge active={item.active} />
+                  </strong>
+                  <div className="meta">
+                    {item.category}
+                    {item.caption ? ` · ${item.caption}` : ""}
+                    {isVideo && item.videoUrl ? (
+                      <span className="a-muted">
+                        {" "}
+                        ·{" "}
+                        {isExternalVideoUrl(item.videoUrl)
+                          ? "External link"
+                          : "Uploaded video"}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            </ManagerRow>
+              </ManagerRow>
 
-            {editingId === item.id && (
-              <InlineForm>
-                <GalleryItemForm
-                  initial={item}
-                  onDone={() => setEditingId(null)}
-                />
-              </InlineForm>
-            )}
-          </div>
-        ))}
+              {editingId === item.id && (
+                <InlineForm>
+                  <GalleryItemForm
+                    initial={item}
+                    onDone={() => setEditingId(null)}
+                  />
+                </InlineForm>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -169,6 +221,9 @@ function GalleryItemForm({
   onDone: () => void;
 }) {
   const [state, formAction] = useManagerForm(saveGalleryItemAction, onDone);
+  const [mediaType, setMediaType] = useState<"image" | "video">(
+    initial?.mediaType === "video" ? "video" : "image",
+  );
 
   return (
     <form
@@ -182,13 +237,108 @@ function GalleryItemForm({
 
       <FormBanner state={state} />
 
-      <ImageField
-        name="image"
-        label={initial ? "Replace image" : "Image"}
-        hint="JPG, PNG, or WEBP up to 5 MB."
-        state={state}
-        currentImageUrl={initial?.imageUrl ?? null}
-      />
+      {/* Media Type selection */}
+      <div className="a-field">
+        <label>Media type</label>
+        <div style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem" }}>
+          <label
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="radio"
+              name="mediaType"
+              value="image"
+              checked={mediaType === "image"}
+              onChange={() => setMediaType("image")}
+            />
+            <span>Photo / Image</span>
+          </label>
+          <label
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="radio"
+              name="mediaType"
+              value="video"
+              checked={mediaType === "video"}
+              onChange={() => setMediaType("video")}
+            />
+            <span>Video (Link or Upload)</span>
+          </label>
+        </div>
+      </div>
+
+      {mediaType === "image" ? (
+        <ImageField
+          name="image"
+          label={initial ? "Replace image" : "Image file"}
+          hint="JPG, PNG, or WEBP up to 5 MB."
+          state={state}
+          currentImageUrl={initial?.imageUrl ?? null}
+        />
+      ) : (
+        <div
+          style={{
+            background: "rgba(0,0,0,0.02)",
+            padding: "1rem",
+            borderRadius: 8,
+            marginBottom: "1rem",
+            border: "1px solid #e5dbcf",
+          }}
+        >
+          <div className="a-field">
+            <label htmlFor={`gl-video-url-${initial?.id ?? "new"}`}>
+              Video link (YouTube, Vimeo, or MP4)
+            </label>
+            <input
+              id={`gl-video-url-${initial?.id ?? "new"}`}
+              name="videoUrl"
+              defaultValue={initial?.videoUrl ?? ""}
+              placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..."
+              className={fieldClass("videoUrl", state)}
+            />
+            <span className="hint">
+              Paste a YouTube or Vimeo link, or leave blank to upload a video
+              file below.
+            </span>
+            <FieldError name="videoUrl" state={state} />
+          </div>
+
+          <div className="a-field" style={{ marginTop: "0.75rem" }}>
+            <label htmlFor={`gl-video-file-${initial?.id ?? "new"}`}>
+              Or upload video file (MP4, WebM, MOV up to 40 MB)
+            </label>
+            <input
+              id={`gl-video-file-${initial?.id ?? "new"}`}
+              type="file"
+              name="videoFile"
+              accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
+              className={fieldClass("videoFile", state)}
+            />
+            <FieldError name="videoFile" state={state} />
+          </div>
+
+          <div style={{ marginTop: "1rem" }}>
+            <ImageField
+              name="image"
+              label="Video thumbnail / poster image (optional)"
+              hint="JPG, PNG, or WEBP up to 5 MB. YouTube thumbnails are detected automatically if left blank."
+              state={state}
+              currentImageUrl={initial?.imageUrl ?? null}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="a-grid-2">
         <div className="a-field">
@@ -244,7 +394,7 @@ function GalleryItemForm({
             id={`gl-alt-${initial?.id ?? "new"}`}
             name="altText"
             defaultValue={initial?.altText ?? ""}
-            placeholder="Describe the image for accessibility & SEO"
+            placeholder="Describe for accessibility & SEO"
             className={fieldClass("altText", state)}
           />
           <FieldError name="altText" state={state} />
@@ -262,7 +412,11 @@ function GalleryItemForm({
 
       <div className="a-btn-row">
         <SubmitButton pendingText="Saving…">
-          {initial ? "Save changes" : "Upload image"}
+          {initial
+            ? "Save changes"
+            : mediaType === "video"
+            ? "Add video"
+            : "Upload image"}
         </SubmitButton>
         <button type="button" className="a-btn ghost" onClick={onDone}>
           Cancel

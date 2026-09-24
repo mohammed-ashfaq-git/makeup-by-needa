@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { navigation } from "@/lib/site-data";
 
 function isActivePath(pathname: string, href: string) {
@@ -23,6 +23,28 @@ export function SiteHeader({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const bookActive = isActivePath(pathname, "/book");
+
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <header className="site-header">
@@ -51,6 +73,13 @@ export function SiteHeader({
           <i />
           <i />
         </button>
+        {open && (
+          <div
+            className="mobile-nav-backdrop"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+        )}
         <nav className={open ? "nav nav-open" : "nav"} aria-label="Main navigation">
           {navigation.map((item) => {
             const active = isActivePath(pathname, item.href);

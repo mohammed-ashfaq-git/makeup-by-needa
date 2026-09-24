@@ -10,6 +10,7 @@ import { getDb } from "@/lib/db";
 import { siteImages } from "@/lib/db/schema";
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
+export const MAX_VIDEO_BYTES = 40 * 1024 * 1024; // 40 MB
 
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
@@ -80,6 +81,105 @@ export type ProcessedImage = {
   mimeType: string;
   filename: string;
 };
+
+export type ProcessedMedia = {
+  buffer: Buffer;
+  mimeType: string;
+  filename: string;
+  mediaType: "image" | "video";
+};
+
+/** Detects media type (image or video) from magic bytes, declared MIME, or extension. */
+function detectMediaType(
+  bytes: Uint8Array,
+  declaredType?: string,
+  fileName?: string,
+): { mediaType: "image" | "video"; mimeType: string } | null {
+  const imageType = detectImageType(bytes);
+  if (imageType && ALLOWED_MIME_TYPES.has(imageType)) {
+    return { mediaType: "image", mimeType: imageType };
+  }
+
+  // WebM: 1A 45 DF A3
+  if (
+    bytes.length >= 4 &&
+    bytes[0] === 0x1a &&
+    bytes[1] === 0x45 &&
+    bytes[2] === 0xdf &&
+    bytes[3] === 0xa3
+  ) {
+    return { mediaType: "video", mimeType: "video/webm" };
+  }
+
+  // MP4/MOV: 'ftyp', 'moov', 'mdat', 'wide' at offset 4
+  if (bytes.length >= 12) {
+    const boxType = String.fromCharCode(bytes[4], bytes[5], bytes[6], bytes[7]);
+    if (boxType === "ftyp" || boxType === "moov" || boxType === "mdat" || boxType === "wide") {
+      const brand = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+      if (brand === "qt  ") {
+        return { mediaType: "video", mimeType: "video/quicktime" };
+      }
+      return { mediaType: "video", mimeType: "video/mp4" };
+    }
+  }
+
+  // Fallback to declared type and extension for standard video formats
+  const ext = fileName?.split(".").pop()?.toLowerCase();
+  if (declaredType === "video/mp4" || ext === "mp4" || ext === "m4v") {
+    return { mediaType: "video", mimeType: "video/mp4" };
+  }
+  if (declaredType === "video/webm" || ext === "webm") {
+    return { mediaType: "video", mimeType: "video/webm" };
+  }
+  if (declaredType === "video/quicktime" || ext === "mov") {
+    return { mediaType: "video", mimeType: "video/quicktime" };
+  }
+
+  return null;
+}
+
+/**
+ * Validates an uploaded media file (image up to 5 MB or video up to 40 MB).
+ * Throws ImageValidationError with a client-safe message.
+ */
+export async function processMediaUpload(
+  file: unknown,
+  _fieldName = "media",
+): Promise<ProcessedMedia | null> {
+  if (file == null) return null;
+  if (!(file instanceof File) || file.size === 0) return null;
+
+  if (file.size > MAX_VIDEO_BYTES) {
+    throw new ImageValidationError(
+      "The file is too large. Please choose an image under 5 MB or video under 40 MB.",
+    );
+  }
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const detected = detectMediaType(buffer, file.type, file.name);
+
+  if (!detected) {
+    throw new ImageValidationError(
+      "Unsupported format. Please upload JPG, PNG, WEBP for images, or MP4, WebM, MOV for videos.",
+    );
+  }
+
+  if (detected.mediaType === "image" && file.size > MAX_IMAGE_BYTES) {
+    throw new ImageValidationError(
+      "The image is too large. Please choose a file under 5 MB.",
+    );
+  }
+
+  const originalName = file.name || "upload";
+  const safeName = originalName.replace(/[^\w.\- ]+/g, "_").slice(0, 120);
+
+  return {
+    buffer,
+    mimeType: detected.mimeType,
+    filename: safeName,
+    mediaType: detected.mediaType,
+  };
+}
 
 /**
  * Validates an uploaded file and returns its bytes plus the detected

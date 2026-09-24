@@ -30,12 +30,36 @@ export async function GET(
   }
 
   const body = new Uint8Array(image.data);
+  const totalLength = body.byteLength;
+  const rangeHeader = _request.headers.get("range");
+
+  if (rangeHeader && rangeHeader.startsWith("bytes=")) {
+    const parts = rangeHeader.replace(/bytes=/, "").split("-");
+    const start = Number.parseInt(parts[0], 10);
+    const end = parts[1] ? Number.parseInt(parts[1], 10) : totalLength - 1;
+
+    if (!Number.isNaN(start) && start >= 0 && start <= end && end < totalLength) {
+      const chunk = body.subarray(start, end + 1);
+      return new Response(chunk, {
+        status: 206,
+        headers: {
+          "Content-Range": `bytes ${start}-${end}/${totalLength}`,
+          "Accept-Ranges": "bytes",
+          "Content-Length": String(chunk.byteLength),
+          "Content-Type": image.mimeType,
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
+  }
 
   return new Response(body, {
     status: 200,
     headers: {
       "Content-Type": image.mimeType,
-      "Content-Length": String(body.byteLength),
+      "Content-Length": String(totalLength),
+      "Accept-Ranges": "bytes",
       "Cache-Control": "public, max-age=31536000, immutable",
       "X-Content-Type-Options": "nosniff",
     },

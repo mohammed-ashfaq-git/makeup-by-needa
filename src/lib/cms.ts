@@ -58,8 +58,10 @@ export type PublicService = {
   id: number;
   name: string;
   category: "Makeup" | "Hair" | "Nails";
+  subcategory: string | null;
   shortDescription: string | null;
   description: string;
+  details: string[];
   /** Display text, e.g. "$150", "From $120" or "Enquire for pricing". */
   priceDisplay: string;
   hasNumericPrice: boolean;
@@ -72,6 +74,8 @@ export type PublicGalleryItem = {
   id: number;
   title: string;
   category: "Makeup" | "Bridal" | "Hair" | "Nails";
+  mediaType: "image" | "video";
+  videoUrl: string | null;
   imageUrl: string;
   altText: string;
   caption: string | null;
@@ -210,8 +214,10 @@ export const getServices = cache(
         id: index + 1,
         name: service.name,
         category: service.category,
+        subcategory: null,
         shortDescription: null,
         description: service.description,
+        details: [],
         priceDisplay: service.price,
         hasNumericPrice: false,
         duration: service.duration,
@@ -226,8 +232,10 @@ export const getServices = cache(
         id: row.id,
         name: row.name,
         category: row.category,
+        subcategory: row.subcategory ?? null,
         shortDescription: row.shortDescription,
         description: row.description,
+        details: splitLines(row.details),
         priceDisplay:
           row.priceDisplay || formatPrice(row.price) || "Enquire for pricing",
         hasNumericPrice: row.price != null,
@@ -255,6 +263,8 @@ export const getGalleryItems = cache(async (): Promise<PublicGalleryItem[]> => {
       id: index + 1,
       title: item.title,
       category: item.category,
+      mediaType: "image" as const,
+      videoUrl: null,
       imageUrl: item.imageUrl,
       altText: item.altText,
       caption: null,
@@ -262,12 +272,14 @@ export const getGalleryItems = cache(async (): Promise<PublicGalleryItem[]> => {
   }
 
   return rows
-    .filter((row) => row.active && row.imageUrl)
+    .filter((row) => row.active && (row.imageUrl || row.videoUrl))
     .map((row) => ({
       id: row.id,
       title: row.title,
       category: row.category,
-      imageUrl: row.imageUrl,
+      mediaType: (row.mediaType ?? "image") as "image" | "video",
+      videoUrl: row.videoUrl ?? null,
+      imageUrl: row.imageUrl || "/images/makeup-by-needa-hero.jpg",
       altText: row.altText || row.title,
       caption: row.caption,
     }));

@@ -41,6 +41,8 @@ export default async function AdminGalleryPage() {
             caption: row.caption,
             altText: row.altText,
             category: row.category,
+            mediaType: (row.mediaType ?? "image") as "image" | "video",
+            videoUrl: row.videoUrl ?? null,
             active: row.active,
           }))}
         />

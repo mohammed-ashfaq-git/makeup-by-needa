@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { AddToEnquiryButton } from "@/components/service-cart";
 import { getServices, getSettings } from "@/lib/cms";
 import {
+  groupHairServicesBySubcategory,
   hairInfoBlocks,
   hairMenuBrand,
   hairServiceSections,
@@ -78,6 +80,7 @@ export default async function Services() {
     getSettings(),
   ]);
 
+  const hairSections = groupHairServicesBySubcategory(services);
   const makeupAndNails = categories.filter((category) => category !== "Hair");
 
   return (
@@ -160,7 +163,7 @@ export default async function Services() {
             </header>
 
             <nav className="hair-menu-toc" aria-label="Hairstyling categories">
-              {hairServiceSections.map((section) => (
+              {hairSections.map((section) => (
                 <a key={section.id} href={`#hair-${section.id}`}>
                   {section.emoji} {section.title}
                 </a>
@@ -172,7 +175,7 @@ export default async function Services() {
               ))}
             </nav>
 
-            {hairServiceSections.map((section) => (
+            {hairSections.map((section) => (
               <section
                 className="hair-section"
                 id={`hair-${section.id}`}
@@ -185,8 +188,22 @@ export default async function Services() {
 
                 {section.items.map((item) => (
                   <article className="hair-item" key={item.name}>
-                    <h4 className="hair-item-name">{item.name}</h4>
-                    <div className="hair-item-price">{item.price}</div>
+                    <div className="hair-item-row-main">
+                      <div className="hair-item-info">
+                        <h4 className="hair-item-name">{item.name}</h4>
+                        <div className="hair-item-price">{item.price}</div>
+                      </div>
+                      <div className="hair-item-btn-wrapper">
+                        <AddToEnquiryButton
+                          service={{
+                            name: item.name,
+                            category: "Hair",
+                            subcategory: section.title,
+                            price: item.price,
+                          }}
+                        />
+                      </div>
+                    </div>
 
                     {item.description ? (
                       <p className="hair-item-desc">{item.description}</p>
@@ -335,9 +352,28 @@ export default async function Services() {
                             {service.duration || "Duration on enquiry"}
                           </span>
 
-                          <Link href="/book">
-                            Enquire <b>→</b>
-                          </Link>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "0.5rem",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                              marginTop: "0.4rem",
+                            }}
+                          >
+                            <AddToEnquiryButton
+                              service={{
+                                id: service.id,
+                                name: service.name,
+                                category: service.category,
+                                subcategory: service.subcategory,
+                                price: service.priceDisplay,
+                              }}
+                            />
+                            <Link href="/book">
+                              Enquire <b>→</b>
+                            </Link>
+                          </div>
                         </div>
                       </article>
                     ))}
