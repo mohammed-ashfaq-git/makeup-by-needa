@@ -193,7 +193,7 @@ export function ServiceCartProvider({
   );
 }
 
-/** Floating bottom-left button matching Aura Beauty styling */
+/** Floating bottom-left button matching the site styling */
 function ServiceCartFloatingButton() {
   const { totalCount, toggleDrawer } = useServiceCart();
 
@@ -394,7 +394,7 @@ function ServiceCartDrawer() {
                     rows={2}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. Bridal party of 4, location in Cambridge, ceremony at 2 PM…"
+                    placeholder="e.g. Bridal party of 4, ceremony at 2 PM…"
                   />
                 </div>
               </div>

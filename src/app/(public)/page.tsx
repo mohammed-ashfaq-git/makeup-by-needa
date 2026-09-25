@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Gallery } from "@/components/gallery";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionHeading } from "@/components/section-heading";
-import { AddToEnquiryButton } from "@/components/service-cart";
+import { ServiceCarousel } from "@/components/service-carousel";
 import {
   getArtist,
   getGalleryItems,
@@ -81,13 +81,22 @@ export default async function Home() {
       getArtist(),
     ]);
 
-  // Featured services for the homepage grid; when none are flagged as
-  // featured, the first active services (in display order) are shown so the
-  // section never renders empty while services exist.
+  // Services for the homepage slideshow: featured services lead (in CMS
+  // display order), followed by the rest, so a flagged service always appears
+  // early. The carousel itself caps the list at 10 slides.
   const featuredServices = services.filter((service) => service.featured);
-  const featured = (
-    featuredServices.length > 0 ? featuredServices : services
-  ).slice(0, 4);
+  const otherServices = services.filter((service) => !service.featured);
+  const carouselServices = [...featuredServices, ...otherServices].map(
+    (service) => ({
+      id: service.id,
+      name: service.name,
+      category: service.category,
+      subcategory: service.subcategory,
+      description: service.shortDescription || service.description,
+      priceDisplay: service.priceDisplay,
+      imageUrl: service.imageUrl,
+    }),
+  );
 
   // Hero image: dedicated CMS hero, else the first active gallery image,
   // else the static file that ships with the site.
@@ -103,9 +112,6 @@ export default async function Home() {
     settings.heroImageMobileUrl ||
     (settings.heroImageUrl ? null : galleryItems[0]?.mobileImageUrl) ||
     null;
-
-  const getCategoryLabel = (category: string) =>
-    category === "Nails" ? "Nail Art" : category;
 
   return (
     <>
@@ -234,67 +240,10 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="service-grid">
-            {featured.map((service, index) => {
-              const categoryLabel = getCategoryLabel(service.category);
-
-              return (
-                <article className="service-card" key={service.id}>
-                  <Link
-                    href="/services"
-                    className="service-card-link"
-                    aria-label={`View ${service.name} service details`}
-                  >
-                    <div
-                      className={`service-visual service-visual-${index + 1}`}
-                    >
-                      {service.imageUrl ? (
-                        <Image
-                          src={service.imageUrl}
-                          alt={service.name}
-                          fill
-                          sizes="(max-width: 760px) 100vw, 33vw"
-                        />
-                      ) : (
-                        <span>{categoryLabel}</span>
-                      )}
-                    </div>
-
-                    <div className="service-card-copy">
-                      <span className="service-number">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-
-                      <p className="eyebrow">{categoryLabel}</p>
-
-                      <h3>{service.name}</h3>
-
-                      <p>{service.shortDescription || service.description}</p>
-                    </div>
-                  </Link>
-
-                  <div className="service-card-actions-row">
-                    <strong>{service.priceDisplay}</strong>
-
-                    <div className="service-card-btns">
-                      <AddToEnquiryButton
-                        service={{
-                          id: service.id,
-                          name: service.name,
-                          category: service.category,
-                          subcategory: service.subcategory,
-                          price: service.priceDisplay,
-                        }}
-                      />
-                      <Link href="/services" className="service-details-link">
-                        Details <b>→</b>
-                      </Link>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <ServiceCarousel
+            services={carouselServices}
+            label="Featured services"
+          />
         </div>
       </section>
       )}

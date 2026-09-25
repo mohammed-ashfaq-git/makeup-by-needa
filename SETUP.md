@@ -1,6 +1,6 @@
-# Aura Beauty — Setup & Deployment Guide
+# Makeup by Needa — Setup & Deployment Guide
 
-This repository powers **Aura Beauty** (Makeup by Needa), an editorial, database-driven beauty and hair artistry website with full CMS management, service enquiry cart with WhatsApp integration, and rich portfolio media (photos and videos).
+This repository powers **Makeup by Needa**, an editorial, database-driven beauty and hair artistry website with full CMS management, service enquiry cart with WhatsApp integration, and rich portfolio media (photos and videos).
 
 ---
 
@@ -13,7 +13,7 @@ npm install
 npm run setup:dev
 ```
 
-This starts a local private MySQL dev instance, creates `.env`, applies all migrations (including `0002_services_subcategory_details` and `0003_gallery_video`), seeds the database, and loads the Aura Beauty hair menu.
+This starts a local private MySQL dev instance, creates `.env`, applies all migrations (including `0002_services_subcategory_details` and `0003_gallery_video`), seeds the database, and loads the hairstyling hair menu.
 
 In a second terminal:
 ```bash

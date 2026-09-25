@@ -11,7 +11,7 @@ pages, all driven by the database:
 - **Service enquiry cart with WhatsApp** — visitors can add services to an
   in-browser cart, pick an event date, add notes, and generate a pre-formatted
   WhatsApp message with categorized line items.
-- **Full hairstyling price list** — categorized Aura Beauty menu with
+- **Full hairstyling price list** — categorized hairstyling menu with
   everyday, event, bridal, South Asian, extension, braid and party styling.
 - **Media gallery** — photo portfolio and video playback (YouTube, Vimeo,
   and uploaded MP4/WebM/MOV) with responsive video lightbox.

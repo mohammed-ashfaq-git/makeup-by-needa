@@ -54,7 +54,7 @@ export function saveCartToStorage(items: CartItem[]): void {
 
 /**
  * Builds a formatted WhatsApp enquiry message string matching the
- * Aura Beauty specification:
+ * Site specification:
  *
  * Hi {businessName}! ✨
  * I'd like to enquire about the following services:

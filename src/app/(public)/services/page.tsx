@@ -2,19 +2,22 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { AddToEnquiryButton } from "@/components/service-cart";
+import {
+  ServiceSearch,
+  type ServiceSearchItem,
+} from "@/components/service-search";
 import { getServices, getSettings } from "@/lib/cms";
 import {
   groupHairServicesBySubcategory,
   hairInfoBlocks,
   hairMenuBrand,
-  hairServiceSections,
 } from "@/lib/hair-services";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 import styles from "./services.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `Aura Beauty hairstyling services & price list — everyday hair, bridal, South Asian, event styling, extensions and more. Makeup and nail artistry also available.`;
+  const description = `${settings.businessName} hairstyling services & price list — everyday hair, bridal, South Asian, event styling, extensions and more. Makeup and nail artistry also available.`;
   const canonicalUrl = getAbsoluteSiteUrl("/services");
 
   return {
@@ -58,7 +61,7 @@ const categoryContent: Record<
     title: "Hair styling",
     eyebrow: "02 · Hair",
     intro:
-      "Elegant updos, romantic waves, and sleek finishes designed to complement your features, outfit, and occasion. See the full Aura Beauty hairstyling price list below.",
+      "Elegant updos, romantic waves, and sleek finishes designed to complement your features, outfit, and occasion. See the full hairstyling price list below.",
     visualLabel: "Hair styling",
     direction: "visual-right",
     enquiryLabel: "hair styling",
@@ -74,6 +77,11 @@ const categoryContent: Record<
   },
 };
 
+/** Anchor target for a CMS-driven category section. */
+const categorySectionId = (category: string) =>
+  `service-${category.toLowerCase()}`;
+
+
 export default async function Services() {
   const [services, settings] = await Promise.all([
     getServices(),
@@ -83,13 +91,52 @@ export default async function Services() {
   const hairSections = groupHairServicesBySubcategory(services);
   const makeupAndNails = categories.filter((category) => category !== "Hair");
 
+  // The price list is branded with the business name and location from the
+  // CMS, so the menu never falls back to another studio's copy.
+  const brandName = settings.businessName;
+  const brandInitials = brandName
+    .split(/\s+/)
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 3)
+    .toUpperCase();
+
+  /**
+   * Everything the search panel can find and jump to: the whole hairstyling
+   * price list plus every makeup and nail service in the CMS.
+   */
+  const searchItems: ServiceSearchItem[] = [
+    ...hairSections.flatMap((section) =>
+      section.items.map((item) => ({
+        id: `hair-${section.id}-${item.name}`,
+        name: item.name,
+        price: item.price,
+        description: item.description,
+        category: "Hair" as const,
+        group: section.title,
+        href: `#hair-${section.id}`,
+      })),
+    ),
+    ...services
+      .filter((service) => service.category !== "Hair")
+      .map((service) => ({
+        id: `service-${service.id}`,
+        name: service.name,
+        price: service.priceDisplay,
+        description: service.shortDescription || service.description,
+        category: service.category,
+        group: categoryContent[service.category].title,
+        href: `#${categorySectionId(service.category)}`,
+      })),
+  ];
+
   return (
     <div className={styles.scope}>
       <main>
         <section className="page-hero services-page-hero">
           <div className="shell">
             <div className="services-hero-copy">
-              <p className="eyebrow">Aura Beauty · Services & Price List</p>
+              <p className="eyebrow">{brandName} · Services &amp; Price List</p>
 
               <h1>
                 Hairstyling, makeup
@@ -98,7 +145,7 @@ export default async function Services() {
               </h1>
 
               <p className="lede">
-                Explore the full Aura Beauty hairstyling menu with transparent
+                Explore the full {brandName} hairstyling menu with transparent
                 pricing, plus makeup and nail artistry designed around your
                 occasion, personal style, and the finish you want to feel
                 confident in.
@@ -115,13 +162,13 @@ export default async function Services() {
               </div>
 
               <div className="services-hero-meta">
-                <span>{hairMenuBrand.location}</span>
+                <span>{settings.location}</span>
                 <span>{settings.hours || "By appointment"}</span>
               </div>
             </div>
 
             <div className="services-hero-number" aria-hidden="true">
-              <span>AB</span>
+              <span>{brandInitials}</span>
               <small>Hair · Makeup · Nails</small>
             </div>
           </div>
@@ -151,12 +198,15 @@ export default async function Services() {
           </div>
         </section>
 
-        {/* ---- Full Aura Beauty Hairstyling Price List ---- */}
+        {/* ---- Search across the whole menu ---- */}
+        <ServiceSearch items={searchItems} />
+
+        {/* ---- Full Hairstyling Price List ---- */}
         <section className="hair-menu" id="hair-menu">
           <div className="shell">
             <header className="hair-menu-header">
               <p className="eyebrow">Price List</p>
-              <p className="hair-menu-brand">{hairMenuBrand.name}</p>
+              <p className="hair-menu-brand">{brandName.toUpperCase()}</p>
               <h2>{hairMenuBrand.title}</h2>
               <p className="hair-menu-tagline">{hairMenuBrand.tagline}</p>
               <div className="hair-menu-divider" aria-hidden="true" />
@@ -253,10 +303,10 @@ export default async function Services() {
             </div>
 
             <div className="hair-menu-signoff">
-              <strong>{hairMenuBrand.name}</strong>
+              <strong>{brandName}</strong>
               <span className="disciplines">{hairMenuBrand.disciplines}</span>
               <em>{hairMenuBrand.closing}</em>
-              <span className="location">{hairMenuBrand.location}</span>
+              <span className="location">{settings.location}</span>
 
               <div className="hair-menu-cta">
                 <Link className="button" href="/book">
@@ -299,6 +349,7 @@ export default async function Services() {
           return (
             <section
               className={`service-feature ${content.direction}`}
+              id={categorySectionId(category)}
               key={category}
             >
               <div className="service-feature-background" />
