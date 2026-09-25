@@ -1,6 +1,9 @@
 /**
- * Aura Beauty — Hairstyling Services & Price List
+ * Hairstyling Services & Price List
  * Static curated menu shown on the public Services page.
+ *
+ * The menu is content only: the business name and location shown around it
+ * come from the CMS (`site_settings`), never from this file.
  */
 
 export type HairServiceItem = {
@@ -28,10 +31,8 @@ export type HairInfoBlock = {
 };
 
 export const hairMenuBrand = {
-  name: "AURA BEAUTY",
   title: "Hairstyling Services & Price List",
   tagline: "Confident You",
-  location: "Cambridge, Ontario",
   disciplines: "HAIR • MAKEUP • NAILS • BRIDAL",
   closing: "Beautifully Styled. Confidently You.",
 } as const;
@@ -368,7 +369,7 @@ export const hairInfoBlocks: HairInfoBlock[] = [
     id: "on-location",
     emoji: "🚗",
     title: "On-Location Hairstyling",
-    intro: "Aura Beauty provides mobile hairstyling for:",
+    intro: "Mobile hairstyling is available for:",
     bullets: [
       "Weddings",
       "Bridal parties",

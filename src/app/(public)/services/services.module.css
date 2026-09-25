@@ -500,3 +500,270 @@
     text-align: left;
   }
 }
+
+/* =========================================================
+   SERVICES — FULL-MENU SEARCH
+   ========================================================= */
+
+.scope :global(.service-search) {
+  position: relative;
+  padding: 88px 0 96px;
+  border-top: 1px solid var(--line);
+  background: linear-gradient(180deg, #fbf8f3 0%, #f4ece3 100%);
+}
+
+.scope :global(.service-search-header) {
+  max-width: 640px;
+}
+
+.scope :global(.service-search-header h2) {
+  margin: 8px 0 14px;
+}
+
+.scope :global(.service-search-lede) {
+  margin: 0;
+  color: #6c625b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.scope :global(.service-search-panel) {
+  max-width: 900px;
+  margin: 36px auto 0;
+  padding: 28px 30px 30px;
+  border: 1px solid rgba(119, 86, 68, 0.18);
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: var(--shadow-soft);
+}
+
+.scope :global(.service-search-field) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scope :global(.service-search-label) {
+  color: #7b675d;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.scope :global(.service-search-input) {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.scope :global(.service-search-input)::placeholder {
+  color: #b3a49a;
+}
+
+.scope :global(.service-search-input:focus) {
+  border-color: #a5786d;
+  box-shadow: 0 0 0 3px rgba(165, 120, 109, 0.16);
+  outline: none;
+}
+
+.scope :global(.service-search-chips) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.scope :global(.service-search-chip) {
+  padding: 8px 16px;
+  border: 1px solid rgba(119, 86, 68, 0.28);
+  border-radius: 99px;
+  background: transparent;
+  color: #6c4f42;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.scope :global(.service-search-chip:hover) {
+  border-color: #6c4f42;
+  background: rgba(108, 79, 66, 0.07);
+}
+
+.scope :global(.service-search-chip.is-active) {
+  border-color: #6c4f42;
+  background: #6c4f42;
+  color: #fff;
+}
+
+.scope :global(.service-search-chip:focus-visible),
+.scope :global(.service-search-clear:focus-visible),
+.scope :global(.service-search-details:focus-visible) {
+  outline: 2px solid #a5786d;
+  outline-offset: 3px;
+}
+
+.scope :global(.service-search-status) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.scope :global(.service-search-count) {
+  color: #594239;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.scope :global(.service-search-hint) {
+  color: #8d7c72;
+  font-size: 12px;
+}
+
+.scope :global(.service-search-clear) {
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid #76584a;
+  background: transparent;
+  color: #72523f;
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.scope :global(.service-search-clear:hover) {
+  border-color: #a5786d;
+  color: #a5786d;
+}
+
+.scope :global(.service-search-list) {
+  margin: 18px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.scope :global(.service-search-result) {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.scope :global(.service-search-result-name) {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.scope :global(.service-search-result-meta) {
+  margin: 0 0 6px;
+  color: #94756a;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.scope :global(.service-search-result-desc) {
+  max-width: 62ch;
+  margin: 0;
+  color: #71645c;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.scope :global(.service-search-result-side) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  text-align: right;
+  font-size: 10px;
+}
+
+.scope :global(.service-search-result-price) {
+  color: #594239;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.scope :global(.service-search-details) {
+  padding-bottom: 2px;
+  border-bottom: 1px solid #76584a;
+  color: #72523f;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: transform 0.25s ease;
+}
+
+.scope :global(.service-search-details) b {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.scope :global(.service-search-details:hover) b {
+  transform: translateX(3px);
+}
+
+.scope :global(.service-search-empty) {
+  margin-top: 18px;
+  padding: 26px 0 4px;
+  border-top: 1px solid var(--line);
+  color: #71645c;
+  text-align: center;
+}
+
+.scope :global(.service-search-empty) p {
+  margin: 0 0 14px;
+}
+
+/* Search results jump to a section, which must clear the sticky header. */
+.scope :global(.service-search),
+.scope :global(.hair-menu),
+.scope :global(.hair-section),
+.scope :global(.hair-info-card),
+.scope :global(.service-feature) {
+  scroll-margin-top: 96px;
+}
+
+@media (max-width: 760px) {
+  .scope :global(.service-search) {
+    padding: 64px 0 70px;
+  }
+
+  .scope :global(.service-search-panel) {
+    padding: 22px 18px 24px;
+  }
+
+  .scope :global(.service-search-result) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .scope :global(.service-search-result-side) {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

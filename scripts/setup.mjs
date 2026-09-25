@@ -1,5 +1,5 @@
 /**
- * Aura Beauty automated setup script.
+ * Makeup by Needa automated setup script.
  *
  * 1. Verifies database connection.
  * 2. Ensures hair services with subcategories and price list are seeded/upserted.
@@ -365,7 +365,7 @@ const HAIR_SECTIONS = [
 ];
 
 async function main() {
-  console.log("→ Running Aura Beauty setup…");
+  console.log("→ Running Makeup by Needa setup…");
 
   // Step 1: Run Drizzle migrations
   try {

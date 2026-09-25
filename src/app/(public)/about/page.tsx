@@ -7,7 +7,7 @@ import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `Meet Needa, founder & beauty artist at Aura Beauty — Confident You. 5+ years of professional makeup, hair, nail art and bridal beauty.`;
+  const description = `Meet Needa, founder & beauty artist at ${settings.businessName}. 5+ years of professional makeup, hair, nail art and bridal beauty.`;
   const canonicalUrl = getAbsoluteSiteUrl("/about");
 
   return {
@@ -37,7 +37,7 @@ const experienceItems = [
   "Creative Beauty Looks",
 ] as const;
 
-const auraExperienceItems = [
+const experienceHighlights = [
   "Personalized consultation",
   "Customized beauty services",
   "Professional techniques",
@@ -49,7 +49,14 @@ const auraExperienceItems = [
 ] as const;
 
 export default async function About() {
-  const artist = await getArtist();
+  const [artist, settings] = await Promise.all([getArtist(), getSettings()]);
+
+  const brandInitials = settings.businessName
+    .split(/\s+/)
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 3)
+    .toUpperCase();
 
   return (
     <main>
@@ -62,10 +69,10 @@ export default async function About() {
               <h1>
                 Needa —
                 <br />
-                <i>Founder &amp; Beauty Artist at AURA BEAUTY</i>
+                <i>Founder &amp; Beauty Artist at {settings.businessName}</i>
               </h1>
 
-              <p className="lede">Welcome to Aura Beauty — Confident You.</p>
+              <p className="lede">Welcome to {settings.businessName}.</p>
 
               <div className="about-hero-actions">
                 <Link className="button" href="/book">
@@ -79,7 +86,7 @@ export default async function About() {
             </div>
 
             <div className="about-hero-mark" aria-hidden="true">
-              <span>AB</span>
+              <span>{brandInitials}</span>
               <small>Makeup · Hair · Nails</small>
             </div>
           </div>
@@ -92,7 +99,7 @@ export default async function About() {
             <div className="portrait-photo">
               <Image
                 src={artist.photoUrl}
-                alt={`${artist.name}, beauty artist at Aura Beauty`}
+                alt={`${artist.name}, beauty artist at ${settings.businessName}`}
                 fill
                 sizes="(max-width: 760px) 92vw, 40vw"
                 priority
@@ -102,7 +109,7 @@ export default async function About() {
             <div className="portrait-placeholder" aria-hidden="true">
               <div className="portrait-placeholder-inner">
                 <strong className="portrait-monogram">N</strong>
-                <small>Aura Beauty · Makeup · Hair · Nails</small>
+                <small>{settings.businessName} · Makeup · Hair · Nails</small>
               </div>
             </div>
           )}
@@ -110,7 +117,8 @@ export default async function About() {
           <div className="about-story-content">
             <div className="about-copy">
               <p>
-                I’m Needa, the founder and beauty artist behind Aura Beauty.
+                I’m Needa, the founder and beauty artist behind{" "}
+                {settings.businessName}.
                 With 5+ years of experience in the beauty industry, my passion
                 is creating personalized beauty looks that help every client
                 feel confident, comfortable and beautiful.
@@ -232,14 +240,18 @@ export default async function About() {
 
       <section className="section cream about-aura-section">
         <div className="shell">
-          <p className="eyebrow">The Aura Beauty Experience</p>
+          <p className="eyebrow">The {settings.businessName} Experience</p>
 
-          <h2 className="about-aura-title">When you book with Aura Beauty</h2>
+          <h2 className="about-aura-title">
+            When you book with {settings.businessName}
+          </h2>
 
-          <p className="lede">When you book with Aura Beauty, you can expect:</p>
+          <p className="lede">
+            When you book with {settings.businessName}, you can expect:
+          </p>
 
           <ul className="about-bullets about-bullets-grid about-bullets-sparkle">
-            {auraExperienceItems.map((item) => (
+            {experienceHighlights.map((item) => (
               <li key={item}>
                 <span className="about-sparkle" aria-hidden="true">
                   ✨
@@ -268,7 +280,7 @@ export default async function About() {
           </h2>
 
           <p className="lede">
-            At Aura Beauty, every service is created with one goal:
+            At {settings.businessName}, every service is created with one goal:
           </p>
 
           <p className="about-promise">
@@ -277,11 +289,11 @@ export default async function About() {
 
           <p className="copy">
             Thank you for trusting me with your special moments. I look forward
-            to welcoming you to Aura Beauty.
+            to welcoming you to {settings.businessName}.
           </p>
 
           <p className="about-signoff">
-            <strong>AURA BEAUTY</strong>
+            <strong>{settings.businessName.toUpperCase()}</strong>
             <span>Makeup • Hair • Nails • Bridal Beauty</span>
             <em>Confident You.</em>
           </p>
