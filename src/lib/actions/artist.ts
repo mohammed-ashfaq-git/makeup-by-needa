@@ -60,7 +60,7 @@ export async function saveArtistAction(
   try {
     const file = readOptionalFile(formData, "photo");
     if (file) {
-      const processed = await processImageUpload(file, "photo");
+      const processed = await processImageUpload(file);
       if (processed) photoUrl = await storeImage(processed);
     } else if (removePhoto) {
       photoUrl = null;

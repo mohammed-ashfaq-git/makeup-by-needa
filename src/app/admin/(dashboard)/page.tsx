@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { desc, eq, sql } from "drizzle-orm";
 import { DbError } from "@/components/admin/DbError";
-import { getDb, queryWithFallback } from "@/lib/db";
+import { queryWithFallback } from "@/lib/db";
 import {
   enquiries,
   galleryItems,

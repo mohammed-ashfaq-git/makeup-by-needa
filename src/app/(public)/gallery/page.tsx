@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Gallery } from "@/components/gallery";
 import { getGalleryItems, getSettings } from "@/lib/cms";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";

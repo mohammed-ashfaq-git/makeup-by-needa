@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
-import { getDb, queryWithFallback } from "@/lib/db";
+import { queryWithFallback } from "@/lib/db";
 import { enquiries } from "@/lib/db/schema";
 import { enquirySubmissionSchema } from "@/lib/schemas";
 import { getSettings } from "@/lib/cms";

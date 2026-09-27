@@ -84,10 +84,7 @@ export async function saveGalleryItemAction(
     let currentVideo: string | null | undefined = undefined;
 
     if (mobileImageFile) {
-      const processedMobileImg = await processImageUpload(
-        mobileImageFile,
-        "mobileImage",
-      );
+      const processedMobileImg = await processImageUpload(mobileImageFile);
       if (processedMobileImg) {
         currentMobileImage = await storeImage(processedMobileImg);
       }
@@ -115,7 +112,7 @@ export async function saveGalleryItemAction(
 
       if (mediaType === "video") {
         if (videoFile) {
-          const processedVid = await processMediaUpload(videoFile, "videoFile");
+          const processedVid = await processMediaUpload(videoFile);
           if (processedVid) {
             currentVideo = await storeImage(processedVid);
           }
@@ -124,7 +121,7 @@ export async function saveGalleryItemAction(
         }
 
         if (imageFile) {
-          const processedImg = await processImageUpload(imageFile, "image");
+          const processedImg = await processImageUpload(imageFile);
           if (processedImg) currentImage = await storeImage(processedImg);
         } else if (!previousImage && currentVideo) {
           const ytThumb = getYouTubeThumbnailUrl(currentVideo);
@@ -134,7 +131,7 @@ export async function saveGalleryItemAction(
         // Image item
         currentVideo = null;
         if (imageFile) {
-          const processedImg = await processImageUpload(imageFile, "image");
+          const processedImg = await processImageUpload(imageFile);
           if (processedImg) currentImage = await storeImage(processedImg);
         }
       }
@@ -159,7 +156,7 @@ export async function saveGalleryItemAction(
       // New item
       if (mediaType === "video") {
         if (videoFile) {
-          const processedVid = await processMediaUpload(videoFile, "videoFile");
+          const processedVid = await processMediaUpload(videoFile);
           if (processedVid) {
             currentVideo = await storeImage(processedVid);
           }
@@ -179,7 +176,7 @@ export async function saveGalleryItemAction(
         }
 
         if (imageFile) {
-          const processedImg = await processImageUpload(imageFile, "image");
+          const processedImg = await processImageUpload(imageFile);
           if (processedImg) currentImage = await storeImage(processedImg);
         } else {
           const ytThumb = getYouTubeThumbnailUrl(currentVideo);
@@ -195,7 +192,7 @@ export async function saveGalleryItemAction(
           };
         }
 
-        const processedImg = await processImageUpload(imageFile, "image");
+        const processedImg = await processImageUpload(imageFile);
         if (!processedImg) {
           return {
             ok: false,
