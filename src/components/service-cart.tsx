@@ -68,8 +68,11 @@ export function ServiceCartProvider({
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
-  // Load from localStorage on client mount
+  // Load from localStorage after mount. This can't be a lazy useState
+  // initialiser: the server has no localStorage, so reading it during the first
+  // render would cause a hydration mismatch. One extra render on mount is intended.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(loadCartFromStorage());
     setHydrated(true);
   }, []);

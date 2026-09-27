@@ -44,7 +44,6 @@ interface SubmitResponse {
 export function EnquiryForm({
   serviceOptions,
   whatsappNumber,
-  whatsappMessage,
   artistName,
 }: {
   serviceOptions: EnquiryFormService[];

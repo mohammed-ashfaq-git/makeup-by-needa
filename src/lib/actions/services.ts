@@ -69,7 +69,7 @@ export async function saveServiceAction(
   try {
     const file = readOptionalFile(formData, "image");
     if (file) {
-      const processed = await processImageUpload(file, "image");
+      const processed = await processImageUpload(file);
       if (processed) imageUrl = await storeImage(processed);
     } else if (removeImage) {
       imageUrl = null;

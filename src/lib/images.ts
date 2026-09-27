@@ -144,7 +144,6 @@ function detectMediaType(
  */
 export async function processMediaUpload(
   file: unknown,
-  _fieldName = "media",
 ): Promise<ProcessedMedia | null> {
   if (file == null) return null;
   if (!(file instanceof File) || file.size === 0) return null;
@@ -187,7 +186,6 @@ export async function processMediaUpload(
  */
 export async function processImageUpload(
   file: unknown,
-  fieldName = "image",
 ): Promise<ProcessedImage | null> {
   if (file == null) return null;
   if (!(file instanceof File) || file.size === 0) return null;

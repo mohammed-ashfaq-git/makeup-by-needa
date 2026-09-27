@@ -74,7 +74,7 @@ export async function saveSettingsAction(
   try {
     const logoFile = readOptionalFile(formData, "logo");
     if (logoFile) {
-      const processed = await processImageUpload(logoFile, "logo");
+      const processed = await processImageUpload(logoFile);
       if (processed) logoUrl = await storeImage(processed);
     } else if (removeLogo) {
       logoUrl = null;
@@ -82,7 +82,7 @@ export async function saveSettingsAction(
 
     const heroFile = readOptionalFile(formData, "hero");
     if (heroFile) {
-      const processed = await processImageUpload(heroFile, "hero");
+      const processed = await processImageUpload(heroFile);
       if (processed) heroImageUrl = await storeImage(processed);
     } else if (removeHero) {
       heroImageUrl = null;
@@ -90,7 +90,7 @@ export async function saveSettingsAction(
 
     const heroMobileFile = readOptionalFile(formData, "heroMobile");
     if (heroMobileFile) {
-      const processed = await processImageUpload(heroMobileFile, "heroMobile");
+      const processed = await processImageUpload(heroMobileFile);
       if (processed) heroImageMobileUrl = await storeImage(processed);
     } else if (removeHeroMobile) {
       heroImageMobileUrl = null;
