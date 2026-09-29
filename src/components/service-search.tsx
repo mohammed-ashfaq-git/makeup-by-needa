@@ -72,7 +72,7 @@ export function ServiceSearch({
           <h2>Search the price list.</h2>
 
           <p className="service-search-lede">
-            Every nail service in one list. Search by name, or filter by
+            Nail, makeup and hair services in one list. Search by name, or filter by
             section and jump straight to the details.
           </p>
         </header>
