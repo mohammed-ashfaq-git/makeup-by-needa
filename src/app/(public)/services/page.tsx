@@ -52,11 +52,6 @@ export default async function Services() {
     .slice(0, 3)
     .toUpperCase();
 
-  const serviceCount = nailServiceSections.reduce(
-    (total, section) => total + section.items.length,
-    0,
-  );
-
   /** Everything the search panel can find and jump to. */
   const searchItems: ServiceSearchItem[] = [...nailServiceSections.flatMap(
     (section) =>
@@ -82,16 +77,15 @@ export default async function Services() {
               <p className="eyebrow">{brandName} · Services &amp; Price List</p>
 
               <h1>
-                Premium nail services
+                Beauty services
                 <br />
                 &amp; <i>price list.</i>
               </h1>
 
               <p className="lede">
-                Gel polish manicures, nail extensions, nail art, premium
-                finishes, charms and signature sets — {serviceCount} services
-                with transparent pricing, each tailored to your preferred
-                length, shape and style.
+                Explore makeup, bridal, hair and nail services with transparent
+                pricing. From everyday glam to your wedding day, find a look
+                that feels like you.
               </p>
 
               <div className="services-hero-actions">
@@ -121,6 +115,46 @@ export default async function Services() {
           items={searchItems}
           groups={[...nailServiceSections.map((section) => section.title), ...auraSections.map((section) => section.title)]}
         />
+
+        <section className="nail-menu" id="aura-menu">
+          <div className="shell">
+            <header className="nail-menu-header">
+              <p className="eyebrow">Aura Beauty · Confident You</p>
+              <p className="nail-menu-brand">MAKEUP • NAILS • HAIR • BRIDAL</p>
+              <h2>Makeup, hair &amp; bridal services</h2>
+              <p>Two supplied makeup menus are shown separately where prices differ. Please confirm your final quote when booking.</p>
+            </header>
+            <nav className="nail-menu-toc" aria-label="Makeup and hair service categories">
+              {auraSections.map((section) => <a key={section.id} href={`#aura-${section.id}`}>{section.emoji} {section.title}</a>)}
+              <a href="#aura-location">On-location</a><a href="#aura-booking">Booking information</a>
+            </nav>
+            {auraSections.map((section) => (
+              <section className="nail-section" id={`aura-${section.id}`} key={section.id}>
+                <div className="nail-section-heading"><span aria-hidden="true">{section.emoji}</span><h3>{section.title}</h3></div>
+                {section.items.map((item, index) => (
+                  <article className="nail-item" key={`${item.name}-${index}`}>
+                    <div className="nail-item-row-main">
+                      <div className="nail-item-info"><h4 className="nail-item-name">{item.name}</h4><div className="nail-item-price">{item.price}</div></div>
+                      <div className="nail-item-btn-wrapper"><AddToEnquiryButton service={{ name: item.name, category: section.category, subcategory: section.title, price: item.price }} /></div>
+                    </div>
+                    {item.description && <p className="nail-item-desc">{item.description}</p>}
+                    {item.details && <ul className={styles.details}>{item.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>}
+                  </article>
+                ))}
+                {section.note && <p className="nail-section-note">{section.note}</p>}
+              </section>
+            ))}
+            <section className="nail-section" id="aura-location">
+              <div className="nail-section-heading"><span aria-hidden="true">🚗</span><h3>On-Location Makeup</h3></div>
+              <p>Aura Beauty offers mobile makeup services for weddings, bridal parties, events, photoshoots, fashion shows and private celebrations. Travel fees apply depending on location.</p>
+              <p>On-location bridal bookings can include setup, professional lighting requirements and a customized service timeline.</p>
+            </section>
+            <section className="nail-section" id="aura-booking">
+              <div className="nail-section-heading"><span aria-hidden="true">📌</span><h3>Booking Information</h3></div>
+              <ul className={styles.details}>{bookingNotes.map((note) => <li key={note}>{note}</li>)}</ul>
+            </section>
+          </div>
+        </section>
 
         {/* ---- Premium Nail Services & Price List ---- */}
         <section className="nail-menu" id="nail-menu">
@@ -197,46 +231,6 @@ export default async function Services() {
           </div>
         </section>
 
-        <section className="nail-menu" id="aura-menu">
-          <div className="shell">
-            <header className="nail-menu-header">
-              <p className="eyebrow">Aura Beauty · Confident You</p>
-              <p className="nail-menu-brand">MAKEUP • NAILS • HAIR • BRIDAL</p>
-              <h2>Makeup, hair &amp; bridal services</h2>
-              <p>Two supplied makeup menus are shown separately where prices differ. Please confirm your final quote when booking.</p>
-            </header>
-            <nav className="nail-menu-toc" aria-label="Makeup and hair service categories">
-              {auraSections.map((section) => <a key={section.id} href={`#aura-${section.id}`}>{section.emoji} {section.title}</a>)}
-              <a href="#aura-location">On-location</a><a href="#aura-booking">Booking information</a>
-            </nav>
-            {auraSections.map((section) => (
-              <section className="nail-section" id={`aura-${section.id}`} key={section.id}>
-                <div className="nail-section-heading"><span aria-hidden="true">{section.emoji}</span><h3>{section.title}</h3></div>
-                {section.items.map((item, index) => (
-                  <article className="nail-item" key={`${item.name}-${index}`}>
-                    <div className="nail-item-row-main">
-                      <div className="nail-item-info"><h4 className="nail-item-name">{item.name}</h4><div className="nail-item-price">{item.price}</div></div>
-                      <div className="nail-item-btn-wrapper"><AddToEnquiryButton service={{ name: item.name, category: section.category, subcategory: section.title, price: item.price }} /></div>
-                    </div>
-                    {item.description && <p className="nail-item-desc">{item.description}</p>}
-                    {item.details && <ul className={styles.details}>{item.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>}
-                  </article>
-                ))}
-                {section.note && <p className="nail-section-note">{section.note}</p>}
-              </section>
-            ))}
-            <section className="nail-section" id="aura-location">
-              <div className="nail-section-heading"><span aria-hidden="true">🚗</span><h3>On-Location Makeup</h3></div>
-              <p>Aura Beauty offers mobile makeup services for weddings, bridal parties, events, photoshoots, fashion shows and private celebrations. Travel fees apply depending on location.</p>
-              <p>On-location bridal bookings can include setup, professional lighting requirements and a customized service timeline.</p>
-            </section>
-            <section className="nail-section" id="aura-booking">
-              <div className="nail-section-heading"><span aria-hidden="true">📌</span><h3>Booking Information</h3></div>
-              <ul className={styles.details}>{bookingNotes.map((note) => <li key={note}>{note}</li>)}</ul>
-            </section>
-          </div>
-        </section>
-
         <section className="services-closing">
           <div className="shell">
             <div className="services-closing-inner">
@@ -246,15 +240,15 @@ export default async function Services() {
                 <h2>
                   Ready to book
                   <br />
-                  your <i>set?</i>
+                  your <i>look?</i>
                 </h2>
               </div>
 
               <div className="services-closing-copy">
                 <p>
-                  Tell me which service you would like, your preferred length
-                  and shape, and any inspiration you have in mind. Timing,
-                  details and final pricing can then be confirmed together —
+                  Tell me which service you would like and any inspiration you
+                  have in mind. Timing, details and final pricing can then
+                  be confirmed together —
                   including the $10 booking deposit to secure your appointment.
                 </p>
 
