@@ -230,7 +230,7 @@ function TestimonialForm({
             id={`t-service-${initial?.id ?? "new"}`}
             name="service"
             defaultValue={initial?.service ?? ""}
-            placeholder="Optional — e.g. Bridal Makeup"
+            placeholder="Optional — e.g. Gel-X Extensions"
             className={fieldClass("service", state)}
           />
           <FieldError name="service" state={state} />

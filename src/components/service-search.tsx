@@ -7,54 +7,52 @@ export type ServiceSearchItem = {
   name: string;
   price: string;
   description?: string;
-  /** Chip grouping. */
-  category: "Makeup" | "Hair" | "Nails";
-  /** Section the service is listed under, e.g. "Bridal Hair Services". */
+  /** Price-list section the service is listed under, e.g. "Nail Extensions". */
   group: string;
-  /** Anchor of the section this service is listed in, e.g. "#hair-bridal". */
+  /** Anchor of that section, e.g. "#nail-extensions". */
   href: string;
 };
 
-const CATEGORY_ORDER = ["Makeup", "Hair", "Nails"] as const;
-type Chip = "All" | (typeof CATEGORY_ORDER)[number];
+const ALL = "All";
 
 /**
- * Search across the whole services page: every hairstyling price-list entry
- * plus each makeup and nail service the CMS provides.
+ * Search across the nail price list. The chips are the price-list sections
+ * themselves (passed in `groups`), so they can never drift from the menu.
  *
  * The result list only appears once a filter is active — until then the page
  * below is the menu, and this panel is a fast way to find one entry and jump
  * to it.
  */
-export function ServiceSearch({ items }: { items: ServiceSearchItem[] }) {
+export function ServiceSearch({
+  items,
+  groups,
+}: {
+  items: ServiceSearchItem[];
+  /** Section titles in menu order; each becomes a filter chip. */
+  groups: string[];
+}) {
   const [query, setQuery] = useState("");
-  const [chip, setChip] = useState<Chip>("All");
+  const [chip, setChip] = useState<string>(ALL);
 
-  const chips = useMemo<Chip[]>(
-    () => [
-      "All",
-      ...CATEGORY_ORDER.filter((category) =>
-        items.some((item) => item.category === category),
-      ),
-    ],
-    [items],
+  const chips = useMemo(
+    () => [ALL, ...groups.filter((group) => items.some((item) => item.group === group))],
+    [groups, items],
   );
 
   const trimmedQuery = query.trim().toLowerCase();
-  const filtering = trimmedQuery !== "" || chip !== "All";
+  const filtering = trimmedQuery !== "" || chip !== ALL;
 
   const results = useMemo(() => {
-    if (!trimmedQuery && chip === "All") return [];
+    if (!trimmedQuery && chip === ALL) return [];
     const needle = trimmedQuery;
 
     return items.filter((item) => {
-      if (chip !== "All" && item.category !== chip) return false;
+      if (chip !== ALL && item.group !== chip) return false;
       if (!needle) return true;
 
       return (
         item.name.toLowerCase().includes(needle) ||
         item.group.toLowerCase().includes(needle) ||
-        item.category.toLowerCase().includes(needle) ||
         (item.description?.toLowerCase().includes(needle) ?? false)
       );
     });
@@ -62,7 +60,7 @@ export function ServiceSearch({ items }: { items: ServiceSearchItem[] }) {
 
   const clear = () => {
     setQuery("");
-    setChip("All");
+    setChip(ALL);
   };
 
   return (
@@ -71,12 +69,11 @@ export function ServiceSearch({ items }: { items: ServiceSearchItem[] }) {
         <header className="service-search-header">
           <p className="eyebrow">Find your service</p>
 
-          <h2>Search the full menu.</h2>
+          <h2>Search the price list.</h2>
 
           <p className="service-search-lede">
-            Every hairstyling price-list entry and each makeup or nail service,
-            in one list. Search by name, or filter by category and jump straight
-            to the details.
+            Every nail service in one list. Search by name, or filter by
+            section and jump straight to the details.
           </p>
         </header>
 
@@ -92,13 +89,13 @@ export function ServiceSearch({ items }: { items: ServiceSearchItem[] }) {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Try “bridal”, “blowout”, “nail art”…"
+              placeholder="Try “chrome”, “Gel-X”, “French”…"
               autoComplete="off"
               aria-controls="service-search-results"
             />
           </div>
 
-          <div className="service-search-chips" role="group" aria-label="Filter by category">
+          <div className="service-search-chips" role="group" aria-label="Filter by section">
             {chips.map((option) => (
               <button
                 key={option}
@@ -131,7 +128,7 @@ export function ServiceSearch({ items }: { items: ServiceSearchItem[] }) {
               </>
             ) : (
               <span className="service-search-hint">
-                {items.length} services in the full menu — start typing to filter.
+                {items.length} services in the price list — start typing to filter.
               </span>
             )}
           </div>
@@ -145,7 +142,7 @@ export function ServiceSearch({ items }: { items: ServiceSearchItem[] }) {
               <div className="service-search-empty">
                 <p>
                   No services match that search. Try another word, or clear the
-                  filters to see the whole menu.
+                  filters to see the whole price list.
                 </p>
 
                 <button
@@ -166,7 +163,7 @@ export function ServiceSearch({ items }: { items: ServiceSearchItem[] }) {
                       <h3 className="service-search-result-name">{item.name}</h3>
 
                       <p className="service-search-result-meta">
-                        {item.group} · {item.category === "Nails" ? "Nail Art" : item.category}
+                        {item.group}
                       </p>
 
                       {item.description ? (

@@ -3,7 +3,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { PageTransition } from "@/components/motion";
 import { ServiceCartProvider } from "@/components/service-cart";
-import { getServices, getSettings } from "@/lib/cms";
+import { getSettings } from "@/lib/cms";
+import { nailSectionHref, nailServiceSections } from "@/lib/nail-services";
 
 /**
  * Public website shell. Content is rendered per-request so CMS changes
@@ -15,15 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function PublicLayout({
   children,
 }: LayoutProps<"/">) {
-  const [settings, services] = await Promise.all([
-    getSettings(),
-    getServices(),
-  ]);
-
-  const flagged = services.filter((service) => service.featured);
-  const featuredServices = (
-    flagged.length > 0 ? flagged : services
-  ).slice(0, 6);
+  const settings = await getSettings();
 
   return (
     <ServiceCartProvider
@@ -39,9 +32,9 @@ export default async function PublicLayout({
       </main>
       <SiteFooter
         settings={settings}
-        featuredServices={featuredServices.map((service) => ({
-          name: service.name,
-          category: service.category,
+        serviceLinks={nailServiceSections.map((section) => ({
+          name: section.title,
+          href: nailSectionHref(section),
         }))}
       />
       <WhatsAppButton

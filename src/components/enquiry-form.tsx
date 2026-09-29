@@ -3,9 +3,10 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
-export type EnquiryFormService = {
-  name: string;
-  category: "Makeup" | "Hair" | "Nails";
+/** One <optgroup> of the service dropdown: a section of the price list. */
+export type EnquiryFormServiceGroup = {
+  label: string;
+  services: string[];
 };
 
 interface FormFields {
@@ -42,11 +43,11 @@ interface SubmitResponse {
 }
 
 export function EnquiryForm({
-  serviceOptions,
+  serviceGroups,
   whatsappNumber,
   artistName,
 }: {
-  serviceOptions: EnquiryFormService[];
+  serviceGroups: EnquiryFormServiceGroup[];
   whatsappNumber: string;
   whatsappMessage: string;
   artistName: string;
@@ -57,10 +58,6 @@ export function EnquiryForm({
   const [responseInfo, setResponseInfo] = useState<SubmitResponse | null>(null);
 
   // Group services by category for clean, intuitive dropdown navigation
-  const makeupServices = serviceOptions.filter((s) => s.category === "Makeup");
-  const hairServices = serviceOptions.filter((s) => s.category === "Hair");
-  const nailServices = serviceOptions.filter((s) => s.category === "Nails");
-
   // Apply today's date directly to the date input after it mounts.
   // This avoids server/client hydration differences without requiring
   // a state update inside an effect.
@@ -383,7 +380,7 @@ export function EnquiryForm({
         </label>
 
         <label htmlFor="enquiry-service">
-          Service / Event type{" "}
+          Service{" "}
           <span className="req" aria-hidden="true">
             *
           </span>
@@ -397,31 +394,17 @@ export function EnquiryForm({
             aria-invalid={Boolean(fieldErrors.service)}
             aria-describedby={fieldErrors.service ? "service-error" : undefined}
           >
-            <option value="">Select a service category</option>
+            <option value="">Select a service</option>
 
-            <optgroup label="── Makeup Artistry ──">
-              {makeupServices.map((x) => (
-                <option key={x.name} value={x.name}>
-                  {x.name}
-                </option>
-              ))}
-            </optgroup>
-
-            <optgroup label="── Hair Styling ──">
-              {hairServices.map((x) => (
-                <option key={x.name} value={x.name}>
-                  {x.name}
-                </option>
-              ))}
-            </optgroup>
-
-            <optgroup label="── Nail Art ──">
-              {nailServices.map((x) => (
-                <option key={x.name} value={x.name}>
-                  {x.name}
-                </option>
-              ))}
-            </optgroup>
+            {serviceGroups.map((group) => (
+              <optgroup key={group.label} label={`── ${group.label} ──`}>
+                {group.services.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
           </select>
 
           {fieldErrors.service && (
@@ -432,7 +415,7 @@ export function EnquiryForm({
         </label>
 
         <label htmlFor="enquiry-time">
-          Preferred ready-by time
+          Preferred appointment time
 
           <input
             id="enquiry-time"
@@ -472,7 +455,7 @@ export function EnquiryForm({
           rows={4}
           value={fields.message}
           onChange={handleChange}
-          placeholder="Please share occasion type, preferred finish/style, bridal requirements, or any questions."
+          placeholder="Please share your preferred length, shape, colours, design inspiration, or any questions."
           aria-invalid={Boolean(fieldErrors.message)}
           aria-describedby={fieldErrors.message ? "message-error" : undefined}
         />

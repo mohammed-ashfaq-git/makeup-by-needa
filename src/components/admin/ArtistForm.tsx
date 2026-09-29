@@ -75,7 +75,7 @@ export function ArtistForm({ initial }: { initial: ArtistFormValues }) {
             id="a-experience"
             name="experience"
             defaultValue={initial.experience ?? ""}
-            placeholder="e.g. 6+ years of bridal & event artistry"
+            placeholder="e.g. 5+ years of nail and beauty experience"
             className={fieldClass("experience", state)}
           />
           <FieldError name="experience" state={state} />
@@ -122,7 +122,7 @@ export function ArtistForm({ initial }: { initial: ArtistFormValues }) {
             name="specialties"
             defaultValue={initial.specialties ?? ""}
             rows={4}
-            placeholder={"Bridal makeup\nSoft glam\nNail art"}
+            placeholder={"Gel-X extensions\nChrome & cat eye\nCustom nail designs"}
             className={fieldClass("specialties", state, "a-textarea")}
           />
           <span className="hint">One per line.</span>

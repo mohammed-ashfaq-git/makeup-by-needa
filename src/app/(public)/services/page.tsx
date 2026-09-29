@@ -1,23 +1,22 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { AddToEnquiryButton } from "@/components/service-cart";
 import {
   ServiceSearch,
   type ServiceSearchItem,
 } from "@/components/service-search";
-import { getServices, getSettings } from "@/lib/cms";
+import { getSettings } from "@/lib/cms";
 import {
-  groupHairServicesBySubcategory,
-  hairInfoBlocks,
-  hairMenuBrand,
-} from "@/lib/hair-services";
+  nailMenu,
+  nailSectionId,
+  nailServiceSections,
+} from "@/lib/nail-services";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 import styles from "./services.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `${settings.businessName} hairstyling services & price list — everyday hair, bridal, South Asian, event styling, extensions and more. Makeup and nail artistry also available.`;
+  const description = `${settings.businessName} premium nail services & price list — gel polish manicures, nail extensions, nail art, premium finishes, charms, removal and signature sets in ${settings.location}.`;
   const canonicalUrl = getAbsoluteSiteUrl("/services");
 
   return {
@@ -35,61 +34,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const categories = ["Makeup", "Hair", "Nails"] as const;
-
-const categoryContent: Record<
-  (typeof categories)[number],
-  {
-    title: string;
-    eyebrow: string;
-    intro: string;
-    visualLabel: string;
-    direction: string;
-    enquiryLabel: string;
-  }
-> = {
-  Makeup: {
-    title: "Makeup artistry",
-    eyebrow: "01 · Makeup",
-    intro:
-      "A considered beauty look for celebrations, portraits, and occasions that call for a little more intention.",
-    visualLabel: "Makeup artistry",
-    direction: "visual-left",
-    enquiryLabel: "makeup",
-  },
-  Hair: {
-    title: "Hair styling",
-    eyebrow: "02 · Hair",
-    intro:
-      "Elegant updos, romantic waves, and sleek finishes designed to complement your features, outfit, and occasion. See the full hairstyling price list below.",
-    visualLabel: "Hair styling",
-    direction: "visual-right",
-    enquiryLabel: "hair styling",
-  },
-  Nails: {
-    title: "Nail artistry",
-    eyebrow: "03 · Nail Art",
-    intro:
-      "Detailed finishes and expressive design, shaped around your celebration, personal style, and preferred level of detail.",
-    visualLabel: "Nail artistry",
-    direction: "visual-left",
-    enquiryLabel: "nail art",
-  },
-};
-
-/** Anchor target for a CMS-driven category section. */
-const categorySectionId = (category: string) =>
-  `service-${category.toLowerCase()}`;
-
-
+/**
+ * Services page — publishes exactly one catalogue: the Premium Nail Services
+ * & Price List from `lib/nail-services.ts`. Every section has its own anchor
+ * (`#nail-…`) so the homepage slideshow and the search panel can link to it.
+ */
 export default async function Services() {
-  const [services, settings] = await Promise.all([
-    getServices(),
-    getSettings(),
-  ]);
-
-  const hairSections = groupHairServicesBySubcategory(services);
-  const makeupAndNails = categories.filter((category) => category !== "Hair");
+  const settings = await getSettings();
 
   // The price list is branded with the business name and location from the
   // CMS, so the menu never falls back to another studio's copy.
@@ -101,34 +52,23 @@ export default async function Services() {
     .slice(0, 3)
     .toUpperCase();
 
-  /**
-   * Everything the search panel can find and jump to: the whole hairstyling
-   * price list plus every makeup and nail service in the CMS.
-   */
-  const searchItems: ServiceSearchItem[] = [
-    ...hairSections.flatMap((section) =>
+  const serviceCount = nailServiceSections.reduce(
+    (total, section) => total + section.items.length,
+    0,
+  );
+
+  /** Everything the search panel can find and jump to. */
+  const searchItems: ServiceSearchItem[] = nailServiceSections.flatMap(
+    (section) =>
       section.items.map((item) => ({
-        id: `hair-${section.id}-${item.name}`,
+        id: `${nailSectionId(section)}-${item.name}`,
         name: item.name,
         price: item.price,
         description: item.description,
-        category: "Hair" as const,
         group: section.title,
-        href: `#hair-${section.id}`,
+        href: `#${nailSectionId(section)}`,
       })),
-    ),
-    ...services
-      .filter((service) => service.category !== "Hair")
-      .map((service) => ({
-        id: `service-${service.id}`,
-        name: service.name,
-        price: service.priceDisplay,
-        description: service.shortDescription || service.description,
-        category: service.category,
-        group: categoryContent[service.category].title,
-        href: `#${categorySectionId(service.category)}`,
-      })),
-  ];
+  );
 
   return (
     <div className={styles.scope}>
@@ -139,16 +79,16 @@ export default async function Services() {
               <p className="eyebrow">{brandName} · Services &amp; Price List</p>
 
               <h1>
-                Hairstyling, makeup
+                Premium nail services
                 <br />
-                &amp; nails — <i>Confident You.</i>
+                &amp; <i>price list.</i>
               </h1>
 
               <p className="lede">
-                Explore the full {brandName} hairstyling menu with transparent
-                pricing, plus makeup and nail artistry designed around your
-                occasion, personal style, and the finish you want to feel
-                confident in.
+                Gel polish manicures, nail extensions, nail art, premium
+                finishes, charms and signature sets — {serviceCount} services
+                with transparent pricing, each tailored to your preferred
+                length, shape and style.
               </p>
 
               <div className="services-hero-actions">
@@ -156,8 +96,8 @@ export default async function Services() {
                   Book Your Appointment
                 </Link>
 
-                <a className="text-link" href="#hair-menu">
-                  View hair price list <b>→</b>
+                <a className="text-link" href="#nail-menu">
+                  View price list <b>→</b>
                 </a>
               </div>
 
@@ -169,85 +109,58 @@ export default async function Services() {
 
             <div className="services-hero-number" aria-hidden="true">
               <span>{brandInitials}</span>
-              <small>Hair · Makeup · Nails</small>
+              <small>Nail Technician</small>
             </div>
           </div>
         </section>
 
-        <section className="services-introduction">
-          <div className="shell services-introduction-grid">
-            <div>
-              <p className="eyebrow">The collection</p>
-            </div>
+        {/* ---- Search across the price list ---- */}
+        <ServiceSearch
+          items={searchItems}
+          groups={nailServiceSections.map((section) => section.title)}
+        />
 
-            <div>
-              <h2>
-                From everyday styling
-                <br />
-                to <i>bridal beauty.</i>
-              </h2>
-
-              <p>
-                Whether you are preparing for a bridal celebration, an
-                engagement, an event, a photoshoot, or simply want beautifully
-                finished hair, each service can be discussed and tailored during
-                your enquiry. Final pricing is confirmed before your
-                appointment.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ---- Search across the whole menu ---- */}
-        <ServiceSearch items={searchItems} />
-
-        {/* ---- Full Hairstyling Price List ---- */}
-        <section className="hair-menu" id="hair-menu">
+        {/* ---- Premium Nail Services & Price List ---- */}
+        <section className="nail-menu" id="nail-menu">
           <div className="shell">
-            <header className="hair-menu-header">
+            <header className="nail-menu-header">
               <p className="eyebrow">Price List</p>
-              <p className="hair-menu-brand">{brandName.toUpperCase()}</p>
-              <h2>{hairMenuBrand.title}</h2>
-              <p className="hair-menu-tagline">{hairMenuBrand.tagline}</p>
-              <div className="hair-menu-divider" aria-hidden="true" />
+              <p className="nail-menu-brand">{brandName.toUpperCase()}</p>
+              <h2>{nailMenu.title}</h2>
+              <div className="nail-menu-divider" aria-hidden="true" />
             </header>
 
-            <nav className="hair-menu-toc" aria-label="Hairstyling categories">
-              {hairSections.map((section) => (
-                <a key={section.id} href={`#hair-${section.id}`}>
+            <nav className="nail-menu-toc" aria-label="Nail service categories">
+              {nailServiceSections.map((section) => (
+                <a key={section.id} href={`#${nailSectionId(section)}`}>
                   {section.emoji} {section.title}
-                </a>
-              ))}
-              {hairInfoBlocks.map((block) => (
-                <a key={block.id} href={`#hair-${block.id}`}>
-                  {block.emoji} {block.title}
                 </a>
               ))}
             </nav>
 
-            {hairSections.map((section) => (
+            {nailServiceSections.map((section) => (
               <section
-                className="hair-section"
-                id={`hair-${section.id}`}
+                className="nail-section"
+                id={nailSectionId(section)}
                 key={section.id}
               >
-                <div className="hair-section-heading">
+                <div className="nail-section-heading">
                   <span aria-hidden="true">{section.emoji}</span>
                   <h3>{section.title}</h3>
                 </div>
 
                 {section.items.map((item) => (
-                  <article className="hair-item" key={item.name}>
-                    <div className="hair-item-row-main">
-                      <div className="hair-item-info">
-                        <h4 className="hair-item-name">{item.name}</h4>
-                        <div className="hair-item-price">{item.price}</div>
+                  <article className="nail-item" key={item.name}>
+                    <div className="nail-item-row-main">
+                      <div className="nail-item-info">
+                        <h4 className="nail-item-name">{item.name}</h4>
+                        <div className="nail-item-price">{item.price}</div>
                       </div>
-                      <div className="hair-item-btn-wrapper">
+                      <div className="nail-item-btn-wrapper">
                         <AddToEnquiryButton
                           service={{
                             name: item.name,
-                            category: "Hair",
+                            category: "Nails",
                             subcategory: section.title,
                             price: item.price,
                           }}
@@ -256,61 +169,23 @@ export default async function Services() {
                     </div>
 
                     {item.description ? (
-                      <p className="hair-item-desc">{item.description}</p>
-                    ) : null}
-
-                    {item.details && item.details.length > 0 ? (
-                      <ul className="hair-item-details">
-                        {item.details.map((detail) => (
-                          <li key={detail}>{detail}</li>
-                        ))}
-                      </ul>
+                      <p className="nail-item-desc">{item.description}</p>
                     ) : null}
                   </article>
                 ))}
 
-                {section.note ? (
-                  <p className="hair-section-note">{section.note}</p>
-                ) : null}
+                <p className="nail-section-note">{nailMenu.pricingNote}</p>
               </section>
             ))}
 
-            <div className="hair-info-grid">
-              {hairInfoBlocks.map((block) => (
-                <aside
-                  className="hair-info-card"
-                  id={`hair-${block.id}`}
-                  key={block.id}
-                >
-                  <h3>
-                    <span aria-hidden="true">{block.emoji}</span>
-                    {block.title}
-                  </h3>
-
-                  {block.intro ? <p className="intro">{block.intro}</p> : null}
-
-                  <ul>
-                    {block.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ul>
-
-                  {block.footer ? (
-                    <p className="footer-note">{block.footer}</p>
-                  ) : null}
-                </aside>
-              ))}
-            </div>
-
-            <div className="hair-menu-signoff">
+            <div className="nail-menu-signoff">
               <strong>{brandName}</strong>
-              <span className="disciplines">{hairMenuBrand.disciplines}</span>
-              <em>{hairMenuBrand.closing}</em>
+              <span className="disciplines">Nail Technician</span>
               <span className="location">{settings.location}</span>
 
-              <div className="hair-menu-cta">
+              <div className="nail-menu-cta">
                 <Link className="button" href="/book">
-                  Book Hairstyling
+                  Book Your Appointment
                 </Link>
                 <Link className="text-link" href="/contact">
                   Ask a question <b>→</b>
@@ -319,125 +194,6 @@ export default async function Services() {
             </div>
           </div>
         </section>
-
-        {/* ---- Makeup & Nails (CMS-driven) ---- */}
-        {services.length === 0 && (
-          <section className="section">
-            <div className="shell">
-              <div className="empty-state">
-                <p className="eyebrow">More services</p>
-                <p>
-                  Makeup and nail artistry menus are being updated. Please
-                  enquire and {settings.businessName} will be happy to help.
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {makeupAndNails.map((category, categoryIndex) => {
-          const content = categoryContent[category];
-          const categoryServices = services.filter(
-            (service) => service.category === category,
-          );
-          const categoryImage = categoryServices.find(
-            (service) => service.imageUrl,
-          )?.imageUrl;
-
-          if (categoryServices.length === 0) return null;
-
-          return (
-            <section
-              className={`service-feature ${content.direction}`}
-              id={categorySectionId(category)}
-              key={category}
-            >
-              <div className="service-feature-background" />
-
-              <div className="shell service-feature-grid">
-                <div
-                  className={`service-feature-visual ${category.toLowerCase()}-visual`}
-                >
-                  <div className="service-feature-frame" />
-
-                  {categoryImage ? (
-                    <Image
-                      className="service-feature-image"
-                      src={categoryImage}
-                      alt={content.visualLabel}
-                      fill
-                      sizes="(max-width: 1000px) 92vw, 42vw"
-                    />
-                  ) : null}
-
-                  <div className="service-visual-overlay">
-                    <span>{content.visualLabel}</span>
-                    <strong>0{categoryIndex + 1}</strong>
-                  </div>
-                </div>
-
-                <div className="service-feature-content">
-                  <p className="eyebrow">{content.eyebrow}</p>
-
-                  <h2>{content.title}</h2>
-
-                  <p className="service-intro">{content.intro}</p>
-
-                  <div className="service-blocks">
-                    {categoryServices.map((service, serviceIndex) => (
-                      <article className="service-block" key={service.id}>
-                        <span className="block-number">
-                          {String(serviceIndex + 1).padStart(2, "0")}
-                        </span>
-
-                        <div className="service-block-main">
-                          <h3>{service.name}</h3>
-                          <p>
-                            {service.shortDescription || service.description}
-                          </p>
-                        </div>
-
-                        <div className="block-detail">
-                          <strong>{service.priceDisplay}</strong>
-                          <span>
-                            {service.duration || "Duration on enquiry"}
-                          </span>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "0.5rem",
-                              alignItems: "center",
-                              flexWrap: "wrap",
-                              marginTop: "0.4rem",
-                            }}
-                          >
-                            <AddToEnquiryButton
-                              service={{
-                                id: service.id,
-                                name: service.name,
-                                category: service.category,
-                                subcategory: service.subcategory,
-                                price: service.priceDisplay,
-                              }}
-                            />
-                            <Link href="/book">
-                              Enquire <b>→</b>
-                            </Link>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-
-                  <Link className="button service-enquiry" href="/book">
-                    Enquire about {content.enquiryLabel}
-                  </Link>
-                </div>
-              </div>
-            </section>
-          );
-        })}
 
         <section className="services-closing">
           <div className="shell">
@@ -448,16 +204,16 @@ export default async function Services() {
                 <h2>
                   Ready to book
                   <br />
-                  your <i>look?</i>
+                  your <i>set?</i>
                 </h2>
               </div>
 
               <div className="services-closing-copy">
                 <p>
-                  Tell me about your occasion, preferred service, and the look
-                  you have in mind. Timing, details, and final pricing can then
-                  be confirmed together — including the $10 booking deposit to
-                  secure your appointment.
+                  Tell me which service you would like, your preferred length
+                  and shape, and any inspiration you have in mind. Timing,
+                  details and final pricing can then be confirmed together —
+                  including the $10 booking deposit to secure your appointment.
                 </p>
 
                 <Link className="text-link" href="/book">

@@ -8,10 +8,14 @@ import { ServiceCarousel } from "@/components/service-carousel";
 import {
   getArtist,
   getGalleryItems,
-  getServices,
   getSettings,
   getTestimonials,
 } from "@/lib/cms";
+import {
+  nailSectionHref,
+  nailSectionStartingPrice,
+  showcaseNailSections,
+} from "@/lib/nail-services";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 function InstagramIcon() {
@@ -72,31 +76,24 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [settings, services, galleryItems, testimonials, artist] =
-    await Promise.all([
-      getSettings(),
-      getServices(),
-      getGalleryItems(),
-      getTestimonials(),
-      getArtist(),
-    ]);
+  const [settings, galleryItems, testimonials, artist] = await Promise.all([
+    getSettings(),
+    getGalleryItems(),
+    getTestimonials(),
+    getArtist(),
+  ]);
 
-  // Services for the homepage slideshow: featured services lead (in CMS
-  // display order), followed by the rest, so a flagged service always appears
-  // early. The carousel itself caps the list at 10 slides.
-  const featuredServices = services.filter((service) => service.featured);
-  const otherServices = services.filter((service) => !service.featured);
-  const carouselServices = [...featuredServices, ...otherServices].map(
-    (service) => ({
-      id: service.id,
-      name: service.name,
-      category: service.category,
-      subcategory: service.subcategory,
-      description: service.shortDescription || service.description,
-      priceDisplay: service.priceDisplay,
-      imageUrl: service.imageUrl,
-    }),
-  );
+  // Homepage slideshow: six looping slides, one per showcase section of the
+  // nail price list. Each card deep-links to its section on /services.
+  const carouselServices = showcaseNailSections.map((section) => ({
+    id: section.id,
+    name: section.title,
+    category: "Nails",
+    description: section.summary,
+    priceDisplay: nailSectionStartingPrice(section),
+    detailsHref: nailSectionHref(section),
+    enquirable: false,
+  }));
 
   // Hero image: dedicated CMS hero, else the first active gallery image,
   // else the static file that ships with the site.
@@ -113,6 +110,20 @@ export default async function Home() {
     (settings.heroImageUrl ? null : galleryItems[0]?.mobileImageUrl) ||
     null;
 
+  // Two-line wordmark for the intro panel, e.g. "NEEDA / BEAUTY LAB".
+  const [brandFirstWord, ...brandOtherWords] = settings.businessName
+    .toUpperCase()
+    .split(/\s+/);
+  const brandRest = brandOtherWords.join(" ");
+
+  // Monogram for the hero stamp, derived from the CMS business name.
+  const brandInitials = settings.businessName
+    .split(/\s+/)
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 3)
+    .toUpperCase();
+
   return (
     <>
       {/* =========================================================
@@ -124,7 +135,7 @@ export default async function Home() {
 
         <div className="shell hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow">Makeup · Hair · Nail Art</p>
+            <p className="eyebrow">Nail Technician · {settings.businessName}</p>
 
             <h1>
               Beauty, artistry &amp; confidence —
@@ -132,8 +143,9 @@ export default async function Home() {
             </h1>
 
             <p className="lede">
-              Thoughtfully tailored beauty artistry for bridal moments,
-              celebrations, photographs, and every occasion worth remembering.
+              Premium gel manicures, extensions, nail art and signature sets —
+              thoughtfully tailored to your style and every occasion worth
+              remembering.
             </p>
 
             <div className="actions">
@@ -171,14 +183,14 @@ export default async function Home() {
             </div>
 
             <div className="hero-stamp" aria-hidden="true">
-              MBN
+              {brandInitials}
               <br />
               <i>{settings.location.split(",")[0]}</i>
             </div>
 
             <div className="art-label">
               <span>Beauty, personally considered</span>
-              <em>Makeup · Hair · Nail Art</em>
+              <em>Nail Technician</em>
             </div>
           </div>
         </div>
@@ -193,9 +205,13 @@ export default async function Home() {
             <div className="intro-visual-inner" />
 
             <p>
-              MAKEUP
-              <br />
-              BY NEEDA
+              {brandFirstWord}
+              {brandRest ? (
+                <>
+                  <br />
+                  {brandRest}
+                </>
+              ) : null}
             </p>
           </div>
 
@@ -208,8 +224,9 @@ export default async function Home() {
 
             <div className="intro-note">
               <p>
-                From softly luminous to beautifully defined, each look is
-                approached with care and tailored to your personal style.
+                From a clean gel manicure to a fully custom luxury set, each
+                appointment is approached with care and tailored to your
+                personal style.
               </p>
 
               <Link className="text-link" href="/about">
@@ -221,9 +238,8 @@ export default async function Home() {
       </section>
 
       {/* =========================================================
-          SERVICES (rendered only while the CMS has services)
+          SERVICES — one slide per section of the nail price list
       ========================================================= */}
-      {services.length > 0 && (
       <section className="section cream services-home">
         <div className="service-halo" aria-hidden="true" />
 
@@ -231,8 +247,8 @@ export default async function Home() {
           <div className="row-heading">
             <SectionHeading
               eyebrow="Services"
-              title="Beauty for every chapter."
-              text="Considered artistry across makeup, hair, and nail art — tailored to your occasion."
+              title="Premium nail services."
+              text="From natural nail care to signature sets. Choose a collection to see its full price list."
             />
 
             <Link className="text-link" href="/services">
@@ -242,11 +258,10 @@ export default async function Home() {
 
           <ServiceCarousel
             services={carouselServices}
-            label="Featured services"
+            label="Nail services"
           />
         </div>
       </section>
-      )}
 
       {/* =========================================================
           PORTFOLIO (rendered only while the CMS has gallery images)
@@ -258,7 +273,7 @@ export default async function Home() {
             <SectionHeading
               eyebrow="Selected work"
               title="The beauty is in the details."
-              text="A growing portfolio of makeup, bridal beauty, hair styling, and nail artistry."
+              text="A growing portfolio of work by Needa."
             />
 
             <Link className="text-link" href="/gallery">
@@ -378,12 +393,38 @@ export default async function Home() {
             <h2>Beauty beyond the appointment.</h2>
 
             <p className="lede">
-              Follow the official Instagram channels for portfolio updates,
-              beauty inspiration, makeup artistry, hair styling, and nail art.
+              Follow the official Instagram channels for the latest sets,
+              portfolio updates and nail inspiration.
             </p>
           </div>
 
           <div className="social-cards">
+            <a
+              href={settings.instagramNailsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-card"
+              aria-label={`Visit ${settings.instagramNailsHandle} on Instagram`}
+            >
+              <div className="social-card-top">
+                <InstagramIcon />
+
+                <span className="social-category-tag">Nail Technician</span>
+              </div>
+
+              <strong className="social-card-handle">
+                {settings.instagramNailsHandle}
+              </strong>
+
+              <p className="social-card-bio">
+                Custom nail designs ranging from refined minimalist details to
+                statement event sets.
+              </p>
+
+              <span className="social-card-cta">
+                Visit Instagram <b>↗</b>
+              </span>
+            </a>
             <a
               href={settings.instagramMakeupUrl}
               target="_blank"
@@ -404,8 +445,8 @@ export default async function Home() {
               </strong>
 
               <p className="social-card-bio">
-                Makeup artistry and hair styling for bridal moments,
-                celebrations, and special occasions in {settings.location}.
+                Makeup artistry and hair styling for celebrations and special
+                occasions in {settings.location}.
               </p>
 
               <span className="social-card-cta">
@@ -413,32 +454,6 @@ export default async function Home() {
               </span>
             </a>
 
-            <a
-              href={settings.instagramNailsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-card"
-              aria-label={`Visit ${settings.instagramNailsHandle} on Instagram`}
-            >
-              <div className="social-card-top">
-                <InstagramIcon />
-
-                <span className="social-category-tag">Nail Art</span>
-              </div>
-
-              <strong className="social-card-handle">
-                {settings.instagramNailsHandle}
-              </strong>
-
-              <p className="social-card-bio">
-                Custom nail artistry ranging from refined minimalist details
-                to statement bridal and event looks.
-              </p>
-
-              <span className="social-card-cta">
-                Visit Instagram <b>↗</b>
-              </span>
-            </a>
           </div>
         </div>
       </section>
@@ -454,7 +469,7 @@ export default async function Home() {
 
           <p className="lede">
             Share a few details about your occasion, preferred service, and
-            desired look. {artist.name} will review your enquiry and connect
+            the set you have in mind. {artist.name} will review your enquiry and connect
             with you directly.
           </p>
 

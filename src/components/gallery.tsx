@@ -6,12 +6,30 @@ import { Reveal } from "@/components/motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { toVideoEmbedUrl } from "@/lib/video-url";
 
-const filters = ["All", "Makeup", "Bridal", "Hair", "Nails"] as const;
+/** Categories stored in the CMS (the database enum). */
+type GalleryCategory = "Makeup" | "Bridal" | "Hair" | "Nails";
+
+/**
+ * Public filters. "Bridal" is deliberately not offered: items stored under it
+ * are shown and filtered as "Makeup".
+ */
+const filters = ["All", "Nails", "Makeup", "Hair"] as const;
+type GalleryFilter = (typeof filters)[number];
+
+function publicCategory(category: GalleryCategory): Exclude<GalleryFilter, "All"> {
+  return category === "Bridal" ? "Makeup" : category;
+}
+
+/** Customer-facing label for a filter or category badge. */
+function categoryLabel(category: GalleryCategory | GalleryFilter): string {
+  if (category === "Bridal") return "Makeup";
+  return category === "Nails" ? "Nail Technician" : category;
+}
 
 export type GalleryViewItem = {
   id: number;
   title: string;
-  category: (typeof filters)[number];
+  category: GalleryCategory;
   imageUrl: string;
   /** Optional CMS portrait crop served on phones (< 640px). */
   mobileImageUrl?: string | null;
@@ -36,11 +54,11 @@ export function Gallery({
   businessName: string;
   location: string;
 }) {
-  const [filter, setFilter] = useState<(typeof filters)[number]>("All");
+  const [filter, setFilter] = useState<GalleryFilter>("All");
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const filteredItems = items.filter(
-    (item) => filter === "All" || item.category === filter,
+    (item) => filter === "All" || publicCategory(item.category) === filter,
   );
 
   // No portfolio items yet — show a quiet note instead of an empty grid.
@@ -51,7 +69,7 @@ export function Gallery({
         <p>
           The portfolio is being refreshed — new work will be shared here
           soon. Please enquire for recent examples of {businessName}&apos;s
-          makeup, hair and nail artistry.
+          nail work.
         </p>
       </div>
     );
@@ -81,7 +99,7 @@ export function Gallery({
             }}
             key={item}
           >
-            {item}
+            {categoryLabel(item)}
           </button>
         ))}
       </div>
@@ -137,7 +155,7 @@ export function Gallery({
 
                 <span className="gallery-card-info">
                   <span className="gallery-card-category">
-                    {item.category}
+                    {categoryLabel(item.category)}
                     {isVideo ? " · Video" : ""}
                   </span>
                   <strong className="gallery-card-title">{item.title}</strong>
@@ -203,7 +221,7 @@ export function Gallery({
             )}
 
             <span>
-              {selectedItem.category}
+              {categoryLabel(selectedItem.category)}
               {selectedItem.mediaType === "video" ? " · Video" : ""}
             </span>
 

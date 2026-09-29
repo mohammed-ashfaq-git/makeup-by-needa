@@ -309,8 +309,8 @@ function ServiceCartDrawer() {
               </span>
               <h4>Your enquiry list is empty</h4>
               <p>
-                Browse the hairstyling, makeup and nail artistry menus and click
-                “Add to enquiry” to build your custom appointment package.
+                Browse the nail services price list and click “Add to enquiry”
+                to build your custom appointment package.
               </p>
               <button
                 type="button"
@@ -397,7 +397,7 @@ function ServiceCartDrawer() {
                     rows={2}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. Bridal party of 4, ceremony at 2 PM…"
+                    placeholder="e.g. Almond shape, medium length, soft pink chrome…"
                   />
                 </div>
               </div>

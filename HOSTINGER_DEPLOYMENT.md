@@ -24,6 +24,13 @@ Use the exact database host shown by Hostinger. Percent-encode reserved characte
 
 See [`.env.example`](.env.example) for non-secret example values and local-development-only variables. Never commit a real `.env` file or database password.
 
+## Security: rotate old credentials first
+
+Earlier revisions of `.env.example` contained a real TiDB database credential and a weak `ADMIN_SETUP_SECRET`. They remain in the git history, so before going live:
+
+1. Rotate the database user's password in TiDB (or retire that database) and update `DATABASE_URL` wherever it is configured.
+2. Replace `ADMIN_SETUP_SECRET` with a new long random value (for example `openssl rand -base64 32`).
+
 ## Deploy or update the application
 
 Set the application's working directory to the root of this repository, then run these project scripts in this order after the environment variables are present:
@@ -36,6 +43,7 @@ npm start
 ```
 
 - `npm run db:setup` runs the committed Drizzle migrations and the idempotent seed script. Run it on the target database before the first start and again when a future release includes a migration.
+- The Needa Beauty Lab release includes migrations `0004_mobile_images` and `0005_rebrand_needa_beauty_lab`. Run `npm run db:setup` once when deploying it, or the live site keeps the old business name stored in the database.
 - `npm run build` creates the production Next.js build.
 - `npm start` runs `next start`; do not hard-code a port. A Node hosting platform should supply `PORT`, which Next.js honours.
 - On a later code deployment with no database migration, run `npm install`, `npm run build`, and restart with `npm start`.

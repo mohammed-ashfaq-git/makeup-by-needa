@@ -3,8 +3,8 @@ import Link from "next/link";
 import { AddToEnquiryButton } from "@/components/service-cart";
 
 /**
- * Shape shared by the homepage slideshow and the services page. Both the
- * CMS-backed services and the static fallback in `lib/site-data.ts` fit it.
+ * Shape of one card in the homepage slideshow. On the homepage each card is a
+ * section of the nail price list and links straight to that section.
  */
 export type ServiceCardData = {
   id?: number | string | null;
@@ -14,17 +14,19 @@ export type ServiceCardData = {
   description: string;
   priceDisplay: string;
   imageUrl?: string | null;
+  /** Where the card and its "Details" link go; defaults to /services. */
+  detailsHref?: string;
+  /** Show the "Add to enquiry" button (off for whole price-list sections). */
+  enquirable?: boolean;
 };
 
-/** "Nails" reads better as "Nail Art" in customer-facing labels. */
+/** Customer-facing label for a category: "Nails" is shown as "Nail Technician". */
 export function getCategoryLabel(category: string): string {
-  return category === "Nails" ? "Nail Art" : category;
+  return category === "Nails" ? "Nail Technician" : category;
 }
 
 /**
- * A single service card — one shared implementation for the homepage
- * slideshow and any grid that lists CMS services, so a service always looks
- * the same wherever it appears.
+ * A single service card, rendered by the homepage slideshow.
  *
  * Deliberately not marked "use client": it renders inside the slideshow
  * (a client component) and must therefore stay free of server-only imports.
@@ -32,15 +34,15 @@ export function getCategoryLabel(category: string): string {
 export function ServiceCard({
   service,
   index = 0,
-  detailsHref = "/services",
   sizes = "(max-width: 760px) 92vw, (max-width: 1100px) 46vw, 31vw",
 }: {
   service: ServiceCardData;
   /** Position in the list; drives the two-digit number and visual variant. */
   index?: number;
-  detailsHref?: string;
   sizes?: string;
 }) {
+  const detailsHref = service.detailsHref ?? "/services";
+  const enquirable = service.enquirable ?? true;
   const categoryLabel = getCategoryLabel(service.category);
   // Four gradient variants ship with the site; cycle through them.
   const visualVariant = (index % 4) + 1;
@@ -82,18 +84,20 @@ export function ServiceCard({
         <strong>{service.priceDisplay}</strong>
 
         <div className="service-card-btns">
-          <AddToEnquiryButton
-            service={{
-              id: service.id ?? undefined,
-              name: service.name,
-              category: service.category,
-              subcategory: service.subcategory ?? null,
-              price: service.priceDisplay,
-            }}
-          />
+          {enquirable ? (
+            <AddToEnquiryButton
+              service={{
+                id: service.id ?? undefined,
+                name: service.name,
+                category: service.category,
+                subcategory: service.subcategory ?? null,
+                price: service.priceDisplay,
+              }}
+            />
+          ) : null}
 
           <Link href={detailsHref} className="service-details-link">
-            Details <b>→</b>
+            {enquirable ? "Details" : "View prices"} <b>→</b>
           </Link>
         </div>
       </div>

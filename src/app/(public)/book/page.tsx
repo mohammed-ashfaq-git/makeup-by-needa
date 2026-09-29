@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { EnquiryForm } from "@/components/enquiry-form";
-import { getArtist, getFaqs, getServices, getSettings } from "@/lib/cms";
+import { getArtist, getFaqs, getSettings } from "@/lib/cms";
+import { nailServiceSections } from "@/lib/nail-services";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `Start an appointment enquiry with ${settings.businessName} for makeup, hair styling, or nail artistry.`;
+  const description = `Start an appointment enquiry with ${settings.businessName} for nail services — gel polish, extensions, nail art and signature sets.`;
   const canonicalUrl = getAbsoluteSiteUrl("/book");
 
   return {
@@ -24,8 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Book() {
-  const [services, settings, faqs, artist] = await Promise.all([
-    getServices(),
+  const [settings, faqs, artist] = await Promise.all([
     getSettings(),
     getFaqs(),
     getArtist(),
@@ -70,9 +70,9 @@ export default async function Book() {
           </div>
 
           <EnquiryForm
-            serviceOptions={services.map((service) => ({
-              name: service.name,
-              category: service.category,
+            serviceGroups={nailServiceSections.map((section) => ({
+              label: section.title,
+              services: section.items.map((item) => item.name),
             }))}
             whatsappNumber={settings.whatsappNumber}
             whatsappMessage={settings.whatsappMessage}
