@@ -680,3 +680,7 @@
     text-align: left;
   }
 }
+
+.details { margin: 14px 0 20px; padding-left: 24px; color: #594b43; line-height: 1.8; columns: 2; column-gap: 32px; }
+.details li { break-inside: avoid; }
+@media (max-width: 600px) { .details { columns: 1; } }
