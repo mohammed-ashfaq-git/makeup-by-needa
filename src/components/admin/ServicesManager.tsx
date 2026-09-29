@@ -36,22 +36,13 @@ export type AdminService = {
 const CATEGORIES = ["Makeup", "Hair", "Nails"] as const;
 
 const COMMON_SUBCATEGORIES = [
-  "Everyday Hair Services",
-  "Event Hairstyling",
-  "Bridal Hairstyling",
-  "South Asian Hairstyling",
-  "Hair Accessories",
-  "Photoshoot & Fashion Hair",
-  "Hair Extensions",
-  "Braids & Special Styling",
-  "Hair Add-Ons",
-  "Bridal Party Services",
-  "Bridal Makeup",
-  "Event Makeup",
-  "Photoshoot Makeup",
-  "Gel Nails",
+  "Natural Nail Services",
   "Nail Extensions",
-  "Custom Nail Art",
+  "Nail Art",
+  "Premium Finishes",
+  "Charms • Bling • 3D",
+  "Removal",
+  "Signature Sets",
 ];
 
 export function ServicesManager({ services }: { services: AdminService[] }) {
@@ -400,11 +391,11 @@ function ServiceFormFields({
             name="subcategory"
             list="subcategories-list"
             defaultValue={initial?.subcategory ?? ""}
-            placeholder="e.g. Everyday Hair Services, Event Hairstyling…"
+            placeholder="e.g. Natural Nail Services, Nail Extensions…"
             className={fieldClass("subcategory", state)}
           />
           <span className="hint">
-            Used to group services on the menu (e.g. Everyday Hair, Event Styling, Bridal).
+            Used to group services (e.g. Natural Nail Services, Nail Extensions, Signature Sets).
           </span>
           <FieldError name="subcategory" state={state} />
         </div>

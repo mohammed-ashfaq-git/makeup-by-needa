@@ -12,7 +12,7 @@ import {
 import { useMediaQuery } from "@/components/responsive-image";
 import { ServiceCard, type ServiceCardData } from "@/components/service-card";
 
-/** The homepage slideshow shows at most this many CMS services. */
+/** The homepage slideshow shows at most this many cards. */
 const MAX_SLIDES = 10;
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
@@ -45,7 +45,8 @@ type CarouselEntry = {
 /**
  * Homepage services slideshow.
  *
- * - Shows up to 10 CMS services, 1 / 2 / 3 cards per view by breakpoint.
+ * - Shows up to 10 cards (the homepage passes one per price-list section),
+ *   1 / 2 / 3 cards per view by breakpoint.
  * - Auto-advances forever, pausing on hover, keyboard focus, hidden tab and
  *   touch, and never auto-advances when the visitor prefers reduced motion.
  * - Arrows, dots, a counter and swipe all drive the same position state.

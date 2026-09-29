@@ -36,6 +36,13 @@
       "when": 1790233486870,
       "tag": "0004_mobile_images",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1790566381314,
+      "tag": "0005_rebrand_needa_beauty_lab",
+      "breakpoints": true
     }
   ]
 }

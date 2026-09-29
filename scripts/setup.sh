@@ -32,8 +32,4 @@ fi
 
 npm run db:setup
 
-if [ -f scripts/setup.mjs ]; then
-  node scripts/setup.mjs
-fi
-
 echo "✓ Setup complete. Start the app with: npm run dev"

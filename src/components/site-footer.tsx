@@ -6,10 +6,11 @@ import type { PublicSettings } from "@/lib/cms";
 
 export function SiteFooter({
   settings,
-  featuredServices,
+  serviceLinks,
 }: {
   settings: PublicSettings;
-  featuredServices: { name: string; category: string }[];
+  /** One link per price-list section, deep-linking into /services. */
+  serviceLinks: { name: string; href: string }[];
 }) {
   return (
     <footer className="footer">
@@ -25,11 +26,11 @@ export function SiteFooter({
             />
             <span className="brand-identity">
               <span className="brand-name">{settings.businessName}</span>
-              <span className="brand-services-pill">Makeup · Hair · Nail Art</span>
+              <span className="brand-services-pill">Nail Technician</span>
             </span>
           </Link>
           <p className="footer-tagline">
-            Thoughtful beauty artistry for the moments that matter. Based in{" "}
+            Premium nail services, thoughtfully tailored to you. Based in{" "}
             {settings.location}.
           </p>
         </div>
@@ -45,8 +46,8 @@ export function SiteFooter({
 
         <div>
           <p className="eyebrow">Services</p>
-          {featuredServices.map((x) => (
-            <Link key={x.name} href="/services">
+          {serviceLinks.map((x) => (
+            <Link key={x.href} href={x.href}>
               {x.name}
             </Link>
           ))}
@@ -58,6 +59,16 @@ export function SiteFooter({
         <div className="footer-connect-col">
           <p className="eyebrow">Connect</p>
           <a
+            href={settings.instagramNailsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="footer-social-link"
+            aria-label={`Nail Technician Instagram ${settings.instagramNailsHandle}`}
+          >
+            <span className="footer-social-tag">Nail Technician:</span>{" "}
+            {settings.instagramNailsHandle}
+          </a>
+          <a
             href={settings.instagramMakeupUrl}
             target="_blank"
             rel="noreferrer"
@@ -66,16 +77,6 @@ export function SiteFooter({
           >
             <span className="footer-social-tag">Makeup &amp; Hair:</span>{" "}
             {settings.instagramMakeupHandle}
-          </a>
-          <a
-            href={settings.instagramNailsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="footer-social-link"
-            aria-label={`Nail Art Instagram ${settings.instagramNailsHandle}`}
-          >
-            <span className="footer-social-tag">Nail Art:</span>{" "}
-            {settings.instagramNailsHandle}
           </a>
           {settings.facebookUrl && (
             <a
@@ -119,7 +120,7 @@ export function SiteFooter({
         <span suppressHydrationWarning>
           © {new Date().getFullYear()} {settings.footerText}
         </span>
-        <span>{settings.location} · Makeup · Hair · Nail Art</span>
+        <span>{settings.location} · Nail Technician</span>
       </div>
     </footer>
   );

@@ -1,5 +1,5 @@
 /**
- * Database schema for Makeup by Needa (MySQL, via Drizzle ORM).
+ * Database schema for Needa Beauty Lab (MySQL, via Drizzle ORM).
  *
  * Conventions:
  * - snake_case column names in MySQL, camelCase in TypeScript.

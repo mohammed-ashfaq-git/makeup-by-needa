@@ -24,8 +24,10 @@ export default async function AdminServicesPage() {
         <div>
           <h1>Services</h1>
           <p>
-            Your makeup, hair and nail services with prices, descriptions and
-            images. Leave a price blank to show “Enquire for pricing”.
+            Internal service records. The public website now publishes only the
+            Premium Nail Services &amp; Price List, which is maintained in the
+            site code (<code>src/lib/nail-services.ts</code>) — changes made here
+            are <strong>not</strong> shown on the public site.
           </p>
         </div>
       </div>

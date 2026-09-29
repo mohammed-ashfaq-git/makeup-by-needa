@@ -5,7 +5,7 @@ import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = "Browse a portfolio of makeup, bridal beauty, hair styling, and nail artistry.";
+  const description = "Browse the portfolio — nail sets, nail designs and beauty work by Needa.";
   const canonicalUrl = getAbsoluteSiteUrl("/gallery");
 
   return {
@@ -35,7 +35,7 @@ export default async function GalleryPage() {
         <div className="shell">
           <div className="gallery-hero-layout">
             <div>
-              <p className="eyebrow">Portfolio · Makeup · Hair · Nail Art</p>
+              <p className="eyebrow">Portfolio · Nail Technician</p>
 
               <h1>
                 Moments, made
@@ -49,10 +49,9 @@ export default async function GalleryPage() {
               </p>
 
               <div className="gallery-hero-meta">
+                <span>Nail Technician</span>
                 <span>Makeup</span>
-                <span>Bridal</span>
                 <span>Hair</span>
-                <span>Nails</span>
               </div>
             </div>
 

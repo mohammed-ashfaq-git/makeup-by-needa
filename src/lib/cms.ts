@@ -24,7 +24,6 @@ import {
   artist as staticArtist,
   business,
   galleryItems as staticGallery,
-  services as staticServices,
 } from "@/lib/site-data";
 
 /* ------------------------------------------------------------------ */
@@ -204,6 +203,12 @@ export const getSettings = cache(async (): Promise<PublicSettings> => {
 /* Services                                                            */
 /* ------------------------------------------------------------------ */
 
+/**
+ * CMS services table. Used by the admin only: the public website publishes
+ * the nail price list in `lib/nail-services.ts`, so leftover rows in this
+ * table can never appear on the public site. Without a database there is
+ * nothing to manage, so the result is simply empty.
+ */
 export const getServices = cache(
   async (options?: { activeOnly?: boolean }): Promise<PublicService[]> => {
     const activeOnly = options?.activeOnly ?? true;
@@ -215,22 +220,7 @@ export const getServices = cache(
         .orderBy(asc(servicesTable.displayOrder), asc(servicesTable.id)),
     );
 
-    if (!rows) {
-      return staticServices.map((service, index) => ({
-        id: index + 1,
-        name: service.name,
-        category: service.category,
-        subcategory: null,
-        shortDescription: null,
-        description: service.description,
-        details: [],
-        priceDisplay: service.price,
-        hasNumericPrice: false,
-        duration: service.duration,
-        imageUrl: null,
-        featured: Boolean(service.featured),
-      }));
-    }
+    if (!rows) return [];
 
     return rows
       .filter((row) => (activeOnly ? row.active : true))

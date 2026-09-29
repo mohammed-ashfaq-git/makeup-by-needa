@@ -584,7 +584,7 @@ export default async function Contact() {
               </h1>
 
               <p className="lede">
-                For appointment bookings and bridal enquiries, share your event
+                For appointment bookings and service enquiries, share your
                 details through the enquiry form or connect directly through
                 the official channels below.
               </p>
@@ -619,9 +619,8 @@ export default async function Contact() {
                 </h2>
 
                 <p>
-                  From bridal beauty to celebrations, photographs, and
-                  carefully finished nail art, every enquiry begins with your
-                  vision.
+                  From a clean gel manicure to a fully custom luxury set, every
+                  enquiry begins with your vision.
                 </p>
 
                 <span className="contact-visual-location">
@@ -642,6 +641,34 @@ export default async function Contact() {
                   Prefer a quick message? WhatsApp is available for direct
                   enquiries.
                 </p>
+              </div>
+
+              <div className="contact-channel">
+                <span className="contact-channel-label">
+                  Nail Technician
+                  <br />
+                  Portfolio
+                </span>
+
+                <div className="contact-channel-main">
+                  <a
+                    href={business.instagramNailsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-channel-link"
+                    aria-label={`Visit ${business.instagramNailsHandle} on Instagram`}
+                  >
+                    <InstagramSvg />
+                    <strong>{business.instagramNailsHandle}</strong>
+                    <span className="contact-channel-arrow">
+                      <ArrowSvg />
+                    </span>
+                  </a>
+
+                  <p className="contact-channel-subtext">
+                    Gel polish, nail art, signature sets and luxury extensions.
+                  </p>
+                </div>
               </div>
 
               <div className="contact-channel">
@@ -667,36 +694,7 @@ export default async function Contact() {
                   </a>
 
                   <p className="contact-channel-subtext">
-                    Bridal, soft glam, reception, and event hair &amp; makeup
-                    styling.
-                  </p>
-                </div>
-              </div>
-
-              <div className="contact-channel">
-                <span className="contact-channel-label">
-                  Nail Art
-                  <br />
-                  Portfolio
-                </span>
-
-                <div className="contact-channel-main">
-                  <a
-                    href={business.instagramNailsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="contact-channel-link"
-                    aria-label={`Visit ${business.instagramNailsHandle} on Instagram`}
-                  >
-                    <InstagramSvg />
-                    <strong>{business.instagramNailsHandle}</strong>
-                    <span className="contact-channel-arrow">
-                      <ArrowSvg />
-                    </span>
-                  </a>
-
-                  <p className="contact-channel-subtext">
-                    Custom nail artistry, bridal sets, and luxury extensions.
+                    Soft glam and event hair &amp; makeup styling.
                   </p>
                 </div>
               </div>

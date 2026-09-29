@@ -1,18 +1,23 @@
-# Makeup by Needa
+# Needa Beauty Lab
 
-Client website + custom content management system (CMS) for a Toronto-based
-makeup, hair and nail art artist, built with Next.js 16 (App Router, React 19,
+Client website + custom content management system (CMS) for Needa Beauty Lab,
+a Toronto-based nail technician, built with Next.js 16 (App Router, React 19,
 Server Actions) and MySQL via Drizzle ORM.
 
 ## Features
 
 **Public website** — home, about, services, gallery, contact and booking
-pages, all driven by the database:
+pages, driven by the database (settings, artist, gallery, testimonials, FAQs):
 - **Service enquiry cart with WhatsApp** — visitors can add services to an
   in-browser cart, pick an event date, add notes, and generate a pre-formatted
   WhatsApp message with categorized line items.
-- **Full hairstyling price list** — categorized hairstyling menu with
-  everyday, event, bridal, South Asian, extension, braid and party styling.
+- **Premium Nail Services & Price List** — the one published catalogue: 42
+  services in 7 sections (Natural Nail Services, Nail Extensions, Nail Art,
+  Premium Finishes, Charms • Bling • 3D, Removal, Signature Sets), maintained
+  in `src/lib/nail-services.ts`. Each section has its own anchor
+  (`/services#nail-…`), and a search panel filters the whole list.
+- **Homepage slideshow** — six looping slides, one per price-list section,
+  each linking to that section of the services page.
 - **Media gallery** — photo portfolio and video playback (YouTube, Vimeo,
   and uploaded MP4/WebM/MOV) with responsive video lightbox.
 - **Enquiry form & WhatsApp button** — self-service enquiry form with
@@ -27,10 +32,9 @@ pages, all driven by the database:
   Instagram/Facebook links, homepage copy and footer text.
 - **Artist / Bio** — bio shown on the About page (name, short bio, full bio,
   experience, specialties, qualifications, location, Instagram).
-- **Services** — full CRUD with categories (Makeup / Hair / Nails),
-  subcategories, detail bullet points, pricing (numeric price, custom price
-  text, or *Enquire for pricing*), duration, featured & active flags, search
-  and reordering.
+- **Services** — internal service records (CRUD, categories, pricing, search).
+  These rows are **not** published: the public site shows only the nail price
+  list from `src/lib/nail-services.ts`.
 - **Gallery** — image and video management (supports photo uploads, YouTube/Vimeo
   links, and video uploads up to 40 MB) with captions, alt text, poster images
   and category filters.
@@ -151,14 +155,15 @@ machines without a bundled Chrome, point the suite at one with
 
 ## Notes
 
-- The public website is fully database-driven: settings, artist profile,
-  services, gallery, testimonials and FAQs all come from the CMS, rendered
-  server-side. Admin edits appear immediately — no redeployment needed.
+- The public website is database-driven: settings, artist profile, gallery,
+  testimonials and FAQs come from the CMS, rendered server-side, and admin
+  edits appear immediately. The one exception is the nail price list, which
+  lives in `src/lib/nail-services.ts` and changes with a code deployment.
 - All public pages fall back to the built-in static content if the database
   is unavailable, so the site never goes down with the DB. The enquiry API
   degrades to a WhatsApp hand-off in that case, so no enquiry is lost.
 - Empty CMS collections are handled gracefully: sections with no content
-  (testimonials, FAQs, services, gallery) are hidden or replaced by a short
+  (testimonials, FAQs, gallery) are hidden or replaced by a short
   note instead of rendering empty grids or placeholder text.
 - Uploaded images are stored as BLOBs in `site_images` and streamed through a
   route handler, so no writable disk is required in production.

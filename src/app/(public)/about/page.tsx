@@ -7,7 +7,7 @@ import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `Meet Needa, founder & beauty artist at ${settings.businessName}. 5+ years of professional makeup, hair, nail art and bridal beauty.`;
+  const description = `Meet Needa, founder & nail technician at ${settings.businessName}. 5+ years of professional beauty experience — premium nail services, plus makeup and hair.`;
   const canonicalUrl = getAbsoluteSiteUrl("/about");
 
   return {
@@ -26,14 +26,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const experienceItems = [
+  "Nail Technician",
+  "Gel Polish & Nail Extensions",
+  "Custom Nail Designs",
   "Makeup",
-  "South Asian & Bridal Makeup",
+  "South Asian Makeup",
   "Soft Glam & Full Glam",
   "Event & Photoshoot Makeup",
   "Hairstyling",
-  "Bridal Hairstyling",
-  "Nail Services",
-  "Nail Art",
   "Creative Beauty Looks",
 ] as const;
 
@@ -69,7 +69,7 @@ export default async function About() {
               <h1>
                 Needa —
                 <br />
-                <i>Founder &amp; Beauty Artist at {settings.businessName}</i>
+                <i>Founder &amp; Nail Technician at {settings.businessName}</i>
               </h1>
 
               <p className="lede">Welcome to {settings.businessName}.</p>
@@ -87,7 +87,7 @@ export default async function About() {
 
             <div className="about-hero-mark" aria-hidden="true">
               <span>{brandInitials}</span>
-              <small>Makeup · Hair · Nails</small>
+              <small>Nail Technician</small>
             </div>
           </div>
         </div>
@@ -99,7 +99,7 @@ export default async function About() {
             <div className="portrait-photo">
               <Image
                 src={artist.photoUrl}
-                alt={`${artist.name}, beauty artist at ${settings.businessName}`}
+                alt={`${artist.name}, nail technician at ${settings.businessName}`}
                 fill
                 sizes="(max-width: 760px) 92vw, 40vw"
                 priority
@@ -109,7 +109,7 @@ export default async function About() {
             <div className="portrait-placeholder" aria-hidden="true">
               <div className="portrait-placeholder-inner">
                 <strong className="portrait-monogram">N</strong>
-                <small>{settings.businessName} · Makeup · Hair · Nails</small>
+                <small>{settings.businessName} · Nail Technician</small>
               </div>
             </div>
           )}
@@ -117,7 +117,7 @@ export default async function About() {
           <div className="about-story-content">
             <div className="about-copy">
               <p>
-                I’m Needa, the founder and beauty artist behind{" "}
+                I’m Needa, the founder and nail technician behind{" "}
                 {settings.businessName}.
                 With 5+ years of experience in the beauty industry, my passion
                 is creating personalized beauty looks that help every client
@@ -210,7 +210,7 @@ export default async function About() {
               <p className="eyebrow">My Approach</p>
 
               <h2>
-                I believe makeup and beauty should enhance your individuality,
+                I believe beauty should enhance your individuality,
                 <br />
                 <i>not hide it.</i>
               </h2>
@@ -220,9 +220,10 @@ export default async function About() {
               <p>
                 Every client has their own features, style, personality and
                 vision. I take the time to understand what you are looking for
-                and customize each service accordingly — whether you want a soft
-                natural look, elegant glam, a South Asian bridal transformation,
-                a statement hairstyle or detailed nail art.
+                and customize each service accordingly — whether you want a
+                clean natural manicure, glossy chrome or cat eye, sculpted
+                extensions, or a fully custom set finished with charms and 3D
+                details.
               </p>
 
               <p>
@@ -294,8 +295,7 @@ export default async function About() {
 
           <p className="about-signoff">
             <strong>{settings.businessName.toUpperCase()}</strong>
-            <span>Makeup • Hair • Nails • Bridal Beauty</span>
-            <em>Confident You.</em>
+            <span>Nail Technician • Premium Nail Services</span>
           </p>
 
           <Link className="text-link" href="/book">
