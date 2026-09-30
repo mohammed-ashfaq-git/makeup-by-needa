@@ -1,13 +1,16 @@
 # Hostinger deployment
 
-This application is a Next.js server backed by MySQL. It runs with the repository's existing scripts; it does not use static export, serverless functions, a separate API process, or disk uploads.
+This is a server-rendered Next.js application backed by MySQL. Use Hostinger Node.js Web Apps; do not configure a static export. Uploaded media is stored in MySQL, so no writable upload directory is needed.
 
 ## Before you deploy
 
-1. Use a Hostinger plan that can run a persistent Node.js application and connect to its MySQL database.
-2. Select **Node.js 22.x** where it is available. The application declares a minimum supported version of Node.js `20.9.0`.
-3. Provision a MySQL database and a dedicated database user in Hostinger. Record the database host, port, database name, username, and password from the Hostinger panel. Do not assume the host is `localhost`.
-4. Point the production domain at the Node application and enable HTTPS before serving traffic. The app sends HSTS in production, so the final canonical domain must work over HTTPS first.
+1. Use a Hostinger Business or Cloud plan with Node.js Web Apps, or a VPS with Node.js configured manually.
+2. Select **Next.js** and **Node.js 22.x**. This project requires Node.js `>=20.9.0`.
+3. Connect GitHub repository `mohammed-ashfaq-git/makeup-by-needa`, branch `main`, and set the app root to the repository root.
+4. Set the build command to `npm run build`, the start command to `npm start`, and the output directory to `.next` if Hostinger asks for it. Do not add a custom startup file.
+5. Attach `needabeautylab.com` to the Node.js app and enable HTTPS before serving traffic. The app sends HSTS in production.
+
+Hostinger's current Node.js flow supports Next.js, GitHub deployment, and Node.js 22. See [Deploy a Node.js web app](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Add environment variables](https://www.hostinger.com/support/how-to-add-environment-variables-during-node-js-application-deployment/), and [Connect a Hostinger MySQL database](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/).
 
 ## Required environment variables
 
@@ -15,47 +18,39 @@ Configure these in the hosting control panel, not in the repository:
 
 | Variable | Required | Value |
 | --- | --- | --- |
-| `DATABASE_URL` | Yes | MySQL connection URL, for example `mysql://app_user:password@db-host:3306/makeup_by_needa` |
-| `NEXT_PUBLIC_SITE_URL` | Yes | Final HTTPS canonical URL, for example `https://www.example.com` |
-| `ADMIN_SETUP_SECRET` | Recommended | A long, unique secret required by the one-time first-admin setup flow |
-| `NODE_ENV` | Set by the start command | `production` when running `npm start` |
+| `DATABASE_URL` | Yes | `mysql://u545250591_needabeautylab:<DATABASE_PASSWORD>@<DATABASE_HOST>:3306/u545250591_needa` |
+| `NEXT_PUBLIC_SITE_URL` | Yes | `https://needabeautylab.com` |
+| `ADMIN_SETUP_SECRET` | Recommended | A new, long random secret for the one-time first-admin setup |
+| `NODE_ENV` | Set by Hostinger | `production` |
 
-Use the exact database host shown by Hostinger. Percent-encode reserved characters in the database password when putting it in `DATABASE_URL` (for example, `@` becomes `%40`). Set `NEXT_PUBLIC_SITE_URL` **before** building: it is used for canonical metadata, the XML sitemap, and `robots.txt`. Do not add a trailing path such as `/admin`.
+The database name and username above come from the supplied Hostinger panel screenshot. The screenshot does not show its password or host. Find those in **Websites → Dashboard → Databases → Management**. Hostinger commonly uses `localhost`, but use the host shown in your panel. Percent-encode reserved password characters in `DATABASE_URL` (`@` becomes `%40`). Set `NEXT_PUBLIC_SITE_URL` **before** building because canonical metadata, the sitemap, and `robots.txt` use it.
 
-See [`.env.example`](.env.example) for non-secret example values and local-development-only variables. Never commit a real `.env` file or database password.
+Copy [`.env.example`](.env.example) to a local `.env`, replace the password, host, and `ADMIN_SETUP_SECRET`, then import `.env` in hPanel. Hostinger stores environment values outside Git. `.env` is git-ignored; never commit it or paste real credentials into GitHub. The example file contains the production domain and database identifiers with a password placeholder.
 
 ## Security: rotate old credentials first
 
-Earlier revisions of `.env.example` contained a real TiDB database credential and a weak `ADMIN_SETUP_SECRET`. They remain in the git history, so before going live:
-
-1. Rotate the database user's password in TiDB (or retire that database) and update `DATABASE_URL` wherever it is configured.
-2. Replace `ADMIN_SETUP_SECRET` with a new long random value (for example `openssl rand -base64 32`).
+Earlier repository history included a database credential and a weak `ADMIN_SETUP_SECRET`. Do not reuse any values that were ever committed; rotate any exposed credential and set a fresh `ADMIN_SETUP_SECRET` (for example, `openssl rand -base64 32`).
 
 ## Deploy or update the application
 
-Set the application's working directory to the root of this repository, then run these project scripts in this order after the environment variables are present:
+Hostinger runs the configured install/build commands during GitHub deployment. Set `NEXT_PUBLIC_SITE_URL` before the build. Set database variables before starting the app, then use:
 
 ```bash
 npm install
-npm run db:setup
 npm run build
 npm start
 ```
 
-- `npm run db:setup` runs the committed Drizzle migrations and the idempotent seed script. Run it on the target database before the first start and again when a future release includes a migration.
-- The Needa Beauty Lab release includes migrations `0004_mobile_images` and `0005_rebrand_needa_beauty_lab`. Run `npm run db:setup` once when deploying it, or the live site keeps the old business name stored in the database.
-- `npm run build` creates the production Next.js build.
-- `npm start` runs `next start`; do not hard-code a port. A Node hosting platform should supply `PORT`, which Next.js honours.
-- On a later code deployment with no database migration, run `npm install`, `npm run build`, and restart with `npm start`.
-
-If the selected Hostinger product only accepts a startup-file path and cannot execute an npm start command, confirm its documented Next.js/Node process support with Hostinger before deploying. This repository deliberately has no fabricated `server.js` startup file.
+- `npm run build` creates the production Next.js build in `.next` without requiring a database connection during the build.
+- `npm start` runs database migrations and the idempotent seed script, then starts Next.js. The app process must be able to reach the configured MySQL host. Drizzle tracks completed migrations; the seed script does not overwrite existing CMS content.
+- Do not hard-code a port. A Node hosting platform should supply `PORT`, which Next.js honours.
 
 ## First administrator
 
 After the application is live and the database is migrated, visit:
 
 ```text
-https://your-production-domain/admin/setup
+https://needabeautylab.com/admin/setup
 ```
 
 This page creates the first administrator only while `admin_users` is empty. If `ADMIN_SETUP_SECRET` is configured, enter it during setup. Store the resulting administrator password in a password manager. Once an administrator exists, use `/admin/login`; the setup page will no longer create another account.
@@ -72,7 +67,7 @@ That command updates the named account and invalidates all administrator session
 
 After every production deployment, verify the following using the real HTTPS domain:
 
-1. `/`, `/about`, `/services`, `/gallery`, `/book`, and `/contact` load successfully.
+1. `https://needabeautylab.com/`, `/about`, `/services`, `/gallery`, `/book`, and `/contact` load successfully.
 2. `/robots.txt` allows public pages, disallows `/admin`, and names the HTTPS sitemap URL.
 3. `/sitemap.xml` lists only the six public routes with the canonical HTTPS host.
 4. `/admin` redirects unauthenticated visitors to `/admin/login` and the first-admin setup flow behaves as described above.
@@ -84,7 +79,7 @@ After every production deployment, verify the following using the real HTTPS dom
 - **Build fails with a Node version error:** select Node.js 22.x or any version meeting `>=20.9.0`, reinstall dependencies with `npm install`, then build again.
 - **Database connection error:** recheck `DATABASE_URL`, including URL-encoding of special characters and the database host/port supplied by Hostinger. Ensure the database user has access to the selected schema.
 - **`/admin/setup` says setup is unavailable:** an administrator already exists. Use `/admin/login` or the recovery command from a trusted server shell.
-- **Sitemap or canonical URLs use the wrong domain:** correct `NEXT_PUBLIC_SITE_URL`, rebuild with `npm run build`, and restart the application.
+- **Sitemap or canonical URLs use the wrong domain:** correct `NEXT_PUBLIC_SITE_URL` in hPanel and redeploy so the app rebuilds.
 - **Application does not answer after startup:** ensure the Hostinger process is running `npm start` from the repository root and that the platform-provided `PORT` has not been overridden.
 
 The app stores managed image data in MySQL; there is no writable upload directory to configure on Hostinger.
