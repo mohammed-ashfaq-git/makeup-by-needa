@@ -5,7 +5,7 @@ This is a server-rendered Next.js application backed by MySQL. Use Hostinger Nod
 ## Before you deploy
 
 1. Use a Hostinger Business or Cloud plan with Node.js Web Apps, or a VPS with Node.js configured manually.
-2. Select **Next.js** and **Node.js 22.x**. This project requires Node.js `>=20.9.0`.
+2. Select **Next.js** and **Node.js 22.x (22.12 or newer)**. This project requires Node.js `>=22.12.0`.
 3. Connect GitHub repository `mohammed-ashfaq-git/makeup-by-needa`, branch `main`, and set the app root to the repository root.
 4. Set the build command to `npm run build`, the start command to `npm start`, and the output directory to `.next` if Hostinger asks for it. Do not add a custom startup file.
 5. Attach `needabeautylab.com` to the Node.js app and enable HTTPS before serving traffic. The app sends HSTS in production.
@@ -41,7 +41,7 @@ npm run build
 npm start
 ```
 
-- `npm run build` creates the production Next.js build in `.next` without requiring a database connection during the build.
+- `npm run build` (Webpack) creates the production Next.js build in `.next` without requiring a database connection during the build.
 - `npm start` runs database migrations and the idempotent seed script, then starts Next.js. The app process must be able to reach the configured MySQL host. Drizzle tracks completed migrations; the seed script does not overwrite existing CMS content.
 - Do not hard-code a port. A Node hosting platform should supply `PORT`, which Next.js honours.
 
@@ -76,7 +76,7 @@ After every production deployment, verify the following using the real HTTPS dom
 
 ## Troubleshooting
 
-- **Build fails with a Node version error:** select Node.js 22.x or any version meeting `>=20.9.0`, reinstall dependencies with `npm install`, then build again.
+- **Build fails with a Node version error:** select Node.js 22.x (22.12 or newer), reinstall dependencies with `npm install`, then build again.
 - **Database connection error:** recheck `DATABASE_URL`, including URL-encoding of special characters and the database host/port supplied by Hostinger. Ensure the database user has access to the selected schema.
 - **`/admin/setup` says setup is unavailable:** an administrator already exists. Use `/admin/login` or the recovery command from a trusted server shell.
 - **Sitemap or canonical URLs use the wrong domain:** correct `NEXT_PUBLIC_SITE_URL` in hPanel and redeploy so the app rebuilds.

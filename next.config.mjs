@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+// @ts-check
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -34,7 +34,8 @@ const securityHeaders = [
     : []),
 ];
 
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   poweredByHeader: false,
   experimental: {
     cpus: 1,
