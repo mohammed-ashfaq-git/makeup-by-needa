@@ -33,9 +33,23 @@ export type AdminService = {
   active: boolean;
 };
 
-const CATEGORIES = ["Makeup", "Hair", "Nails"] as const;
+const CATEGORIES = ["Nails", "Makeup", "Hair"] as const;
 
 const COMMON_SUBCATEGORIES = [
+  "Everyday & Event Makeup",
+  "South Asian & Cultural Makeup",
+  "Bridal Makeup",
+  "Bridal Trials",
+  "Bridal Party & Family",
+  "Photoshoot & Content Makeup",
+  "Creative & Special Effects",
+  "Makeup Lessons",
+  "Makeup Add-Ons",
+  "Makeup + Hair Packages",
+  "Basic Hair Styling",
+  "Party & Occasion Hair",
+  "Bridal Hair",
+  "Hair Add-Ons",
   "Natural Nail Services",
   "Nail Extensions",
   "Nail Art",
@@ -372,12 +386,12 @@ function ServiceFormFields({
           <select
             id={`sv-category-${initial?.id ?? "new"}`}
             name="category"
-            defaultValue={initial?.category ?? "Hair"}
+            defaultValue={initial?.category ?? "Nails"}
             className={fieldClass("category", state, "a-select")}
           >
-            <option value="Hair">Hair</option>
-            <option value="Makeup">Makeup</option>
             <option value="Nails">Nails</option>
+            <option value="Makeup">Makeup</option>
+            <option value="Hair">Hair</option>
           </select>
           <FieldError name="category" state={state} />
         </div>
@@ -395,7 +409,7 @@ function ServiceFormFields({
             className={fieldClass("subcategory", state)}
           />
           <span className="hint">
-            Used to group services (e.g. Natural Nail Services, Nail Extensions, Signature Sets).
+            Used to organize the public menu and its filters.
           </span>
           <FieldError name="subcategory" state={state} />
         </div>

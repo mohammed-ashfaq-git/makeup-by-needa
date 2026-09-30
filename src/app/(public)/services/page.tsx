@@ -5,7 +5,7 @@ import {
   ServiceSearch,
   type ServiceSearchItem,
 } from "@/components/service-search";
-import { getSettings } from "@/lib/cms";
+import { getServices, getSettings } from "@/lib/cms";
 import {
   nailMenu,
   nailSectionId,
@@ -14,6 +14,27 @@ import {
 import { auraSections, bookingNotes } from "@/lib/aura-services";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 import styles from "./services.module.css";
+
+const SERVICE_GROUPS = [
+  { id: "nails", label: "Nails" },
+  { id: "makeup", label: "Makeup" },
+  { id: "bridal", label: "Bridal" },
+  { id: "hair", label: "Hair" },
+  { id: "packages", label: "Packages" },
+  { id: "extras", label: "Extras" },
+] as const;
+
+const auraGroupOrder = SERVICE_GROUPS.map((group) => group.label);
+
+function serviceGroup(category: string, subcategory: string, name: string) {
+  const detail = `${subcategory} ${name}`.toLowerCase();
+  if (/package/.test(detail) || category === "Packages") return "Packages";
+  if (/add[- ]?on|extra|removal|touch[- ]?up/.test(detail)) return "Extras";
+  if (category === "Nails") return "Nails";
+  if (category === "Hair") return "Hair";
+  if (/bridal|bride|wedding|trial|bridesmaid|family/.test(detail) || category === "Bridal") return "Bridal";
+  return "Makeup";
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
@@ -40,7 +61,8 @@ export async function generateMetadata(): Promise<Metadata> {
  * bridal and hair menus. Each section has an anchor for search navigation.
  */
 export default async function Services() {
-  const settings = await getSettings();
+  const [settings, cmsServices] = await Promise.all([getSettings(), getServices()]);
+  const useCmsServices = cmsServices.length > 0;
 
   // The price list is branded with the business name and location from the
   // CMS, so the menu never falls back to another studio's copy.
@@ -52,21 +74,55 @@ export default async function Services() {
     .slice(0, 3)
     .toUpperCase();
 
-  /** Everything the search panel can find and jump to. */
-  const searchItems: ServiceSearchItem[] = [...nailServiceSections.flatMap(
-    (section) =>
-      section.items.map((item) => ({
-        id: `${nailSectionId(section)}-${item.name}`,
-        name: item.name,
-        price: item.price,
-        description: item.description,
-        group: section.title,
-        href: `#${nailSectionId(section)}`,
-      })),
-  ), ...auraSections.flatMap((section) => section.items.map((item, index) => ({
-    id: `aura-${section.id}-${index}`, name: item.name, price: item.price,
-    description: item.description, group: section.title, href: `#aura-${section.id}`,
-  })))];
+  /** Keep filters broad while each result still jumps to its details. */
+  const searchItems: ServiceSearchItem[] = useCmsServices
+    ? cmsServices.map((service) => {
+        const group = serviceGroup(service.category, service.subcategory ?? "", service.name);
+        const groupId = SERVICE_GROUPS.find((candidate) => candidate.label === group)?.id ?? "makeup";
+        return {
+          id: `cms-${service.id}`,
+          name: service.name,
+          price: service.priceDisplay,
+          description: service.shortDescription || service.description,
+          group,
+          href: `#services-${groupId}`,
+        };
+      })
+    : [
+        ...nailServiceSections.flatMap((section) =>
+          section.items.map((item) => ({
+            id: `${nailSectionId(section)}-${item.name}`,
+            name: item.name,
+            price: item.price,
+            description: item.description,
+            group: "Nails",
+            href: `#${nailSectionId(section)}`,
+          })),
+        ),
+        ...auraSections.flatMap((section) =>
+          section.items.map((item, index) => ({
+            id: `aura-${section.id}-${index}`,
+            name: item.name,
+            price: item.price,
+            description: item.description,
+            group: serviceGroup(section.category, section.title, item.name),
+            href: `#aura-${section.id}`,
+          })),
+        ),
+      ];
+
+  const orderedCmsServices = SERVICE_GROUPS.map((group) => ({
+    ...group,
+    services: cmsServices.filter(
+      (service) => serviceGroup(service.category, service.subcategory ?? "", service.name) === group.label,
+    ),
+  })).filter((group) => group.services.length > 0);
+  const orderedAuraSections = [...auraSections].sort((a, b) => {
+    const groupA = serviceGroup(a.category, a.title, "");
+    const groupB = serviceGroup(b.category, b.title, "");
+    return auraGroupOrder.indexOf(groupA as (typeof auraGroupOrder)[number]) -
+      auraGroupOrder.indexOf(groupB as (typeof auraGroupOrder)[number]);
+  });
 
   return (
     <div className={styles.scope}>
@@ -93,8 +149,14 @@ export default async function Services() {
                   Book Your Appointment
                 </Link>
 
-                <a className="text-link" href="#nail-menu">Nail price list <b>→</b></a>
-                <a className="text-link" href="#aura-menu">Makeup &amp; hair price list <b>→</b></a>
+                {useCmsServices ? (
+                  <a className="text-link" href="#aura-menu">Browse service categories <b aria-hidden="true">&rarr;</b></a>
+                ) : (
+                  <>
+                    <a className="text-link" href="#nail-menu">Nail price list <b aria-hidden="true">&rarr;</b></a>
+                    <a className="text-link" href="#aura-menu">Makeup &amp; hair price list <b aria-hidden="true">&rarr;</b></a>
+                  </>
+                )}
               </div>
 
               <div className="services-hero-meta">
@@ -110,25 +172,58 @@ export default async function Services() {
           </div>
         </section>
 
-        {/* ---- Search across the price list ---- */}
-        <ServiceSearch
-          items={searchItems}
-          groups={[...nailServiceSections.map((section) => section.title), ...auraSections.map((section) => section.title)]}
-        />
-
         <section className="nail-menu" id="aura-menu">
           <div className="shell">
             <header className="nail-menu-header">
               <p className="eyebrow">Aura Beauty · Confident You</p>
               <p className="nail-menu-brand">MAKEUP • NAILS • HAIR • BRIDAL</p>
-              <h2>Makeup, hair &amp; bridal services</h2>
-              <p>Two supplied makeup menus are shown separately where prices differ. Please confirm your final quote when booking.</p>
+              <h2>{useCmsServices ? "Services & pricing" : "Makeup, hair &amp; bridal services"}</h2>
+              <p>{useCmsServices ? "Choose a category to explore current services and pricing." : "Two supplied makeup menus are shown separately where prices differ. Please confirm your final quote when booking."}</p>
             </header>
-            <nav className="nail-menu-toc" aria-label="Makeup and hair service categories">
-              {auraSections.map((section) => <a key={section.id} href={`#aura-${section.id}`}>{section.emoji} {section.title}</a>)}
-              <a href="#aura-location">On-location</a><a href="#aura-booking">Booking information</a>
-            </nav>
-            {auraSections.map((section) => (
+          </div>
+
+          {/* The search filters replace the duplicate Aura category links. */}
+          <ServiceSearch
+            items={searchItems}
+            groups={[...SERVICE_GROUPS]}
+          />
+
+          {useCmsServices ? (
+            <div className={`shell ${styles.cmsServiceGroups}`}>
+              {orderedCmsServices.map((group) => (
+                <section className="nail-section" id={`services-${group.id}`} key={group.id}>
+                  <div className="nail-section-heading"><h3>{group.label}</h3></div>
+                  {group.services.map((service) => (
+                    <article className="nail-item" id={`cms-service-${service.id}`} key={service.id}>
+                      <div className="nail-item-row-main">
+                        <div className="nail-item-info">
+                          <h4 className="nail-item-name">{service.name}</h4>
+                          <div className="nail-item-price">{service.priceDisplay}</div>
+                        </div>
+                        <div className="nail-item-btn-wrapper">
+                          <AddToEnquiryButton service={{
+                            name: service.name,
+                            category: service.category,
+                            subcategory: service.subcategory,
+                            price: service.priceDisplay,
+                          }} />
+                        </div>
+                      </div>
+                      {(service.shortDescription || service.description) && (
+                        <p className="nail-item-desc">{service.shortDescription || service.description}</p>
+                      )}
+                      {service.details.length > 0 && (
+                        <ul className={styles.details}>{service.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>
+                      )}
+                    </article>
+                  ))}
+                </section>
+              ))}
+            </div>
+          ) : null}
+
+          {!useCmsServices && <div className="shell">
+            {orderedAuraSections.map((section) => (
               <section className="nail-section" id={`aura-${section.id}`} key={section.id}>
                 <div className="nail-section-heading"><span aria-hidden="true">{section.emoji}</span><h3>{section.title}</h3></div>
                 {section.items.map((item, index) => (
@@ -153,11 +248,11 @@ export default async function Services() {
               <div className="nail-section-heading"><span aria-hidden="true">📌</span><h3>Booking Information</h3></div>
               <ul className={styles.details}>{bookingNotes.map((note) => <li key={note}>{note}</li>)}</ul>
             </section>
-          </div>
+          </div>}
         </section>
 
         {/* ---- Premium Nail Services & Price List ---- */}
-        <section className="nail-menu" id="nail-menu">
+        {!useCmsServices && <section className="nail-menu" id="nail-menu">
           <div className="shell">
             <header className="nail-menu-header">
               <p className="eyebrow">Price List</p>
@@ -229,7 +324,7 @@ export default async function Services() {
               </div>
             </div>
           </div>
-        </section>
+        </section>}
 
         <section className="services-closing">
           <div className="shell">

@@ -66,7 +66,7 @@ export function SiteHeader({
         <button
           className="menu-button"
           onClick={() => setOpen(!open)}
-          aria-label="Toggle navigation"
+          aria-label={open ? "Close navigation" : "Open navigation"}
           aria-expanded={open}
         >
           <i />

@@ -15,9 +15,13 @@ export type ServiceSearchItem = {
 
 const ALL = "All";
 
+export type ServiceSearchGroup = {
+  id: string;
+  label: string;
+};
+
 /**
- * Search across the nail price list. The chips are the price-list sections
- * themselves (passed in `groups`), so they can never drift from the menu.
+ * Search the active services menu with a concise, looping set of filters.
  *
  * The result list only appears once a filter is active — until then the page
  * below is the menu, and this panel is a fast way to find one entry and jump
@@ -28,16 +32,17 @@ export function ServiceSearch({
   groups,
 }: {
   items: ServiceSearchItem[];
-  /** Section titles in menu order; each becomes a filter chip. */
-  groups: string[];
+  /** A short, ordered set of customer-facing category filters. */
+  groups: ServiceSearchGroup[];
 }) {
   const [query, setQuery] = useState("");
   const [chip, setChip] = useState<string>(ALL);
+  const [paused, setPaused] = useState(false);
 
-  const chips = useMemo(
-    () => [ALL, ...groups.filter((group) => items.some((item) => item.group === group))],
-    [groups, items],
-  );
+  const chips = useMemo(() => [
+    { id: ALL, label: ALL },
+    ...groups.filter((group) => items.some((item) => item.group === group.label)),
+  ], [groups, items]);
 
   const trimmedQuery = query.trim().toLowerCase();
   const filtering = trimmedQuery !== "" || chip !== ALL;
@@ -47,7 +52,7 @@ export function ServiceSearch({
     const needle = trimmedQuery;
 
     return items.filter((item) => {
-      if (chip !== ALL && item.group !== chip) return false;
+      if (chip !== ALL && item.group !== groups.find((group) => group.id === chip)?.label) return false;
       if (!needle) return true;
 
       return (
@@ -56,7 +61,7 @@ export function ServiceSearch({
         (item.description?.toLowerCase().includes(needle) ?? false)
       );
     });
-  }, [chip, items, trimmedQuery]);
+  }, [chip, groups, items, trimmedQuery]);
 
   const clear = () => {
     setQuery("");
@@ -72,8 +77,7 @@ export function ServiceSearch({
           <h2>Search the price list.</h2>
 
           <p className="service-search-lede">
-            Nail, makeup and hair services in one list. Search by name, or filter by
-            section and jump straight to the details.
+            Search by name or choose a category to jump to service details.
           </p>
         </header>
 
@@ -95,21 +99,44 @@ export function ServiceSearch({
             />
           </div>
 
-          <div className="service-search-chips" role="group" aria-label="Filter by section">
-            {chips.map((option) => (
-              <button
-                key={option}
-                type="button"
-                className={`service-search-chip${
-                  option === chip ? " is-active" : ""
-                }`}
-                onClick={() => setChip(option)}
-                aria-pressed={option === chip}
-              >
-                {option}
-              </button>
-            ))}
+          <div
+            className={`service-search-marquee${paused ? " is-paused" : ""}`}
+            onPointerEnter={() => setPaused(true)}
+          >
+            <div className="service-search-marquee-track">
+              {[0, 1].map((copy) => (
+                <div
+                  className="service-search-chips"
+                  role={copy === 0 ? "group" : undefined}
+                  aria-label={copy === 0 ? "Filter by service category" : undefined}
+                  aria-hidden={copy === 1 ? true : undefined}
+                  key={copy}
+                >
+                  {chips.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className={`service-search-chip${option.id === chip ? " is-active" : ""}`}
+                      onClick={() => copy === 0 && setChip(option.id)}
+                      aria-pressed={copy === 0 ? option.id === chip : undefined}
+                      tabIndex={copy === 0 ? undefined : -1}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
+
+          <button
+            type="button"
+            className="service-search-motion-toggle"
+            onClick={() => setPaused((current) => !current)}
+            aria-pressed={paused}
+          >
+            {paused ? "Play categories" : "Pause categories"}
+          </button>
 
           <div className="service-search-status">
             {filtering ? (

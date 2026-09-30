@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, TouchEvent as ReactTouchEvent } from "react";
+import type { TouchEvent as ReactTouchEvent } from "react";
 import {
   useCallback,
   useEffect,
@@ -12,15 +12,15 @@ import {
 import { useMediaQuery } from "@/components/responsive-image";
 import { ServiceCard, type ServiceCardData } from "@/components/service-card";
 
-/** The homepage slideshow shows at most this many cards. */
-const MAX_SLIDES = 10;
+/** The homepage slideshow shows the six featured service collections. */
+const MAX_SLIDES = 6;
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 /** Must match the `--per-view` breakpoints in globals.css. */
 const TABLET_QUERY = "(max-width: 1100px)";
 const MOBILE_QUERY = "(max-width: 760px)";
 
-const AUTOPLAY_MS = 5000;
+const AUTOPLAY_MS = 3000;
 /** Time the wrap-around cross-fade needs before the track is re-seated. */
 const RESEAT_MS = 200;
 /** How long a touch holds autoplay after the finger leaves the screen. */
@@ -227,7 +227,6 @@ export function ServiceCarousel({
   return (
     <section
       className={`service-carousel${reseating ? " is-reseating" : ""}`}
-      style={{ "--per-view": perView } as CSSProperties}
       role="region"
       aria-roledescription="carousel"
       aria-label={`${label} slideshow`}
@@ -271,21 +270,9 @@ export function ServiceCarousel({
 
       {canAdvance ? (
         <div className="service-carousel-controls">
-          <button
-            type="button"
-            className="service-carousel-arrow service-carousel-arrow-prev"
-            onClick={goPrev}
-            aria-label="Previous services"
-          >
-            <span aria-hidden="true">‹</span>
-          </button>
+          
 
           <div className="service-carousel-progress">
-            <span className="service-carousel-counter">
-              {String(active + 1).padStart(2, "0")}
-              <i> / {String(count).padStart(2, "0")}</i>
-            </span>
-
             <div className="service-carousel-pagination">
               {items.map((entry, index) => (
                 <button
@@ -302,14 +289,7 @@ export function ServiceCarousel({
             </div>
           </div>
 
-          <button
-            type="button"
-            className="service-carousel-arrow service-carousel-arrow-next"
-            onClick={goNext}
-            aria-label="Next services"
-          >
-            <span aria-hidden="true">›</span>
-          </button>
+          
         </div>
       ) : null}
     </section>

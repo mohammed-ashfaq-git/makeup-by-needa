@@ -204,10 +204,8 @@ export const getSettings = cache(async (): Promise<PublicSettings> => {
 /* ------------------------------------------------------------------ */
 
 /**
- * CMS services table. Used by the admin only: the public website publishes
- * the nail price list in `lib/nail-services.ts`, so leftover rows in this
- * table can never appear on the public site. Without a database there is
- * nothing to manage, so the result is simply empty.
+ * Active CMS services power the public services menu. If no active records
+ * exist, the public page falls back to its supplied starter price lists.
  */
 export const getServices = cache(
   async (options?: { activeOnly?: boolean }): Promise<PublicService[]> => {

@@ -23,12 +23,7 @@ export default async function AdminServicesPage() {
       <div className="admin-page-head">
         <div>
           <h1>Services</h1>
-          <p>
-            Internal service records. The public website now publishes only the
-            Premium Nail Services &amp; Price List, which is maintained in the
-            site code (<code>src/lib/nail-services.ts</code>) — changes made here
-            are <strong>not</strong> shown on the public site.
-          </p>
+          <p>Manage active services and prices shown on the public price list. Services appear in this order: Nails, Makeup, Bridal, Hair, Packages, then Extras. Use the reorder controls within each category to set the display order.</p>
         </div>
       </div>
 
