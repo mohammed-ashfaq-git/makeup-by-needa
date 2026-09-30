@@ -18,14 +18,14 @@ Configure these in the hosting control panel, not in the repository:
 
 | Variable | Required | Value |
 | --- | --- | --- |
-| `DATABASE_URL` | Yes | `mysql://u545250591_needabeautylab:<DATABASE_PASSWORD>@<DATABASE_HOST>:3306/u545250591_needa` |
+| `DATABASE_URL` | Yes | `mysql://u545250591_needabeautylab:<DATABASE_PASSWORD>@srv1128.hstgr.io:3306/u545250591_needa` |
 | `NEXT_PUBLIC_SITE_URL` | Yes | `https://needabeautylab.com` |
 | `ADMIN_SETUP_SECRET` | Recommended | A new, long random secret for the one-time first-admin setup |
 | `NODE_ENV` | Set by Hostinger | `production` |
 
-The database name and username above come from the supplied Hostinger panel screenshot. The screenshot does not show its password or host. Find those in **Websites → Dashboard → Databases → Management**. Hostinger commonly uses `localhost`, but use the host shown in your panel. Percent-encode reserved password characters in `DATABASE_URL` (`@` becomes `%40`). Set `NEXT_PUBLIC_SITE_URL` **before** building because canonical metadata, the sitemap, and `robots.txt` use it.
+The database name, username, and host above were supplied for this deployment. Only the database password is missing; set it privately in Hostinger and never commit it. Percent-encode reserved password characters in `DATABASE_URL` (`@` becomes `%40`). Set `NEXT_PUBLIC_SITE_URL` **before** building because canonical metadata, the sitemap, and `robots.txt` use it.
 
-Copy [`.env.example`](.env.example) to a local `.env`, replace the password, host, and `ADMIN_SETUP_SECRET`, then import `.env` in hPanel. Hostinger stores environment values outside Git. `.env` is git-ignored; never commit it or paste real credentials into GitHub. The example file contains the production domain and database identifiers with a password placeholder.
+Copy [`.env.example`](.env.example) to a local `.env`, replace the password and `ADMIN_SETUP_SECRET`, then import `.env` in hPanel. Hostinger stores environment values outside Git. `.env` is git-ignored; never commit it or paste real credentials into GitHub. The example file contains the production domain and database identifiers with a password placeholder.
 
 ## Security: rotate old credentials first
 
@@ -33,16 +33,17 @@ Earlier repository history included a database credential and a weak `ADMIN_SETU
 
 ## Deploy or update the application
 
-Hostinger runs the configured install/build commands during GitHub deployment. Set `NEXT_PUBLIC_SITE_URL` before the build. Set database variables before starting the app, then use:
+Hostinger runs the build command during deployment. Set `DATABASE_URL` and `NEXT_PUBLIC_SITE_URL` in the Hostinger environment. From the repository root, run these commands in order:
 
 ```bash
 npm install
+npm run db:setup
 npm run build
 npm start
 ```
 
-- `npm run build` (Webpack) creates the production Next.js build in `.next` without requiring a database connection during the build.
-- `npm start` runs database migrations and the idempotent seed script, then starts Next.js. The app process must be able to reach the configured MySQL host. Drizzle tracks completed migrations; the seed script does not overwrite existing CMS content.
+- `npm run db:setup` applies Drizzle migrations and idempotently seeds initial CMS content. Run it when deploying and whenever a release adds migrations. It requires a valid `DATABASE_URL` and database access.
+- `npm run build` creates the production Next.js build in `.next` using Webpack; it does not connect to MySQL. The public routes render dynamically and use CMS data at request time.
 - Do not hard-code a port. A Node hosting platform should supply `PORT`, which Next.js honours.
 
 ## First administrator
