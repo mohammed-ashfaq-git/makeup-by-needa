@@ -20,6 +20,7 @@ import {
   testimonials as testimonialsTable,
 } from "@/lib/db/schema";
 import { queryWithFallback } from "@/lib/db";
+import { mergePageContent, type PageContent } from "@/lib/page-content";
 import {
   artist as staticArtist,
   business,
@@ -54,6 +55,18 @@ export type PublicSettings = {
   homeDescription: string;
   footerText: string;
 };
+
+export type { PageContent } from "@/lib/page-content";
+
+export const getPageContent = cache(async (): Promise<PageContent> => {
+  const rows = await queryWithFallback((db) =>
+    db.select({ pageContentJson: siteSettings.pageContentJson })
+      .from(siteSettings)
+      .where(eq(siteSettings.id, 1))
+      .limit(1),
+  );
+  return mergePageContent(rows?.[0]?.pageContentJson ?? null);
+});
 
 export type PublicService = {
   id: number;

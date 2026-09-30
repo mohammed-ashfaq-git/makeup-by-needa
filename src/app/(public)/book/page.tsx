@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { EnquiryForm } from "@/components/enquiry-form";
-import { getArtist, getFaqs, getSettings } from "@/lib/cms";
+import { getArtist, getFaqs, getPageContent, getSettings } from "@/lib/cms";
 import { nailServiceSections } from "@/lib/nail-services";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
@@ -25,22 +25,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Book() {
-  const [settings, faqs, artist] = await Promise.all([
+  const [settings, faqs, artist, content] = await Promise.all([
     getSettings(),
     getFaqs(),
     getArtist(),
+    getPageContent(),
   ]);
 
   return (
     <>
       <section className="page-hero shell">
         <p className="eyebrow">Appointment enquiry</p>
-        <h1>
-          Tell me about <i>your moment.</i>
-        </h1>
+        <h1>{content.bookingTitle}</h1>
         <p className="lede">
-          This is an enquiry, not a confirmed booking. Availability and final
-          details will be confirmed with you directly.
+          {content.bookingIntroduction} This is an enquiry, not a confirmed booking. Availability and final details will be confirmed with you directly.
         </p>
       </section>
 

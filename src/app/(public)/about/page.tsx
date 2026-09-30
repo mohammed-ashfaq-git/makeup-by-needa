@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
-import { getArtist, getSettings } from "@/lib/cms";
+import { getArtist, getPageContent, getSettings } from "@/lib/cms";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -49,7 +49,7 @@ const experienceHighlights = [
 ] as const;
 
 export default async function About() {
-  const [artist, settings] = await Promise.all([getArtist(), getSettings()]);
+  const [artist, settings, content] = await Promise.all([getArtist(), getSettings(), getPageContent()]);
 
   const brandInitials = settings.businessName
     .split(/\s+/)
@@ -66,13 +66,9 @@ export default async function About() {
             <div>
               <p className="eyebrow">Meet the Artist</p>
 
-              <h1>
-                Needa —
-                <br />
-                <i>Founder &amp; Nail Technician at {settings.businessName}</i>
-              </h1>
+              <h1>{content.aboutTitle.replace("Needa Beauty Lab", settings.businessName).replace(/^Needa/, artist.name)}</h1>
 
-              <p className="lede">Welcome to {settings.businessName}.</p>
+              <p className="lede">{content.aboutIntroduction.replace("Needa Beauty Lab", settings.businessName)}</p>
 
               <div className="about-hero-actions">
                 <Link className="button" href="/book">
@@ -116,13 +112,7 @@ export default async function About() {
 
           <div className="about-story-content">
             <div className="about-copy">
-              <p>
-                I’m Needa, the founder and nail technician behind{" "}
-                {settings.businessName}.
-                With 5+ years of experience in the beauty industry, my passion
-                is creating personalized beauty looks that help every client
-                feel confident, comfortable and beautiful.
-              </p>
+              <p>{content.aboutStory.replaceAll("Needa Beauty Lab", settings.businessName).replaceAll("Needa", artist.name)}</p>
 
               <p>
                 My professional beauty education began in India, where I

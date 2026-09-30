@@ -8,6 +8,7 @@ import { logoutAction } from "@/lib/actions/auth";
 const NAV: { label: string; href: string; exact?: boolean }[] = [
   { label: "Dashboard", href: "/admin", exact: true },
   { label: "Website Settings", href: "/admin/settings" },
+  { label: "Page Content", href: "/admin/content" },
   { label: "Artist / Bio", href: "/admin/artist" },
   { label: "Services", href: "/admin/services" },
   { label: "Gallery", href: "/admin/gallery" },

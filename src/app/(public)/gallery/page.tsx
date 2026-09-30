@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Gallery } from "@/components/gallery";
-import { getGalleryItems, getSettings } from "@/lib/cms";
+import { getGalleryItems, getPageContent, getSettings } from "@/lib/cms";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,9 +24,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GalleryPage() {
-  const [items, settings] = await Promise.all([
+  const [items, settings, content] = await Promise.all([
     getGalleryItems(),
     getSettings(),
+    getPageContent(),
   ]);
 
   return (
@@ -37,15 +38,10 @@ export default async function GalleryPage() {
             <div>
               <p className="eyebrow">Portfolio · Nail Technician</p>
 
-              <h1>
-                Moments, made
-                <br />
-                <i>memorable.</i>
-              </h1>
+              <h1>{content.galleryTitle}</h1>
 
               <p className="lede">
-                A growing collection of beauty work, from refined everyday
-                details to the artistry created for meaningful occasions.
+                {content.galleryIntroduction}
               </p>
 
               <div className="gallery-hero-meta">

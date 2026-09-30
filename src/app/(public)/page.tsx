@@ -8,6 +8,7 @@ import { ServiceCarousel } from "@/components/service-carousel";
 import {
   getArtist,
   getGalleryItems,
+  getPageContent,
   getSettings,
   getTestimonials,
 } from "@/lib/cms";
@@ -76,11 +77,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [settings, galleryItems, testimonials, artist] = await Promise.all([
+  const [settings, galleryItems, testimonials, artist, content] = await Promise.all([
     getSettings(),
     getGalleryItems(),
     getTestimonials(),
     getArtist(),
+    getPageContent(),
   ]);
 
   // Homepage slideshow: six looping slides, one per showcase section of the
@@ -137,16 +139,9 @@ export default async function Home() {
           <div className="hero-copy">
             <p className="eyebrow">Nail Technician · {settings.businessName}</p>
 
-            <h1>
-              Beauty, artistry &amp; confidence —
-              <i> created just for you.</i>
-            </h1>
+            <h1>{content.homeHeroTitle}</h1>
 
-            <p className="lede">
-              Premium gel manicures, extensions, nail art and signature sets —
-              thoughtfully tailored to your style and every occasion worth
-              remembering.
-            </p>
+            <p className="lede">{content.homeHeroDescription}</p>
 
             <div className="actions">
               <Link className="button" href="/book">
@@ -218,16 +213,12 @@ export default async function Home() {
           <div className="intro-content">
             <SectionHeading
               eyebrow="A thoughtful experience"
-              title="Refined artistry, made to feel like you."
-              text="Every appointment begins with listening: your vision, your occasion, and the details that make you feel most yourself."
+              title={content.homeIntroTitle}
+              text={content.homeIntroDescription}
             />
 
             <div className="intro-note">
-              <p>
-                From a clean gel manicure to a fully custom luxury set, each
-                appointment is approached with care and tailored to your
-                personal style.
-              </p>
+              <p>{content.homeIntroNote}</p>
 
               <Link className="text-link" href="/about">
                 Discover {settings.businessName} <b>→</b>
@@ -247,8 +238,8 @@ export default async function Home() {
           <div className="row-heading">
             <SectionHeading
               eyebrow="Services"
-              title="Premium nail services."
-              text="From natural nail care to signature sets. Choose a collection to see its full price list."
+              title={content.homeServicesTitle}
+              text={content.homeServicesDescription}
             />
 
             <Link className="text-link" href="/services">
@@ -272,8 +263,8 @@ export default async function Home() {
           <div className="row-heading">
             <SectionHeading
               eyebrow="Selected work"
-              title="The beauty is in the details."
-              text="A growing portfolio of work by Needa."
+              title={content.homePortfolioTitle}
+              text={content.homePortfolioDescription}
             />
 
             <Link className="text-link" href="/gallery">
@@ -300,8 +291,8 @@ export default async function Home() {
             <div className="row-heading">
               <SectionHeading
                 eyebrow="Kind words"
-                title="Loved by clients."
-                text="What clients say about their experience."
+                title={content.homeTestimonialsTitle}
+                text={content.homeTestimonialsDescription}
               />
             </div>
 
@@ -353,13 +344,10 @@ export default async function Home() {
           <div>
             <p className="eyebrow">The {settings.businessName} approach</p>
 
-            <h2>
-              Intentional from the first conversation to the final touch.
-            </h2>
+            <h2>{content.homeApproachTitle}</h2>
 
             <p className="lede">
-              Your appointment should feel considered, comfortable, and
-              completely personal.
+              {content.homeApproachDescription}
             </p>
           </div>
 
@@ -390,11 +378,10 @@ export default async function Home() {
           <div className="social-home-intro">
             <p className="eyebrow">Follow the artistry</p>
 
-            <h2>Beauty beyond the appointment.</h2>
+            <h2>{content.homeSocialTitle}</h2>
 
             <p className="lede">
-              Follow the official Instagram channels for the latest sets,
-              portfolio updates and nail inspiration.
+              {content.homeSocialDescription}
             </p>
           </div>
 
@@ -465,12 +452,10 @@ export default async function Home() {
         <div className="shell">
           <p className="eyebrow">Your appointment</p>
 
-          <h2>Let&apos;s create something beautiful.</h2>
+          <h2>{content.homeCtaTitle}</h2>
 
           <p className="lede">
-            Share a few details about your occasion, preferred service, and
-            the set you have in mind. {artist.name} will review your enquiry and connect
-            with you directly.
+            {content.homeCtaDescription.replace("Needa", artist.name)}
           </p>
 
           <Link className="button light" href="/book">

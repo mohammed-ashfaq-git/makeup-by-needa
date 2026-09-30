@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getSettings } from "@/lib/cms";
+import { getPageContent, getSettings } from "@/lib/cms";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
 
@@ -120,7 +120,7 @@ function SparkleSvg() {
 }
 
 export default async function Contact() {
-  const business = await getSettings();
+  const [business, content] = await Promise.all([getSettings(), getPageContent()]);
 
   const whatsappUrl = buildWhatsAppUrl(
     business.whatsappNumber,
@@ -579,14 +579,10 @@ export default async function Contact() {
             <div className="contact-hero-copy">
               <p className="eyebrow">Contact &amp; Connect</p>
 
-              <h1>
-                Start with a <i>conversation.</i>
-              </h1>
+              <h1>{content.contactTitle}</h1>
 
               <p className="lede">
-                For appointment bookings and service enquiries, share your
-                details through the enquiry form or connect directly through
-                the official channels below.
+                {content.contactIntroduction}
               </p>
             </div>
 

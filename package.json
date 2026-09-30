@@ -7,8 +7,9 @@
   },
   "scripts": {
     "dev": "next dev --webpack",
+    "prebuild": "npm run db:setup",
     "build": "next build --webpack",
-    "hostinger:build": "npm run db:setup && npm run build",
+    "hostinger:build": "npm run build",
     "start": "next start",
     "lint": "eslint",
     "setup": "bash scripts/setup.sh",
@@ -33,8 +34,6 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "dotenv": "^18.0.1",
-    "drizzle-kit": "^0.31.10",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

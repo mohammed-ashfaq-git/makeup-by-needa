@@ -106,6 +106,8 @@ export const siteSettings = mysqlTable("site_settings", {
   facebookUrl: varchar("facebook_url", { length: 500 }),
   homeTitle: varchar("home_title", { length: 255 }).notNull(),
   homeDescription: varchar("home_description", { length: 500 }).notNull(),
+  /** Structured public page copy edited in the CMS. */
+  pageContentJson: text("page_content_json"),
   footerText: varchar("footer_text", { length: 500 }).notNull(),
   updatedAt: datetime("updated_at", { mode: "string" })
     .notNull()

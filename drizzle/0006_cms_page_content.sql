@@ -1,0 +1,1 @@
+ALTER TABLE `site_settings` ADD `page_content_json` text;

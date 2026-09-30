@@ -5,7 +5,7 @@ import {
   ServiceSearch,
   type ServiceSearchItem,
 } from "@/components/service-search";
-import { getServices, getSettings } from "@/lib/cms";
+import { getPageContent, getServices, getSettings } from "@/lib/cms";
 import {
   nailMenu,
   nailSectionId,
@@ -61,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * bridal and hair menus. Each section has an anchor for search navigation.
  */
 export default async function Services() {
-  const [settings, cmsServices] = await Promise.all([getSettings(), getServices()]);
+  const [settings, cmsServices, content] = await Promise.all([getSettings(), getServices(), getPageContent()]);
   const useCmsServices = cmsServices.length > 0;
 
   // The price list is branded with the business name and location from the
@@ -132,16 +132,10 @@ export default async function Services() {
             <div className="services-hero-copy">
               <p className="eyebrow">{brandName} · Services &amp; Price List</p>
 
-              <h1>
-                Beauty services
-                <br />
-                &amp; <i>price list.</i>
-              </h1>
+              <h1>{content.servicesTitle}</h1>
 
               <p className="lede">
-                Explore makeup, bridal, hair and nail services with transparent
-                pricing. From everyday glam to your wedding day, find a look
-                that feels like you.
+                {content.servicesIntroduction}
               </p>
 
               <div className="services-hero-actions">
