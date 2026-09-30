@@ -7,7 +7,7 @@ This is a server-rendered Next.js application backed by MySQL. Use Hostinger Nod
 1. Use a Hostinger Business or Cloud plan with Node.js Web Apps, or a VPS with Node.js configured manually.
 2. Select **Next.js** and **Node.js 22.x (22.12 or newer)**. This project requires Node.js `>=22.12.0`.
 3. Connect GitHub repository `mohammed-ashfaq-git/makeup-by-needa`, branch `main`, and set the app root to the repository root.
-4. Set the build command to `npm run build`, the start command to `npm start`, and the output directory to `.next` if Hostinger asks for it. Do not add a custom startup file.
+4. Set the build command to `npm run hostinger:build`, the start command to `npm start`, and the output directory to `.next` if Hostinger asks for it. Do not add a custom startup file.
 5. Attach `needabeautylab.com` to the Node.js app and enable HTTPS before serving traffic. The app sends HSTS in production.
 
 Hostinger's current Node.js flow supports Next.js, GitHub deployment, and Node.js 22. See [Deploy a Node.js web app](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/), [Add environment variables](https://www.hostinger.com/support/how-to-add-environment-variables-during-node-js-application-deployment/), and [Connect a Hostinger MySQL database](https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/).
@@ -33,17 +33,16 @@ Earlier repository history included a database credential and a weak `ADMIN_SETU
 
 ## Deploy or update the application
 
-Hostinger runs the build command during deployment. Set `DATABASE_URL` and `NEXT_PUBLIC_SITE_URL` in the Hostinger environment. From the repository root, run these commands in order:
+Set `DATABASE_URL` and `NEXT_PUBLIC_SITE_URL` in the Hostinger environment before deployment. Hostinger managed Node.js plans do not allow npm commands over SSH, so set the Build command to `npm run hostinger:build`. That script applies migrations and seeds CMS data before running the normal Next.js build.
 
 ```bash
 npm install
-npm run db:setup
-npm run build
+npm run hostinger:build
 npm start
 ```
 
-- `npm run db:setup` applies Drizzle migrations and idempotently seeds initial CMS content. Run it when deploying and whenever a release adds migrations. It requires a valid `DATABASE_URL` and database access.
-- `npm run build` creates the production Next.js build in `.next` using Webpack; it does not connect to MySQL. The public routes render dynamically and use CMS data at request time.
+- `npm run hostinger:build` runs `npm run db:setup` and then `npm run build`. It requires a valid `DATABASE_URL` and a database reachable during Hostinger deployment.
+- `npm run build` alone creates the production Next.js build in `.next` using Webpack and does not connect to MySQL. This keeps local builds independent from database availability.
 - Do not hard-code a port. A Node hosting platform should supply `PORT`, which Next.js honours.
 
 ## First administrator

@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
+    "hostinger:build": "npm run db:setup && npm run build",
     "start": "next start",
     "lint": "eslint",
     "setup": "bash scripts/setup.sh",
