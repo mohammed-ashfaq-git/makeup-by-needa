@@ -9,6 +9,7 @@ import {
   getArtist,
   getGalleryItems,
   getPageContent,
+  getServices,
   getSettings,
   getTestimonials,
 } from "@/lib/cms";
@@ -57,6 +58,20 @@ function StarIcon({ filled }: { filled: boolean }) {
   );
 }
 
+function startingPriceFromServices(
+  services: { priceDisplay: string }[],
+): string {
+  const prices = services.flatMap((service) => {
+    const match = service.priceDisplay.match(/\$([\d,]+(?:\.\d{1,2})?)(?:\+)?(\/nail)?/i);
+    if (!match) return [];
+    return [{ amount: Number(match[1].replace(/,/g, "")), displayAmount: match[1], unit: match[2] ?? "" }];
+  });
+
+  prices.sort((a, b) => a.amount - b.amount);
+  const lowest = prices[0];
+  return lowest ? `From $${lowest.displayAmount}${lowest.unit}` : "See price list";
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   const canonicalUrl = getAbsoluteSiteUrl("/");
@@ -77,25 +92,43 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [settings, galleryItems, testimonials, artist, content] = await Promise.all([
+  const [settings, galleryItems, testimonials, artist, content, cmsServices] = await Promise.all([
     getSettings(),
     getGalleryItems(),
     getTestimonials(),
     getArtist(),
     getPageContent(),
+    getServices(),
   ]);
 
   // Homepage slideshow: six looping slides, one per showcase section of the
-  // nail price list. Each card deep-links to its section on /services.
-  const carouselServices = showcaseNailSections.map((section) => ({
-    id: section.id,
-    name: section.title,
-    category: "Nails",
-    description: section.summary,
-    priceDisplay: nailSectionStartingPrice(section),
-    detailsHref: nailSectionHref(section),
-    enquirable: false,
-  }));
+  // nail price list. When the CMS is populated, card prices come from it.
+  const carouselServices = cmsServices.length > 0
+    ? showcaseNailSections.flatMap((section) => {
+        const sectionServices = cmsServices.filter(
+          (service) => service.category === "Nails" && service.subcategory === section.title,
+        );
+        if (sectionServices.length === 0) return [];
+
+        return [{
+          id: section.id,
+          name: section.title,
+          category: "Nails",
+          description: section.summary,
+          priceDisplay: startingPriceFromServices(sectionServices),
+          detailsHref: nailSectionHref(section),
+          enquirable: false,
+        }];
+      })
+    : showcaseNailSections.map((section) => ({
+        id: section.id,
+        name: section.title,
+        category: "Nails",
+        description: section.summary,
+        priceDisplay: nailSectionStartingPrice(section),
+        detailsHref: nailSectionHref(section),
+        enquirable: false,
+      }));
 
   // Hero image: dedicated CMS hero, else the first active gallery image,
   // else the static file that ships with the site.

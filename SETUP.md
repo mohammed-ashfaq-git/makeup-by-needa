@@ -64,11 +64,11 @@ npm run dev
   - `src/components/gallery.tsx`: Public gallery grid with play badges and video lightbox
   - `src/components/admin/GalleryManager.tsx`: Admin interface for photos and videos
 
-### 3. Services: the Nail Price List
-- **Public menu:** The services page publishes exactly one catalogue — the Premium Nail Services & Price List in `src/lib/nail-services.ts` (42 services, 7 sections, each with an `#nail-…` anchor and the pricing note).
-- **Homepage:** `src/components/service-carousel.tsx` shows six looping slides, one per section, each deep-linking to `/services#nail-…`.
-- **Search:** `src/components/service-search.tsx` filters the price list; its chips are the section titles.
-- **Admin:** `/admin/services` still manages the `services` table, but those rows are not shown on the public site.
+### 3. Services and prices
+- **Initial catalogues:** `src/lib/nail-services.ts` and `src/lib/aura-services.ts` hold the current nail, makeup, and hair menus. `npm run db:setup` loads them into the `services` table only when it is empty.
+- **Admin:** `/admin/services` edits the seeded records. Changes to names, descriptions, and prices appear on the public services page; homepage nail starting prices also use the CMS values.
+- **Public fallback:** If the CMS has no services or the database is unavailable, the built-in catalogues are shown.
+- **Search:** `src/components/service-search.tsx` filters the public price list and links to each service group.
 
 ### 4. Database Migrations
 - `drizzle/0000_sparkling_sebastian_shaw.sql`: Initial 8 tables

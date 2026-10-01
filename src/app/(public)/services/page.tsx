@@ -35,6 +35,21 @@ function serviceGroup(category: string, subcategory: string, name: string) {
   return "Makeup";
 }
 
+function serviceSubcategoryId(category: string, subcategory: string) {
+  const catalogSection =
+    category === "Nails"
+      ? nailServiceSections.find((section) => section.title === subcategory)
+      : auraSections.find((section) => section.title === subcategory);
+  const fallbackSlug = subcategory
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return category === "Nails"
+    ? `nail-${catalogSection?.id ?? fallbackSlug}`
+    : `aura-${catalogSection?.id ?? fallbackSlug}`;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   const description = `${settings.businessName} nail, makeup, hair and special occasion services & price list \u2014 gel manicures, event makeup and hairstyling in ${settings.location}.`;
@@ -186,30 +201,46 @@ export default async function Services() {
               {orderedCmsServices.map((group) => (
                 <section className="nail-section" id={`services-${group.id}`} key={group.id}>
                   <div className="nail-section-heading"><h3>{group.label}</h3></div>
-                  {group.services.map((service) => (
-                    <article className="nail-item" id={`cms-service-${service.id}`} key={service.id}>
-                      <div className="nail-item-row-main">
-                        <div className="nail-item-info">
-                          <h4 className="nail-item-name">{service.name}</h4>
-                          <div className="nail-item-price">{service.priceDisplay}</div>
+                  {[...new Set(group.services.map((service) => service.subcategory || "Other services"))].map((subcategory) => {
+                    const subcategoryServices = group.services.filter(
+                      (service) => (service.subcategory || "Other services") === subcategory,
+                    );
+
+                    return (
+                      <div key={subcategory}>
+                        <div
+                          className="nail-section-heading"
+                          id={serviceSubcategoryId(subcategoryServices[0].category, subcategory)}
+                        >
+                          <h4>{subcategory}</h4>
                         </div>
-                        <div className="nail-item-btn-wrapper">
-                          <AddToEnquiryButton service={{
-                            name: service.name,
-                            category: service.category,
-                            subcategory: service.subcategory,
-                            price: service.priceDisplay,
-                          }} />
-                        </div>
+                        {subcategoryServices.map((service) => (
+                          <article className="nail-item" id={`cms-service-${service.id}`} key={service.id}>
+                            <div className="nail-item-row-main">
+                              <div className="nail-item-info">
+                                <h4 className="nail-item-name">{service.name}</h4>
+                                <div className="nail-item-price">{service.priceDisplay}</div>
+                              </div>
+                              <div className="nail-item-btn-wrapper">
+                                <AddToEnquiryButton service={{
+                                  name: service.name,
+                                  category: service.category,
+                                  subcategory: service.subcategory,
+                                  price: service.priceDisplay,
+                                }} />
+                              </div>
+                            </div>
+                            {(service.shortDescription || service.description) && (
+                              <p className="nail-item-desc">{service.shortDescription || service.description}</p>
+                            )}
+                            {service.details.length > 0 && (
+                              <ul className={styles.details}>{service.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>
+                            )}
+                          </article>
+                        ))}
                       </div>
-                      {(service.shortDescription || service.description) && (
-                        <p className="nail-item-desc">{service.shortDescription || service.description}</p>
-                      )}
-                      {service.details.length > 0 && (
-                        <ul className={styles.details}>{service.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>
-                      )}
-                    </article>
-                  ))}
+                    );
+                  })}
                 </section>
               ))}
             </div>

@@ -11,13 +11,11 @@ pages, driven by the database (settings, artist, gallery, testimonials, FAQs):
 - **Service enquiry cart with WhatsApp** — visitors can add services to an
   in-browser cart, pick an event date, add notes, and generate a pre-formatted
   WhatsApp message with categorized line items.
-- **Premium Nail Services & Price List** — the one published catalogue: 42
-  services in 7 sections (Natural Nail Services, Nail Extensions, Nail Art,
-  Premium Finishes, Charms • Bling • 3D, Removal, Signature Sets), maintained
-  in `src/lib/nail-services.ts`. Each section has its own anchor
-  (`/services#nail-…`), and a search panel filters the whole list.
-- **Homepage slideshow** — six looping slides, one per price-list section,
-  each linking to that section of the services page.
+- **Editable services and prices** — nail, makeup, and hair catalogues are
+  loaded into the CMS on an empty database. Edit them at `/admin/services`;
+  public service listings and homepage nail starting prices use the CMS values.
+- **Homepage slideshow** — six looping nail service slides link to their
+  sections on the services page.
 - **Media gallery** — photo portfolio and video playback (YouTube, Vimeo,
   and uploaded MP4/WebM/MOV) with responsive video lightbox.
 - **Enquiry form & WhatsApp button** — self-service enquiry form with
@@ -156,9 +154,9 @@ machines without a bundled Chrome, point the suite at one with
 ## Notes
 
 - The public website is database-driven: settings, artist profile, gallery,
-  testimonials and FAQs come from the CMS, rendered server-side, and admin
-  edits appear immediately. The one exception is the nail price list, which
-  lives in `src/lib/nail-services.ts` and changes with a code deployment.
+  services, testimonials and FAQs come from the CMS, rendered server-side, and
+  admin edits appear immediately. Built-in service catalogues provide the
+  initial seed and a fallback when the database is unavailable.
 - All public pages fall back to the built-in static content if the database
   is unavailable, so the site never goes down with the DB. The enquiry API
   degrades to a WhatsApp hand-off in that case, so no enquiry is lost.

@@ -26,7 +26,7 @@ export const auraSections: AuraSection[] = [
   { id: 'makeup', title: 'Makeup', emoji: '👰', category: 'Makeup', items: [
     item('Makeup', '$250', 'A complete customized makeup application.', ['Detailed skin preparation', 'Foundation and complexion matching', 'Face and neck blending', 'Contour and bronzing', 'Blush and highlight', 'Customized eye makeup', 'Eyeliner', 'False lashes', 'Brows', 'Lip preparation', 'Lip liner and lipstick', 'Setting and long-wear finishing', 'Final look check']),
     item('South Asian Makeup', '$275', 'Customized makeup designed for South Asian event looks.', ['Detailed skin preparation', 'Customized complexion', 'Eye makeup', 'False lashes', 'Contour, blush and highlight', 'Long-wear setting', 'Lip customization', 'Long-wear finishing']),
-  ], note: 'Optional cultural styling: dupatta setting, jewellery placement, dupatta setting and jewellery placement. Additional charges may apply depending on requirements.' },
+  ], note: 'Optional cultural styling includes dupatta setting, jewellery placement and hair accessories. Additional charges may apply depending on requirements.' },
   { id: 'trials', title: 'Makeup Trials', emoji: '💍', category: 'Makeup', items: [
     item('Makeup Trial', '$125', 'A personalized trial appointment to finalize your event makeup.', ['Consultation', 'Skin preparation', 'Trial complexion', 'Eye look', 'Lashes', 'Lip selection', 'Final adjustments']),
     item('Makeup + Hair Trial', '$200', 'Makeup and hairstyling trial performed together to create your complete look.'),
