@@ -26,7 +26,7 @@ export const PAGE_CONTENT_FIELDS = {
   ],
   services: [
     ["servicesTitle", "Page heading", "Beauty services & price list."],
-    ["servicesIntroduction", "Page introduction", "Explore makeup, bridal, hair and nail services with transparent pricing. From everyday glam to your wedding day, find a look that feels like you."],
+    ["servicesIntroduction", "Page introduction", "Explore makeup, hair and nail services with transparent pricing. From everyday glam to special occasions, find a look that feels like you."],
   ],
   gallery: [
     ["galleryTitle", "Page heading", "Moments, made memorable."],

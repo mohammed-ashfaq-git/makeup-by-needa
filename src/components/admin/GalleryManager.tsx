@@ -32,7 +32,7 @@ export type AdminGalleryItem = {
   active: boolean;
 };
 
-const CATEGORIES = ["Makeup", "Bridal", "Hair", "Nails"] as const;
+const CATEGORIES = ["Makeup", "Hair", "Nails"] as const;
 
 export function GalleryManager({
   items,

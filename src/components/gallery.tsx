@@ -10,7 +10,7 @@ import { toVideoEmbedUrl } from "@/lib/video-url";
 type GalleryCategory = "Makeup" | "Bridal" | "Hair" | "Nails";
 
 /**
- * Public filters. "Bridal" is deliberately not offered: items stored under it
+ * Public filters. "Wedding" is deliberately not offered: items stored under it
  * are shown and filtered as "Makeup".
  */
 const filters = ["All", "Nails", "Makeup", "Hair"] as const;

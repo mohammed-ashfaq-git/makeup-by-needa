@@ -18,7 +18,6 @@ import styles from "./services.module.css";
 const SERVICE_GROUPS = [
   { id: "nails", label: "Nails" },
   { id: "makeup", label: "Makeup" },
-  { id: "bridal", label: "Bridal" },
   { id: "hair", label: "Hair" },
   { id: "packages", label: "Packages" },
   { id: "extras", label: "Extras" },
@@ -32,13 +31,13 @@ function serviceGroup(category: string, subcategory: string, name: string) {
   if (/add[- ]?on|extra|removal|touch[- ]?up/.test(detail)) return "Extras";
   if (category === "Nails") return "Nails";
   if (category === "Hair") return "Hair";
-  if (/bridal|bride|wedding|trial|bridesmaid|family/.test(detail) || category === "Bridal") return "Bridal";
+  if (/wedding|bride|trial|bridesmaid|family/.test(detail) || category === "Bridal") return "Makeup";
   return "Makeup";
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `${settings.businessName} nail, makeup, hair and bridal services & price list — gel manicures, event makeup, bridal looks and hairstyling in ${settings.location}.`;
+  const description = `${settings.businessName} nail, makeup, hair and special occasion services & price list — gel manicures, event makeup and hairstyling in ${settings.location}.`;
   const canonicalUrl = getAbsoluteSiteUrl("/services");
 
   return {
@@ -58,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Services page — publishes nail services alongside the Aura Beauty makeup,
- * bridal and hair menus. Each section has an anchor for search navigation.
+ * makeup and hair menus. Each section has an anchor for search navigation.
  */
 export default async function Services() {
   const [settings, cmsServices, content] = await Promise.all([getSettings(), getServices(), getPageContent()]);
@@ -170,8 +169,8 @@ export default async function Services() {
           <div className="shell">
             <header className="nail-menu-header">
               <p className="eyebrow">Aura Beauty · Confident You</p>
-              <p className="nail-menu-brand">MAKEUP • NAILS • HAIR • BRIDAL</p>
-              <h2>{useCmsServices ? "Services & pricing" : "Makeup, hair &amp; bridal services"}</h2>
+              <p className="nail-menu-brand">MAKEUP • NAILS • HAIR</p>
+              <h2>{useCmsServices ? "Services & pricing" : "Makeup &amp; hair services"}</h2>
               <p>{useCmsServices ? "Choose a category to explore current services and pricing." : "Two supplied makeup menus are shown separately where prices differ. Please confirm your final quote when booking."}</p>
             </header>
           </div>
@@ -235,8 +234,8 @@ export default async function Services() {
             ))}
             <section className="nail-section" id="aura-location">
               <div className="nail-section-heading"><span aria-hidden="true">🚗</span><h3>On-Location Makeup</h3></div>
-              <p>Aura Beauty offers mobile makeup services for weddings, bridal parties, events, photoshoots, fashion shows and private celebrations. Travel fees apply depending on location.</p>
-              <p>On-location bridal bookings can include setup, professional lighting requirements and a customized service timeline.</p>
+              <p>Aura Beauty offers mobile makeup services for weddings, wedding parties, events, photoshoots, fashion shows and private celebrations. Travel fees apply depending on location.</p>
+              <p>On-location wedding bookings can include setup, professional lighting requirements and a customized service timeline.</p>
             </section>
             <section className="nail-section" id="aura-booking">
               <div className="nail-section-heading"><span aria-hidden="true">📌</span><h3>Booking Information</h3></div>
