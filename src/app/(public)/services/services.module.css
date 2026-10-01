@@ -523,8 +523,7 @@
 }
 
 .scope :global(.service-search-marquee:hover .service-search-marquee-track),
-.scope :global(.service-search-marquee:focus-within .service-search-marquee-track),
-.scope :global(.service-search-marquee.is-paused .service-search-marquee-track) {
+.scope :global(.service-search-marquee:focus-within .service-search-marquee-track) {
   animation-play-state: paused;
 }
 
@@ -549,25 +548,6 @@
     background 0.25s ease,
     border-color 0.25s ease,
     color 0.25s ease;
-}
-
-.scope :global(.service-search-motion-toggle) {
-  display: block;
-  margin: 7px 0 0 auto;
-  padding: 4px 0;
-  border: 0;
-  background: transparent;
-  color: #806658;
-  font: inherit;
-  font-size: 10px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.scope :global(.service-search-motion-toggle:focus-visible) {
-  outline: 2px solid #a5786d;
-  outline-offset: 3px;
 }
 
 .scope :global(.service-search-chip:hover) {

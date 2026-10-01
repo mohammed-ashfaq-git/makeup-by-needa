@@ -37,7 +37,6 @@ export function ServiceSearch({
 }) {
   const [query, setQuery] = useState("");
   const [chip, setChip] = useState<string>(ALL);
-  const [paused, setPaused] = useState(false);
 
   const chips = useMemo(() => [
     { id: ALL, label: ALL },
@@ -99,10 +98,7 @@ export function ServiceSearch({
             />
           </div>
 
-          <div
-            className={`service-search-marquee${paused ? " is-paused" : ""}`}
-            onPointerEnter={() => setPaused(true)}
-          >
+          <div className="service-search-marquee">
             <div className="service-search-marquee-track">
               {[0, 1].map((copy) => (
                 <div
@@ -128,15 +124,6 @@ export function ServiceSearch({
               ))}
             </div>
           </div>
-
-          <button
-            type="button"
-            className="service-search-motion-toggle"
-            onClick={() => setPaused((current) => !current)}
-            aria-pressed={paused}
-          >
-            {paused ? "Play categories" : "Pause categories"}
-          </button>
 
           <div className="service-search-status">
             {filtering ? (

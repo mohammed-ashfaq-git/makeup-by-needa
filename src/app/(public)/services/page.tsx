@@ -16,11 +16,11 @@ import { getAbsoluteSiteUrl } from "@/lib/site-url";
 import styles from "./services.module.css";
 
 const SERVICE_GROUPS = [
-  { id: "nails", label: "Nails" },
   { id: "makeup", label: "Makeup" },
   { id: "hair", label: "Hair" },
   { id: "packages", label: "Packages" },
   { id: "extras", label: "Extras" },
+  { id: "nails", label: "Nails" },
 ] as const;
 
 const auraGroupOrder = SERVICE_GROUPS.map((group) => group.label);
