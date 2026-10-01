@@ -31,13 +31,13 @@ function serviceGroup(category: string, subcategory: string, name: string) {
   if (/add[- ]?on|extra|removal|touch[- ]?up/.test(detail)) return "Extras";
   if (category === "Nails") return "Nails";
   if (category === "Hair") return "Hair";
-  if (/wedding|bride|trial|bridesmaid|family/.test(detail) || category === "Bridal") return "Makeup";
+  if (/trial|family/.test(detail) || category === "Bridal") return "Makeup";
   return "Makeup";
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `${settings.businessName} nail, makeup, hair and special occasion services & price list — gel manicures, event makeup and hairstyling in ${settings.location}.`;
+  const description = `${settings.businessName} nail, makeup, hair and special occasion services & price list \u2014 gel manicures, event makeup and hairstyling in ${settings.location}.`;
   const canonicalUrl = getAbsoluteSiteUrl("/services");
 
   return {
@@ -169,7 +169,7 @@ export default async function Services() {
           <div className="shell">
             <header className="nail-menu-header">
               <p className="eyebrow">Aura Beauty · Confident You</p>
-              <p className="nail-menu-brand">MAKEUP • NAILS • HAIR</p>
+              <p className="nail-menu-brand">MAKEUP &bull; NAILS &bull; HAIR</p>
               <h2>{useCmsServices ? "Services & pricing" : "Makeup &amp; hair services"}</h2>
               <p>{useCmsServices ? "Choose a category to explore current services and pricing." : "Two supplied makeup menus are shown separately where prices differ. Please confirm your final quote when booking."}</p>
             </header>
@@ -234,8 +234,8 @@ export default async function Services() {
             ))}
             <section className="nail-section" id="aura-location">
               <div className="nail-section-heading"><span aria-hidden="true">🚗</span><h3>On-Location Makeup</h3></div>
-              <p>Aura Beauty offers mobile makeup services for weddings, wedding parties, events, photoshoots, fashion shows and private celebrations. Travel fees apply depending on location.</p>
-              <p>On-location wedding bookings can include setup, professional lighting requirements and a customized service timeline.</p>
+              <p>Aura Beauty offers mobile makeup services for events, photoshoots, fashion shows and private celebrations. Travel fees apply depending on location.</p>
+              <p>On-location makeup bookings can include setup, professional lighting requirements and a customized service timeline.</p>
             </section>
             <section className="nail-section" id="aura-booking">
               <div className="nail-section-heading"><span aria-hidden="true">📌</span><h3>Booking Information</h3></div>

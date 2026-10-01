@@ -21,19 +21,19 @@ export const auraSections: AuraSection[] = [
     item('Mehndi / Mayoon Makeup', '$150', 'Soft or full glam customized to your outfit and event.'),
     item('Reception / Walima Makeup', '$180', 'Elevated glam designed for formal evening celebrations.'),
     item('Nikah Makeup', '$180', 'Elegant, polished makeup customized to your preferred level of glam.'),
-    item('Pre-Wedding Makeup', '$180', 'A detailed glam look for wedding showers, pre-wedding events and celebrations.'),
+    item('Makeup', '$180', 'A detailed glam look for special events and celebrations.'),
   ] },
-  { id: 'wedding', title: 'Wedding Makeup', emoji: '👰', category: 'Makeup', items: [
-    item('Wedding Makeup', '$250', 'A complete customized wedding makeup application.', ['Detailed skin preparation', 'Foundation and complexion matching', 'Face and neck blending', 'Contour and bronzing', 'Blush and highlight', 'Customized wedding eye makeup', 'Eyeliner', 'False lashes', 'Brows', 'Lip preparation', 'Lip liner and lipstick', 'Setting and long-wear finishing', 'Final look check']),
-    item('South Asian Wedding Makeup', '$275', 'Customized wedding makeup designed for South Asian wedding looks.', ['Detailed skin preparation', 'Customized complexion', 'Wedding eye makeup', 'False lashes', 'Contour, blush and highlight', 'Long-wear setting', 'Lip customization', 'Wedding finishing']),
-  ], note: 'Optional cultural styling: dupatta setting, jewellery placement, hair accessories and wedding accessories. Additional charges may apply depending on requirements.' },
-  { id: 'trials', title: 'Wedding Trials', emoji: '💍', category: 'Makeup', items: [
-    item('Wedding Makeup Trial', '$125', 'A personalized trial appointment to finalize your wedding-day makeup.', ['Consultation', 'Skin preparation', 'Trial complexion', 'Eye look', 'Lashes', 'Lip selection', 'Final adjustments']),
-    item('Wedding Makeup + Hair Trial', '$200', 'Makeup and hairstyling trial performed together to create your complete wedding look.'),
+  { id: 'makeup', title: 'Makeup', emoji: '👰', category: 'Makeup', items: [
+    item('Makeup', '$250', 'A complete customized makeup application.', ['Detailed skin preparation', 'Foundation and complexion matching', 'Face and neck blending', 'Contour and bronzing', 'Blush and highlight', 'Customized eye makeup', 'Eyeliner', 'False lashes', 'Brows', 'Lip preparation', 'Lip liner and lipstick', 'Setting and long-wear finishing', 'Final look check']),
+    item('South Asian Makeup', '$275', 'Customized makeup designed for South Asian event looks.', ['Detailed skin preparation', 'Customized complexion', 'Eye makeup', 'False lashes', 'Contour, blush and highlight', 'Long-wear setting', 'Lip customization', 'Long-wear finishing']),
+  ], note: 'Optional cultural styling: dupatta setting, jewellery placement, dupatta setting and jewellery placement. Additional charges may apply depending on requirements.' },
+  { id: 'trials', title: 'Makeup Trials', emoji: '💍', category: 'Makeup', items: [
+    item('Makeup Trial', '$125', 'A personalized trial appointment to finalize your event makeup.', ['Consultation', 'Skin preparation', 'Trial complexion', 'Eye look', 'Lashes', 'Lip selection', 'Final adjustments']),
+    item('Makeup + Hair Trial', '$200', 'Makeup and hairstyling trial performed together to create your complete look.'),
   ] },
-  { id: 'party', title: 'Wedding Party & Family', emoji: '👩‍👧', category: 'Makeup', items: [
-    item('Bridesmaid Makeup', '$130/person'), item('Mother of Bride / Groom', '$130/person'), item('Family / Wedding Guest Makeup', '$120/person'), item('Flower Girl Makeup', '$50'),
-  ], note: 'Group wedding bookings can be customized according to the number of people and services required.' },
+  { id: 'party', title: 'Group Makeup', emoji: '👩‍👧', category: 'Makeup', items: [
+    item('Group Makeup', '$130/person'), item('Family Makeup', '$130/person'), item('Guest Makeup', '$120/person'), item('Flower Girl Makeup', '$50'),
+  ], note: 'Group bookings can be customized according to the number of people and services required.' },
   { id: 'photoshoot', title: 'Photoshoot & Content Makeup', emoji: '📸', category: 'Makeup', items: [
     item('Photoshoot Makeup', '$150', 'Camera-ready complexion and customized eye and lip makeup.', ['Professional photoshoots', 'Portfolio shoots', 'Fashion shoots', 'Beauty content', 'Brand shoots']),
     item('Editorial / Creative Makeup', 'From $175', 'For creative, fashion, editorial or highly detailed makeup looks. Pricing depends on complexity, products and time required.'),
@@ -47,19 +47,19 @@ export const auraSections: AuraSection[] = [
     item('Self-Makeup Masterclass', '$175', 'A more detailed personalized lesson focused on creating a complete glam look.'),
   ] },
   { id: 'addons', title: 'Makeup Add-Ons', emoji: '✨', category: 'Makeup', items: [
-    item('False Lashes', 'Included with Glam & Wedding'), item('Extra Lash / Specialty Lash', 'From $10'), item('Airbrush Makeup', '+$25'), item('Body Glow', '+$20'), item('Additional Body Makeup', 'From $30'), item('Extra Coverage / Detailed Skin Correction', 'From $20'), item('Lip Touch-Up Kit', 'From $15'), item('Touch-Ups During Event', 'From $75/hour'), item('Second Makeup Look', 'From $100'),
+    item('False Lashes', 'Included with Glam'), item('Extra Lash / Specialty Lash', 'From $10'), item('Airbrush Makeup', '+$25'), item('Body Glow', '+$20'), item('Additional Body Makeup', 'From $30'), item('Extra Coverage / Detailed Skin Correction', 'From $20'), item('Lip Touch-Up Kit', 'From $15'), item('Touch-Ups During Event', 'From $75/hour'), item('Second Makeup Look', 'From $100'),
   ] },
   { id: 'packages', title: 'Makeup + Hair Packages', emoji: '💎', category: 'Packages', items: [
-    item('Soft Glam Package', '$180', 'Soft Glam Makeup + Simple Hairstyling'), item('Full Glam Package', '$230', 'Full Glam Makeup + Glam Hairstyling'), item('Event Glam Package', '$250', 'Luxury/Event Makeup + Hairstyling'), item('Wedding Makeup + Hair', '$350', 'Wedding Makeup + Wedding Hairstyling'), item('South Asian Wedding Makeup + Hair', 'From $400', 'Customized wedding makeup + South Asian wedding hairstyling. Final pricing depends on hairstyle, hair length, extensions and accessories.'),
+    item('Soft Glam Package', '$180', 'Soft Glam Makeup + Simple Hairstyling'), item('Full Glam Package', '$230', 'Full Glam Makeup + Glam Hairstyling'), item('Event Glam Package', '$250', 'Luxury/Event Makeup + Hairstyling'), item('Makeup + Hair', '$350', 'Makeup + hairstyling'), item('South Asian Makeup + Hair', 'From $400', 'Customized makeup + South Asian hairstyling. Final pricing depends on hairstyle, hair length, extensions and accessories.'),
   ] },
   { id: 'occasion-menu', title: 'Everyday & Occasion · Additional Menu', emoji: '💄', category: 'Makeup', items: [
     item('Natural / Fresh Makeup', '$85'), item('Soft Glam', '$110'), item('Full Glam', '$130'), item('Party / Event Makeup', '$120'), item('Photoshoot / Editorial Makeup', '$130'), item('Graduation Makeup', '$110'), item('Birthday / Special Occasion', '$120'),
   ] },
-  { id: 'wedding-menu', title: 'Wedding · Additional Menu', emoji: '👰', category: 'Makeup', items: [
-    item('Wedding Makeup', '$250'), item('Wedding Makeup + Lashes', '$275'), item('Engagement Makeup', '$175'), item('Reception Makeup', '$200'), item('Bridesmaid Makeup', '$130'), item('Mother of Bride/Groom', '$120'), item('Wedding Trial', '$125'),
+  { id: 'makeup-menu', title: 'Makeup · Additional Menu', emoji: '👰', category: 'Makeup', items: [
+    item('Makeup', '$250'), item('Makeup + Lashes', '$275'), item('Engagement Makeup', '$175'), item('Reception Makeup', '$200'), item('Group Makeup', '$130'), item('Family Makeup', '$120'), item('Makeup Trial', '$125'),
   ] },
-  { id: 'south-asian-menu', title: 'South Asian Wedding · Additional Menu', emoji: '🌸', category: 'Makeup', items: [
-    item('Traditional / South Asian Wedding Glam', '$275+'), item('HD Wedding Makeup', '$300+'), item('Wedding Makeup + Hair', '$400+'), item('Wedding Makeup + Hair + Draping', '$450+'),
+  { id: 'south-asian-menu', title: 'South Asian Makeup · Additional Menu', emoji: '🌸', category: 'Makeup', items: [
+    item('Traditional / South Asian Glam', '$275+'), item('HD Makeup', '$300+'), item('Makeup + Hair', '$400+'), item('Makeup + Hair + Draping', '$450+'),
   ] },
   { id: 'additional-addons', title: 'Makeup Add-Ons · Additional Menu', emoji: '✨', category: 'Makeup', items: [
     item('Strip Lashes', '$15'), item('Individual/Cluster Lashes', '$25'), item('Dupatta Setting', '$30'), item('Saree Draping', '$50'), item('Hair Styling', '$75+'), item('Touch-Up Kit', '$25'), item('Travel / On-Location Service', 'Additional fee'),
@@ -70,8 +70,8 @@ export const auraSections: AuraSection[] = [
   { id: 'party-hair', title: 'Party & Occasion Hair', emoji: '✨', category: 'Hair', items: [
     item('Basic Updo', '$75+'), item('Glam Updo', '$90+'), item('Braided Hairstyle', '$75+'), item('Ponytail / Sleek Pony', '$70+'), item('South Asian Party Hairstyle', '$90+'),
   ] },
-  { id: 'wedding-hair', title: 'Wedding Hair', emoji: '💍', category: 'Hair', items: [
-    item('Wedding Hairstyle', '$150+'), item('Wedding Updo', '$175+'), item('Wedding Hair + Dupatta Setting', '$200+'), item('Wedding Hair Trial', '$100+'), item('Bridesmaid Hairstyle', '$100+'), item('Engagement Hairstyle', '$125+'),
+  { id: 'hair', title: 'Hair', emoji: '💍', category: 'Hair', items: [
+    item('Hairstyle', '$150+'), item('Updo', '$175+'), item('Hair + Dupatta Setting', '$200+'), item('Hair Trial', '$100+'), item('Group Hairstyle', '$100+'), item('Engagement Hairstyle', '$125+'),
   ] },
   { id: 'hair-addons', title: 'Hair Add-Ons', emoji: '💎', category: 'Hair', items: [
     item('Dupatta Setting', '$30'), item('Saree Draping', '$50'), item('Hair Accessories Setting', '$20+'), item('Hair Extensions Styling', '$30+'), item('Extension Application', '$50+'), item('Travel / On-Location', 'Additional fee'),
@@ -79,5 +79,5 @@ export const auraSections: AuraSection[] = [
 ];
 
 export const bookingNotes = [
-  'Advance booking is required.', 'A $10 non-refundable booking deposit is required to secure your appointment.', 'The deposit is applied toward the final balance.', 'A minimum of 24 hours’ notice is required for rescheduling.', 'Late cancellations and no-shows may result in loss of the deposit.', 'Please arrive with a clean face unless otherwise discussed.', 'Please bring inspiration photos when appropriate.', 'Wedding bookings should be made in advance.', 'Travel and parking fees may apply for mobile services.', 'Custom/creative services are quoted according to the complexity of the requested look.',
+  'Advance booking is required.', 'A $10 non-refundable booking deposit is required to secure your appointment.', 'The deposit is applied toward the final balance.', 'A minimum of 24 hours’ notice is required for rescheduling.', 'Late cancellations and no-shows may result in loss of the deposit.', 'Please arrive with a clean face unless otherwise discussed.', 'Please bring inspiration photos when appropriate.', 'Advance booking is recommended for special events.', 'Travel and parking fees may apply for mobile services.', 'Custom/creative services are quoted according to the complexity of the requested look.',
 ];
