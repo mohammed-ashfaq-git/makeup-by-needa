@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FieldError, fieldClass } from "./FormFeedback";
 import type { ActionState } from "@/lib/form";
 
@@ -18,6 +18,8 @@ export function ImageField({
   removeName,
   removeLabel = "Remove image",
   previewWidth = 120,
+  recommendedDimensions,
+  fit = "crop",
 }: {
   name: string;
   label: string;
@@ -27,9 +29,25 @@ export function ImageField({
   removeName?: string;
   removeLabel?: string;
   previewWidth?: number;
+  recommendedDimensions?: {
+    width: number;
+    height: number;
+    shape: string;
+  };
+  fit?: "crop" | "contain";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedDimensions, setSelectedDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   const shownUrl = previewUrl ?? currentImageUrl ?? null;
 
@@ -39,11 +57,17 @@ export function ImageField({
       {hint && (
         <span className="hint">{hint}</span>
       )}
+      {recommendedDimensions && (
+        <span className="hint">
+          Recommended size: {recommendedDimensions.width} × {recommendedDimensions.height} px ({recommendedDimensions.shape}). {fit === "crop" ? "The site crops photos to fit its layout." : "Keep the full logo within the image; it will not be cropped."}
+        </span>
+      )}
+      <span className="hint">Accepted: JPG, PNG, or WebP · Max 5 MB.</span>
 
       <div className="a-image-field">
         {shownUrl && (
           <div
-            className="a-image-preview"
+            className={`a-image-preview${fit === "contain" ? " a-image-preview-contain" : ""}`}
             style={{ width: previewWidth, height: previewWidth }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -61,12 +85,44 @@ export function ImageField({
           onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) {
-              setPreviewUrl(URL.createObjectURL(file));
+              const objectUrl = URL.createObjectURL(file);
+              setPreviewUrl(objectUrl);
+              setSelectedDimensions(null);
+
+              const image = new window.Image();
+              image.onload = () => {
+                setSelectedDimensions({
+                  width: image.naturalWidth,
+                  height: image.naturalHeight,
+                });
+              };
+              image.src = objectUrl;
             } else {
               setPreviewUrl(null);
+              setSelectedDimensions(null);
             }
           }}
         />
+
+        {selectedDimensions && (
+          <span
+            className={`hint${
+              recommendedDimensions &&
+              (selectedDimensions.width < recommendedDimensions.width ||
+                selectedDimensions.height < recommendedDimensions.height)
+                ? " image-dimensions-warning"
+                : ""
+            }`}
+            aria-live="polite"
+          >
+            Selected image: {selectedDimensions.width} × {selectedDimensions.height} px.
+            {recommendedDimensions &&
+              (selectedDimensions.width < recommendedDimensions.width ||
+                selectedDimensions.height < recommendedDimensions.height)
+              ? " This is below the recommended size and may look soft on the site."
+              : ""}
+          </span>
+        )}
 
         {currentImageUrl && removeName && (
           <label className="a-check">

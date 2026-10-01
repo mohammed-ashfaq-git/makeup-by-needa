@@ -26,11 +26,11 @@ export function SiteFooter({
             />
             <span className="brand-identity">
               <span className="brand-name">{settings.businessName}</span>
-              <span className="brand-services-pill">Nail Technician</span>
+              <span className="brand-services-pill">Makeup • Nails • Hair</span>
             </span>
           </Link>
           <p className="footer-tagline">
-            Premium nail services, thoughtfully tailored to you. Based in{" "}
+            Makeup, nail, and hair services, thoughtfully tailored to you. Based in{" "}
             {settings.location}.
           </p>
         </div>

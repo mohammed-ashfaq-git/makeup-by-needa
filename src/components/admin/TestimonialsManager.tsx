@@ -253,7 +253,8 @@ function TestimonialForm({
       <ImageField
         name="photo"
         label="Client photo"
-        hint="Optional — shown next to the client name."
+        hint="Optional. Shown next to the client name."
+        recommendedDimensions={{ width: 600, height: 600, shape: "square" }}
         state={state}
         currentImageUrl={initial?.photoUrl ?? null}
         removeName="removePhoto"

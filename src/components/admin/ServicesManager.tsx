@@ -512,7 +512,8 @@ function ServiceFormFields({
       <ImageField
         name="image"
         label="Service image"
-        hint="Optional — shown on the homepage service cards and category panels."
+        hint="Optional. Shown on the homepage service cards and category panels."
+        recommendedDimensions={{ width: 1600, height: 900, shape: "16:9 landscape" }}
         state={state}
         currentImageUrl={initial?.imageUrl ?? null}
         removeName="removeImage"

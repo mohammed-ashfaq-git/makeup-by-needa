@@ -377,6 +377,7 @@ i {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .nav {
@@ -574,6 +575,11 @@ i {
     0 100%,
     0 18%
   );
+}
+
+.hero-photo {
+  object-fit: cover;
+  object-position: center;
 }
 
 .hero-photo-stage::before {

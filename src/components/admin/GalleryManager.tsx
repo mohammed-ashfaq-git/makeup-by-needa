@@ -286,7 +286,8 @@ function GalleryItemForm({
           <ImageField
             name="image"
             label={initial ? "Desktop image — replace file" : "Desktop image file"}
-            hint="JPG, PNG, or WEBP up to 5 MB. Shown on desktop and tablet."
+            hint="Shown on desktop and tablet."
+            recommendedDimensions={{ width: 1600, height: 1600, shape: "square" }}
             state={state}
             currentImageUrl={initial?.imageUrl ?? null}
           />
@@ -294,7 +295,8 @@ function GalleryItemForm({
           <ImageField
             name="mobileImage"
             label="Mobile portrait crop (optional)"
-            hint="Recommended 4:5 portrait, JPG/PNG/WEBP up to 5 MB. Shown on phones; when empty, the desktop image is used on mobile instead."
+            hint="Shown on phones; when empty, the desktop image is used instead."
+            recommendedDimensions={{ width: 1080, height: 1350, shape: "4:5 portrait" }}
             state={state}
             currentImageUrl={initial?.mobileImageUrl ?? null}
             removeName="removeMobileImage"
@@ -348,7 +350,8 @@ function GalleryItemForm({
             <ImageField
               name="image"
               label="Video thumbnail / poster image — desktop (optional)"
-              hint="JPG, PNG, or WEBP up to 5 MB. YouTube thumbnails are detected automatically if left blank."
+              hint="YouTube thumbnails are detected automatically if left blank."
+              recommendedDimensions={{ width: 1600, height: 1600, shape: "square" }}
               state={state}
               currentImageUrl={initial?.imageUrl ?? null}
             />
@@ -356,7 +359,8 @@ function GalleryItemForm({
             <ImageField
               name="mobileImage"
               label="Video thumbnail / poster image — mobile portrait crop (optional)"
-              hint="Recommended 4:5 portrait. Shown on phones; when empty, the desktop thumbnail is used on mobile instead."
+              hint="Shown on phones; when empty, the desktop thumbnail is used instead."
+              recommendedDimensions={{ width: 1080, height: 1350, shape: "4:5 portrait" }}
               state={state}
               currentImageUrl={initial?.mobileImageUrl ?? null}
               removeName="removeMobileImage"

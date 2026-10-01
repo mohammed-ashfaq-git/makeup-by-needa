@@ -147,7 +147,8 @@ export function ArtistForm({ initial }: { initial: ArtistFormValues }) {
       <ImageField
         name="photo"
         label="Profile photo"
-        hint="Optional — shown as the portrait on the About page."
+        hint="Optional. Shown as the portrait on the About page."
+        recommendedDimensions={{ width: 1200, height: 1500, shape: "4:5 portrait" }}
         state={state}
         currentImageUrl={initial.photoUrl}
         removeName="removePhoto"

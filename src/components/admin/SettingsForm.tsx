@@ -267,7 +267,9 @@ export function SettingsForm({ initial }: { initial: SettingsFormValues }) {
       <ImageField
         name="logo"
         label="Logo"
-        hint="Optional — JPG, PNG, or WEBP up to 5 MB. Shown in the header and footer."
+        hint="Optional. Shown in the header and footer."
+        recommendedDimensions={{ width: 1200, height: 800, shape: "3:2 landscape" }}
+        fit="contain"
         state={state}
         currentImageUrl={
           initial.logoUrl && initial.logoUrl !== "/makeup-by-needa-logo.jpg"
@@ -281,7 +283,8 @@ export function SettingsForm({ initial }: { initial: SettingsFormValues }) {
       <ImageField
         name="hero"
         label="Homepage hero image — desktop"
-        hint="Optional — when empty, the first active gallery image is used as the hero."
+        hint="Optional. When empty, the first active gallery image is used as the hero."
+        recommendedDimensions={{ width: 1600, height: 1600, shape: "square" }}
         state={state}
         currentImageUrl={initial.heroImageUrl ?? null}
         removeName="removeHero"
@@ -292,7 +295,8 @@ export function SettingsForm({ initial }: { initial: SettingsFormValues }) {
       <ImageField
         name="heroMobile"
         label="Homepage hero image — mobile portrait crop"
-        hint="Optional — a portrait version of the hero shown on phones (under 768px). When empty, the desktop hero is shown instead, cropped to fill the frame."
+        hint="Optional. Shown on phones; when empty, the desktop hero is used."
+        recommendedDimensions={{ width: 1080, height: 1350, shape: "4:5 portrait" }}
         state={state}
         currentImageUrl={initial.heroImageMobileUrl ?? null}
         removeName="removeHeroMobile"

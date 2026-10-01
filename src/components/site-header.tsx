@@ -60,7 +60,7 @@ export function SiteHeader({
           />
           <span className="brand-identity">
             <span className="brand-name">{businessName}</span>
-            <span className="brand-services-pill">Nail Technician</span>
+            <span className="brand-services-pill">Makeup • Nails • Hair</span>
           </span>
         </Link>
         <button
