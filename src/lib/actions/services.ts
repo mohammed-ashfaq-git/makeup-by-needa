@@ -8,6 +8,8 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { services } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/auth/guards";
+import { auraSections } from "@/lib/aura-services";
+import { nailServiceSections } from "@/lib/nail-services";
 import {
   deleteManagedImage,
   isManagedImageUrl,
@@ -27,6 +29,98 @@ import { serviceSchema } from "@/lib/schemas";
 function revalidateServicePages() {
   revalidatePath("/", "layout");
   revalidatePath("/admin/services");
+}
+
+/** Fill missing rows from the original price lists without overwriting edits. */
+export async function loadDefaultServicesAction(
+  _prev: ActionState,
+  _formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const numericPrice = (display: string) => {
+    const match = display.match(/\$\s*([\d,]+(?:\.\d{1,2})?)/);
+    return match ? match[1].replace(/,/g, "") : null;
+  };
+
+  const defaults = [
+    ...nailServiceSections.flatMap((section) =>
+      section.items.map((item) => ({
+        name: item.name,
+        category: "Nails" as const,
+        subcategory: section.title,
+        shortDescription: item.description?.slice(0, 300) ?? null,
+        description: item.description ?? "",
+        details: item.details?.join("\n") ?? null,
+        price: numericPrice(item.price),
+        priceDisplay: item.price,
+        duration: null,
+        imageUrl: null,
+        featured: false,
+        active: true,
+      })),
+    ),
+    ...auraSections.flatMap((section) =>
+      section.items.map((item) => ({
+        name: item.name,
+        category: (section.category === "Hair" ? "Hair" : "Makeup") as "Hair" | "Makeup",
+        subcategory: section.title,
+        shortDescription: item.description?.slice(0, 300) ?? null,
+        description: item.description ?? "",
+        details: item.details?.join("\n") ?? null,
+        price: numericPrice(item.price),
+        priceDisplay: item.price,
+        duration: null,
+        imageUrl: null,
+        featured: false,
+        active: true,
+      })),
+    ),
+  ];
+
+  try {
+    const db = getDb();
+    const addedCount = await db.transaction(async (tx) => {
+      const existing = await tx
+        .select({
+          name: services.name,
+          category: services.category,
+          subcategory: services.subcategory,
+          displayOrder: services.displayOrder,
+        })
+        .from(services);
+      const serviceKey = (service: { name: string; category: string; subcategory: string | null }) =>
+        `${service.category}\u0000${service.subcategory ?? ""}\u0000${service.name}`.toLowerCase();
+      const existingKeys = new Set(existing.map(serviceKey));
+      const missing = defaults.filter((service) => {
+        const key = serviceKey(service);
+        if (existingKeys.has(key)) return false;
+        existingKeys.add(key);
+        return true;
+      });
+
+      if (missing.length > 0) {
+        const maxOrder = Math.max(0, ...existing.map((service) => service.displayOrder));
+        await tx.insert(services).values(
+          missing.map((service, index) => ({
+            ...service,
+            displayOrder: maxOrder + (index + 1) * 10,
+          })),
+        );
+      }
+      return missing.length;
+    });
+
+    revalidateServicePages();
+    return {
+      ok: true,
+      message: addedCount > 0
+        ? `Loaded ${addedCount} missing services. You can now edit each service and price below.`
+        : "All original services are already in the CMS.",
+    };
+  } catch (error) {
+    console.error("[services] catalogue load failed:", error);
+    return { ok: false, message: "Could not load the original services. Please try again." };
+  }
 }
 
 export async function saveServiceAction(

@@ -42,7 +42,7 @@ npm start
 ```
 
 - `npm run build` runs the `prebuild` lifecycle (`npm run db:setup`) before creating `.next` with Webpack. It requires a valid `DATABASE_URL` and a database reachable during every build, including local builds.
-- `npm run db:setup` applies pending Drizzle migrations and runs the idempotent starter seed. If the services table is empty, it loads the current nail, makeup, and hair catalogues so they can be managed from `/admin/services`. Existing service rows are preserved.
+- `npm run db:setup` applies pending Drizzle migrations and fills missing entries from the nail, makeup, and hair catalogues. Existing service rows and edits are preserved. Admins can also run **Load missing price lists** on `/admin/services` if the database catalogue needs restoring.
 - `npm run hostinger:build` remains as an alias for `npm run build` for older Hostinger configurations.
 - Do not hard-code a port. A Node hosting platform should supply `PORT`, which Next.js honours.
 

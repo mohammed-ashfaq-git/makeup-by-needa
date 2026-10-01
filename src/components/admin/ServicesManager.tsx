@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import {
   deleteServiceAction,
+  loadDefaultServicesAction,
   moveServiceAction,
   saveServiceAction,
   toggleServiceAction,
 } from "@/lib/actions/services";
+import { ACTION_IDLE } from "@/lib/form";
 import { SubmitButton } from "./SubmitButton";
 import { FieldError, FormBanner, fieldClass } from "./FormFeedback";
 import { ImageField } from "./ImageField";
@@ -33,7 +35,7 @@ export type AdminService = {
   active: boolean;
 };
 
-const CATEGORIES = ["Nails", "Makeup", "Hair"] as const;
+const CATEGORIES = ["Makeup", "Hair", "Nails"] as const;
 
 const COMMON_SUBCATEGORIES = [
   "Everyday & Event Makeup",
@@ -64,6 +66,10 @@ export function ServicesManager({ services }: { services: AdminService[] }) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
+  const [catalogueState, loadCatalogueAction] = useActionState(
+    loadDefaultServicesAction,
+    ACTION_IDLE,
+  );
 
   const filteredServices = useMemo(() => {
     return services.filter((service) => {
@@ -94,7 +100,13 @@ export function ServicesManager({ services }: { services: AdminService[] }) {
             hidden ones stay editable but are not shown on the website
           </p>
         </div>
-        {!adding && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
+          <form action={loadCatalogueAction}>
+            <SubmitButton className="a-btn" pendingText="Loading…">
+              Load missing price lists
+            </SubmitButton>
+          </form>
+          {!adding && (
           <button
             type="button"
             className="a-btn primary"
@@ -105,8 +117,16 @@ export function ServicesManager({ services }: { services: AdminService[] }) {
           >
             + Add service
           </button>
-        )}
+          )}
+        </div>
       </div>
+
+      {catalogueState.message ? <FormBanner state={catalogueState} /> : null}
+      {services.length === 0 ? (
+        <p className="a-muted" style={{ margin: "0 0 18px" }}>
+          Load the current website price lists to add makeup, hair, and nail services here. Existing edits are kept when missing entries are restored.
+        </p>
+      ) : null}
 
       {/* Filter and Search Bar */}
       <div
@@ -386,12 +406,12 @@ function ServiceFormFields({
           <select
             id={`sv-category-${initial?.id ?? "new"}`}
             name="category"
-            defaultValue={initial?.category ?? "Nails"}
+            defaultValue={initial?.category ?? "Makeup"}
             className={fieldClass("category", state, "a-select")}
           >
-            <option value="Nails">Nails</option>
             <option value="Makeup">Makeup</option>
             <option value="Hair">Hair</option>
+            <option value="Nails">Nails</option>
           </select>
           <FieldError name="category" state={state} />
         </div>

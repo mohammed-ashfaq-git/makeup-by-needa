@@ -13,12 +13,26 @@ import {
   getSettings,
   getTestimonials,
 } from "@/lib/cms";
-import {
-  nailSectionHref,
-  nailSectionStartingPrice,
-  showcaseNailSections,
-} from "@/lib/nail-services";
+import { nailSectionId, nailServiceSections } from "@/lib/nail-services";
+import { auraSections } from "@/lib/aura-services";
 import { getAbsoluteSiteUrl } from "@/lib/site-url";
+
+const HOME_SERVICE_GROUPS = [
+  { id: "makeup", label: "Makeup" },
+  { id: "hair", label: "Hair" },
+  { id: "packages", label: "Packages" },
+  { id: "extras", label: "Extras" },
+  { id: "nails", label: "Nails" },
+] as const;
+
+function homeServiceGroup(category: string, subcategory: string, name: string) {
+  const detail = `${subcategory} ${name}`.toLowerCase();
+  if (/package/.test(detail)) return "Packages";
+  if (/add[- ]?on|extra|removal|touch[- ]?up/.test(detail)) return "Extras";
+  if (category === "Nails") return "Nails";
+  if (category === "Hair") return "Hair";
+  return "Makeup";
+}
 
 function InstagramIcon() {
   return (
@@ -67,8 +81,10 @@ function startingPriceFromServices(
     return [{ amount: Number(match[1].replace(/,/g, "")), displayAmount: match[1], unit: match[2] ?? "" }];
   });
 
-  prices.sort((a, b) => a.amount - b.amount);
-  const lowest = prices[0];
+  const standardPrices = prices.filter((price) => !price.unit);
+  const candidates = standardPrices.length > 0 ? standardPrices : prices;
+  candidates.sort((a, b) => a.amount - b.amount);
+  const lowest = candidates[0];
   return lowest ? `From $${lowest.displayAmount}${lowest.unit}` : "See price list";
 }
 
@@ -101,34 +117,58 @@ export default async function Home() {
     getServices(),
   ]);
 
-  // Homepage slideshow: six looping slides, one per showcase section of the
-  // nail price list. When the CMS is populated, card prices come from it.
-  const carouselServices = cmsServices.length > 0
-    ? showcaseNailSections.flatMap((section) => {
-        const sectionServices = cmsServices.filter(
-          (service) => service.category === "Nails" && service.subcategory === section.title,
-        );
-        if (sectionServices.length === 0) return [];
+  // Use the editable CMS catalogue when available, with built-in price lists
+  // as a fallback until the first catalogue is loaded into the CMS.
+  const defaultServices = [
+    ...nailServiceSections.flatMap((section) => section.items.map((item) => ({
+      id: `${section.id}-${item.name}`,
+      name: item.name,
+      category: "Nails",
+      subcategory: section.title,
+      description: item.description ?? "",
+      priceDisplay: item.price,
+      imageUrl: null,
+    }))),
+    ...auraSections.flatMap((section) => section.items.map((item, index) => ({
+      id: `${section.id}-${index}`,
+      name: item.name,
+      category: section.category === "Hair" ? "Hair" : "Makeup",
+      subcategory: section.title,
+      description: item.description ?? "",
+      priceDisplay: item.price,
+      imageUrl: null,
+    }))),
+  ];
+  const homepageServices = cmsServices.length > 0 ? cmsServices : defaultServices;
+  const fallbackServiceAnchors: Record<(typeof HOME_SERVICE_GROUPS)[number]["id"], string> = {
+    makeup: "aura-everyday",
+    hair: "aura-basic-hair",
+    packages: "aura-packages",
+    extras: "aura-addons",
+    nails: nailSectionId(nailServiceSections[0]),
+  };
+  const carouselServices = HOME_SERVICE_GROUPS.flatMap((group) => {
+    const groupServices = homepageServices.filter(
+      (service) => homeServiceGroup(service.category, service.subcategory ?? "", service.name) === group.label,
+    );
+    if (groupServices.length === 0) return [];
 
-        return [{
-          id: section.id,
-          name: section.title,
-          category: "Nails",
-          description: section.summary,
-          priceDisplay: startingPriceFromServices(sectionServices),
-          detailsHref: nailSectionHref(section),
-          enquirable: false,
-        }];
-      })
-    : showcaseNailSections.map((section) => ({
-        id: section.id,
-        name: section.title,
-        category: "Nails",
-        description: section.summary,
-        priceDisplay: nailSectionStartingPrice(section),
-        detailsHref: nailSectionHref(section),
-        enquirable: false,
-      }));
+    const sections = [...new Set(groupServices.map((service) => service.subcategory).filter(Boolean))];
+    const description = sections.slice(0, 3).join(" · ") || `${group.label} services`;
+
+    return [{
+      id: group.id,
+      name: group.label,
+      category: group.label,
+      description,
+      priceDisplay: startingPriceFromServices(groupServices),
+      detailsHref: cmsServices.length > 0
+        ? `/services#services-${group.id}`
+        : `/services#${fallbackServiceAnchors[group.id]}`,
+      imageUrl: groupServices.find((service) => service.imageUrl)?.imageUrl ?? null,
+      enquirable: false,
+    }];
+  });
 
   // Hero image: dedicated CMS hero, else the first active gallery image,
   // else the static file that ships with the site.
@@ -170,7 +210,7 @@ export default async function Home() {
 
         <div className="shell hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow">Nail Technician · {settings.businessName}</p>
+            <p className="eyebrow">Makeup · Hair · Nails · {settings.businessName}</p>
 
             <h1>{content.homeHeroTitle}</h1>
 
@@ -218,7 +258,7 @@ export default async function Home() {
 
             <div className="art-label">
               <span>Beauty, personally considered</span>
-              <em>Nail Technician</em>
+              <em>Makeup · Hair · Nails</em>
             </div>
           </div>
         </div>

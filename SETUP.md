@@ -65,8 +65,8 @@ npm run dev
   - `src/components/admin/GalleryManager.tsx`: Admin interface for photos and videos
 
 ### 3. Services and prices
-- **Initial catalogues:** `src/lib/nail-services.ts` and `src/lib/aura-services.ts` hold the current nail, makeup, and hair menus. `npm run db:setup` loads them into the `services` table only when it is empty.
-- **Admin:** `/admin/services` edits the seeded records. Changes to names, descriptions, and prices appear on the public services page; homepage nail starting prices also use the CMS values.
+- **Initial catalogues:** `src/lib/nail-services.ts` and `src/lib/aura-services.ts` hold the current nail, makeup, and hair menus. `npm run db:setup` adds any missing entries to the `services` table.
+- **Admin:** `/admin/services` lets you edit each service and price. Use **Load missing price lists** to restore any missing original makeup, hair, or nail entries without replacing edits already made. Homepage service cards use the CMS categories and prices.
 - **Public fallback:** If the CMS has no services or the database is unavailable, the built-in catalogues are shown.
 - **Search:** `src/components/service-search.tsx` filters the public price list and links to each service group.
 

@@ -30,9 +30,9 @@ export const business = {
   address: "Toronto, Canada",
   hours: "By appointment",
 
-  homeTitle: "Needa Beauty Lab | Toronto Nail Technician",
+  homeTitle: "Needa Beauty Lab | Makeup, Hair & Nail Services",
   homeDescription:
-    "Premium nail services in Toronto, Canada — gel polish, extensions, nail art, premium finishes and signature sets.",
+    "Makeup, hairstyling and nail services in Toronto, Canada, with personalized looks and current pricing.",
 
   footerText: "Needa Beauty Lab. All rights reserved.",
 };

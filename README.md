@@ -1,7 +1,7 @@
 # Needa Beauty Lab
 
 Client website + custom content management system (CMS) for Needa Beauty Lab,
-a Toronto-based nail technician, built with Next.js 16 (App Router, React 19,
+a Toronto-based beauty artist, built with Next.js 16 (App Router, React 19,
 Server Actions) and MySQL via Drizzle ORM.
 
 ## Features
@@ -12,10 +12,10 @@ pages, driven by the database (settings, artist, gallery, testimonials, FAQs):
   in-browser cart, pick an event date, add notes, and generate a pre-formatted
   WhatsApp message with categorized line items.
 - **Editable services and prices** — nail, makeup, and hair catalogues are
-  loaded into the CMS on an empty database. Edit them at `/admin/services`;
-  public service listings and homepage nail starting prices use the CMS values.
-- **Homepage slideshow** — six looping nail service slides link to their
-  sections on the services page.
+  loaded into the CMS and missing entries can be restored. Edit them at `/admin/services`;
+  public service listings and homepage category cards use the CMS values.
+- **Homepage slideshow** — makeup, hair, package, extra, and nail service
+  categories link to their sections on the services page.
 - **Media gallery** — photo portfolio and video playback (YouTube, Vimeo,
   and uploaded MP4/WebM/MOV) with responsive video lightbox.
 - **Enquiry form & WhatsApp button** — self-service enquiry form with
@@ -156,7 +156,8 @@ machines without a bundled Chrome, point the suite at one with
 - The public website is database-driven: settings, artist profile, gallery,
   services, testimonials and FAQs come from the CMS, rendered server-side, and
   admin edits appear immediately. Built-in service catalogues provide the
-  initial seed and a fallback when the database is unavailable.
+  initial seed and a fallback when the database is unavailable; admins can
+  restore missing price-list entries without overwriting edits.
 - All public pages fall back to the built-in static content if the database
   is unavailable, so the site never goes down with the DB. The enquiry API
   degrades to a WhatsApp hand-off in that case, so no enquiry is lost.

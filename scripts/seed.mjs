@@ -5,7 +5,7 @@
  * images, mirroring the static configuration in src/lib/site-data.ts.
  *
  * Seeds the current nail, makeup, and hair catalogues into the editable
- * services table when it is empty. The source catalogues are the same ones
+ * services table, adding only missing default entries. The source catalogues are the same ones
  * used by the public website.
  *
  * Idempotent: it never overwrites rows that already exist, so it is safe
@@ -66,11 +66,14 @@ const SETTINGS = {
   instagramMakeupUrl: "https://www.instagram.com/makeupbynee_/",
   instagramNailsHandle: "@nailsbyneeda",
   instagramNailsUrl: "https://www.instagram.com/nailsbyneeda/",
-  homeTitle: "Needa Beauty Lab | Toronto Nail Technician",
+  homeTitle: "Needa Beauty Lab | Makeup, Hair & Nail Services",
   homeDescription:
-    "Premium nail services in Toronto, Canada \u2014 gel polish, extensions, nail art, premium finishes and signature sets.",
+    "Makeup, hairstyling and nail services in Toronto, Canada, with personalized looks and current pricing.",
   footerText: "Needa Beauty Lab. All rights reserved.",
 };
+
+const LEGACY_HOME_DESCRIPTION =
+  "Premium nail services in Toronto, Canada \u2014 gel polish, extensions, nail art, premium finishes and signature sets.";
 
 const ARTIST = {
   name: "Needa",
@@ -147,17 +150,26 @@ async function seedServices(db) {
   await db.beginTransaction();
 
   try {
-    const [[serviceCount]] = await db.query(
-      "SELECT COUNT(*) AS count FROM services",
+    const catalog = await getDefaultServices();
+    const [existingServices] = await db.query(
+      "SELECT name, category, subcategory FROM services",
     );
+    const serviceKey = (service) =>
+      `${service.category}\u0000${service.subcategory ?? ""}\u0000${service.name}`.toLowerCase();
+    const existingKeys = new Set(existingServices.map(serviceKey));
+    const missing = catalog.filter((service) => {
+      const key = serviceKey(service);
+      if (existingKeys.has(key)) return false;
+      existingKeys.add(key);
+      return true;
+    });
 
-    if (Number(serviceCount.count) > 0) {
+    if (missing.length === 0) {
       await db.commit();
-      console.log(`Services already present (${serviceCount.count} rows) — skipped.`);
+      console.log(`All ${catalog.length} default services are already present — skipped.`);
       return;
     }
 
-    const catalog = await getDefaultServices();
     const columns = [
       "name",
       "category",
@@ -175,8 +187,8 @@ async function seedServices(db) {
     ];
     const rowPlaceholder = `(${columns.map(() => "?").join(", ")})`;
 
-    for (let offset = 0; offset < catalog.length; offset += 40) {
-      const rows = catalog.slice(offset, offset + 40);
+    for (let offset = 0; offset < missing.length; offset += 40) {
+      const rows = missing.slice(offset, offset + 40);
       const placeholders = rows.map(() => rowPlaceholder).join(", ");
       const values = rows.flatMap((service) => [
         service.name,
@@ -201,7 +213,7 @@ async function seedServices(db) {
     }
 
     await db.commit();
-    console.log(`Seeded ${catalog.length} editable services from the website price lists.`);
+    console.log(`Added ${missing.length} missing editable services from the website price lists.`);
   } catch (error) {
     await db.rollback();
     throw error;
@@ -236,6 +248,19 @@ async function main() {
         SETTINGS.homeTitle,
         SETTINGS.homeDescription,
         SETTINGS.footerText,
+      ],
+    );
+
+    await db.execute(
+      `UPDATE site_settings
+       SET home_title = IF(home_title = ?, ?, home_title),
+           home_description = IF(home_description = ?, ?, home_description)
+       WHERE id = 1`,
+      [
+        "Needa Beauty Lab | Toronto Nail Technician",
+        SETTINGS.homeTitle,
+        LEGACY_HOME_DESCRIPTION,
+        SETTINGS.homeDescription,
       ],
     );
 

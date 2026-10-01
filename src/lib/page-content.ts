@@ -2,12 +2,12 @@
 export const PAGE_CONTENT_FIELDS = {
   home: [
     ["homeHeroTitle", "Hero heading", "Beauty, artistry & confidence — created just for you."],
-    ["homeHeroDescription", "Hero introduction", "Premium gel manicures, extensions, nail art and signature sets — thoughtfully tailored to your style and every occasion worth remembering."],
+    ["homeHeroDescription", "Hero introduction", "Makeup, hairstyling and nail services, thoughtfully tailored to your style and every occasion worth remembering."],
     ["homeIntroTitle", "Introduction heading", "Refined artistry, made to feel like you."],
     ["homeIntroDescription", "Introduction copy", "Every appointment begins with listening: your vision, your occasion, and the details that make you feel most yourself."],
     ["homeIntroNote", "Introduction note", "From a clean gel manicure to a fully custom luxury set, each appointment is approached with care and tailored to your personal style."],
-    ["homeServicesTitle", "Services heading", "Premium nail services."],
-    ["homeServicesDescription", "Services introduction", "From natural nail care to signature sets. Choose a collection to see its full price list."],
+    ["homeServicesTitle", "Services heading", "Makeup, hair & nail services."],
+    ["homeServicesDescription", "Services introduction", "Explore makeup, hair and nail services, with current prices and details for every category."],
     ["homePortfolioTitle", "Portfolio heading", "The beauty is in the details."],
     ["homePortfolioDescription", "Portfolio introduction", "A growing portfolio of work by Needa."],
     ["homeTestimonialsTitle", "Testimonials heading", "Loved by clients."],
@@ -57,7 +57,7 @@ export function mergePageContent(raw: string | null | undefined): PageContent {
       return DEFAULT_PAGE_CONTENT;
     }
     const values = parsed as Record<string, unknown>;
-    return Object.fromEntries(
+    const merged = Object.fromEntries(
       Object.entries(DEFAULT_PAGE_CONTENT).map(([key, fallback]) => [
         key,
         typeof values[key] === "string" && values[key].trim()
@@ -65,6 +65,20 @@ export function mergePageContent(raw: string | null | undefined): PageContent {
           : fallback,
       ]),
     ) as PageContent;
+
+    // Upgrade the exact old defaults in persisted site content while keeping
+    // any copy the owner has customized in the CMS.
+    if (merged.homeServicesTitle === "Premium nail services.") {
+      merged.homeServicesTitle = DEFAULT_PAGE_CONTENT.homeServicesTitle;
+    }
+    if (merged.homeServicesDescription.startsWith("From natural nail care to signature sets.")) {
+      merged.homeServicesDescription = DEFAULT_PAGE_CONTENT.homeServicesDescription;
+    }
+    if (merged.homeHeroDescription.startsWith("Premium gel manicures, extensions, nail art and signature sets")) {
+      merged.homeHeroDescription = DEFAULT_PAGE_CONTENT.homeHeroDescription;
+    }
+
+    return merged;
   } catch {
     return DEFAULT_PAGE_CONTENT;
   }
