@@ -50,7 +50,7 @@ export async function loadDefaultServicesAction(
         subcategory: section.title,
         shortDescription: item.description?.slice(0, 300) ?? null,
         description: item.description ?? "",
-        details: item.details?.join("\n") ?? null,
+        details: null,
         price: numericPrice(item.price),
         priceDisplay: item.price,
         duration: null,
